@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory 패턴 - GameDev PatternHub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">홈</a>
+                <a href="../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Factory 패턴</h1>
+                <div class="pattern-meta">
+                    <span class="category">생성 패턴</span>
+                    <span class="difficulty">난이도: ★★☆☆☆</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>패턴 개요</h2>
+                    <p>Factory 패턴은 객체 생성 로직을 캡슐화하여 유연한 객체 생성이 가능하게 하는 디자인 패턴입니다. 이 패턴은 객체의 생성과 사용을 분리하여 코드의 유지보수성과 확장성을 높입니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 장점</h3>
+                        <ul>
+                            <li>객체 생성 로직을 한 곳에서 관리하여 코드 중복을 방지</li>
+                            <li>새로운 타입의 객체 추가가 용이하여 확장성이 높음</li>
+                            <li>클라이언트 코드와 구체적인 클래스 간의 결합도 감소</li>
+                            <li>객체 생성 과정의 일관성 유지</li>
+                            <li>인터페이스에 맞춰 코딩하여 시스템의 변화에 유연하게 대응 가능</li>
+                        </ul>
+                    </div>
+
+                    <div class="pattern-use-cases">
+                        <h3>사용 사례</h3>
+                        <ul>
+                            <li>게임 오브젝트 생성 (캐릭터, 아이템, 효과 등)</li>
+                            <li>UI 요소 생성</li>
+                            <li>레벨 디자인에서 다양한 오브젝트 생성</li>
+                            <li>리소스 로딩 및 관리</li>
+                            <li>다양한 타입의 무기나 아이템 생성</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>1. 팩토리 패턴의 종류</h2>
+                    <div class="pattern-types">
+                        <h3>1.1 Simple Factory (간단한 팩토리)</h3>
+                        <p>가장 기본적인 형태의 팩토리 패턴으로, 객체 생성 로직을 하나의 클래스에 캡슐화합니다. 디자인 패턴이라기보다는 프로그래밍 관용구에 가깝습니다.</p>
+                        
+                        <h3>1.2 Factory Method (팩토리 메소드)</h3>
+                        <p>객체를 생성하기 위한 인터페이스를 정의하고, 어떤 클래스의 인스턴스를 만들지는 서브클래스에서 결정하게 만듭니다. 클래스의 인스턴스를 만드는 일을 서브클래스에게 맡기는 패턴입니다.</p>
+                        
+                        <h3>1.3 Abstract Factory (추상 팩토리)</h3>
+                        <p>인터페이스를 이용하여 서로 연관된, 또는 의존하는 객체들을 구상 클래스를 지정하지 않고도 생성할 수 있게 합니다. 제품군을 생성하기 위한 인터페이스를 제공합니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>2. 왜 팩토리 패턴을 사용해야 하는가?</h2>
+                    <div class="pattern-benefits">
+                        <h3>2.1 객체 생성의 유연성</h3>
+                        <p>객체 생성 로직을 한 곳에서 관리하여 코드의 중복을 방지하고, 새로운 타입의 객체 추가가 용이해집니다.</p>
+                        
+                        <h3>2.2 결합도 감소</h3>
+                        <p>클라이언트 코드가 구체적인 클래스에 직접 의존하지 않아 코드의 결합도가 낮아지고 유지보수성이 향상됩니다.</p>
+                        
+                        <h3>2.3 확장성 향상</h3>
+                        <p>새로운 제품 타입을 추가할 때 기존 코드를 수정하지 않고도 확장이 가능합니다.</p>
+                        
+                        <h3>2.4 일관성 유지</h3>
+                        <p>객체 생성 과정을 표준화하여 일관된 방식으로 객체를 생성할 수 있습니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>3. 어떤 상황에서 사용해야 하는가?</h2>
+                    <div class="pattern-use-cases">
+                        <h3>3.1 객체 생성이 복잡한 경우</h3>
+                        <p>객체 생성에 여러 단계나 조건이 필요한 경우, 이 로직을 팩토리 클래스에 캡슐화하여 관리합니다.</p>
+                        
+                        <h3>3.2 런타임에 객체 타입이 결정되는 경우</h3>
+                        <p>프로그램 실행 중에 어떤 타입의 객체를 생성할지 결정해야 하는 경우에 적합합니다.</p>
+                        
+                        <h3>3.3 객체 생성에 의존성이 있는 경우</h3>
+                        <p>객체 생성 시 다른 객체나 설정이 필요한 경우, 팩토리에서 이러한 의존성을 관리합니다.</p>
+                        
+                        <h3>3.4 객체 풀링이 필요한 경우</h3>
+                        <p>객체를 재사용해야 하는 경우, 팩토리에서 객체 풀을 관리할 수 있습니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>4. 어떻게 구현하는가?</h2>
+                    <div class="code-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-lang="csharp">C#</button>
+                            <button class="tab-btn" data-lang="cpp">C++</button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="code-block active" id="csharp-code">
+                                <h3>4.1 기본 구조</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FactoryPattern
+{
+    // 제품 인터페이스
+    public interface IProduct
+    {
+        string Name { get; }
+        void Initialize();
+        void Use();
+    }
+
+    // 구체적인 제품 클래스들
+    public class ConcreteProductA : IProduct
+    {
+        private string name;
+        public string Name => name;
+
+        public ConcreteProductA()
+        {
+            name = "Product A";
+        }
+
+        public void Initialize()
+        {
+            Console.WriteLine($"{name} 초기화 중...");
+        }
+
+        public void Use()
+        {
+            Console.WriteLine($"{name} 사용 중...");
+        }
+    }
+
+    public class ConcreteProductB : IProduct
+    {
+        private string name;
+        public string Name => name;
+
+        public ConcreteProductB()
+        {
+            name = "Product B";
+        }
+
+        public void Initialize()
+        {
+            Console.WriteLine($"{name} 초기화 중...");
+        }
+
+        public void Use()
+        {
+            Console.WriteLine($"{name} 사용 중...");
+        }
+    }
+
+    // 팩토리 인터페이스
+    public interface IFactory
+    {
+        IProduct CreateProduct(string type);
+    }
+
+    // 구체적인 팩토리 클래스
+    public class ConcreteFactory : IFactory
+    {
+        public IProduct CreateProduct(string type)
+        {
+            IProduct product = null;
+
+            switch (type.ToLower())
+            {
+                case "a":
+                    product = new ConcreteProductA();
+                    break;
+                case "b":
+                    product = new ConcreteProductB();
+                    break;
+                default:
+                    throw new ArgumentException($"Unknown product type: {type}");
+            }
+
+            product.Initialize();
+            return product;
+        }
+    }
+}</code></pre>
+
+                                <h3>4.2 사용 예시</h3>
+                                <pre><code class="language-csharp">using System;
+
+namespace FactoryPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 팩토리 인스턴스 생성
+            IFactory factory = new ConcreteFactory();
+
+            try
+            {
+                // 제품 A 생성 및 사용
+                IProduct productA = factory.CreateProduct("a");
+                Console.WriteLine($"Created: {productA.Name}");
+                productA.Use();
+
+                // 제품 B 생성 및 사용
+                IProduct productB = factory.CreateProduct("b");
+                Console.WriteLine($"Created: {productB.Name}");
+                productB.Use();
+
+                // 잘못된 타입으로 시도
+                IProduct invalidProduct = factory.CreateProduct("c");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+    }
+}</code></pre>
+
+                                <h3>4.3 실행 결과</h3>
+                                <pre><code>Product A 초기화 중...
+Created: Product A
+Product A 사용 중...
+Product B 초기화 중...
+Created: Product B
+Product B 사용 중...
+Error: Unknown product type: c</code></pre>
+                            </div>
+
+                            <div class="code-block" id="cpp-code">
+                                <h3>4.1 기본 구조</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+#include &lt;stdexcept&gt;
+
+// 제품 인터페이스
+class IProduct {
+public:
+    virtual ~IProduct() = default;
+    virtual std::string GetName() const = 0;
+    virtual void Initialize() = 0;
+    virtual void Use() = 0;
+};
+
+// 구체적인 제품 클래스들
+class ConcreteProductA : public IProduct {
+private:
+    std::string name;
+public:
+    ConcreteProductA() : name("Product A") {}
+    
+    std::string GetName() const override { return name; }
+    
+    void Initialize() override {
+        std::cout << name << " 초기화 중..." << std::endl;
+    }
+    
+    void Use() override {
+        std::cout << name << " 사용 중..." << std::endl;
+    }
+};
+
+class ConcreteProductB : public IProduct {
+private:
+    std::string name;
+public:
+    ConcreteProductB() : name("Product B") {}
+    
+    std::string GetName() const override { return name; }
+    
+    void Initialize() override {
+        std::cout << name << " 초기화 중..." << std::endl;
+    }
+    
+    void Use() override {
+        std::cout << name << " 사용 중..." << std::endl;
+    }
+};
+
+// 팩토리 인터페이스
+class IFactory {
+public:
+    virtual ~IFactory() = default;
+    virtual std::unique_ptr<IProduct> CreateProduct(const std::string& type) = 0;
+};
+
+// 구체적인 팩토리 클래스
+class ConcreteFactory : public IFactory {
+public:
+    std::unique_ptr<IProduct> CreateProduct(const std::string& type) override {
+        std::unique_ptr<IProduct> product;
+        
+        if (type == "a") {
+            product = std::make_unique<ConcreteProductA>();
+        }
+        else if (type == "b") {
+            product = std::make_unique<ConcreteProductB>();
+        }
+        else {
+            throw std::invalid_argument("Unknown product type: " + type);
+        }
+        
+        product->Initialize();
+        return product;
+    }
+};</code></pre>
+
+                                <h3>4.2 사용 예시</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include "factory.h"  // 위의 클래스들이 정의된 헤더 파일
+
+int main() {
+    try {
+        // 팩토리 인스턴스 생성
+        std::unique_ptr<IFactory> factory = std::make_unique<ConcreteFactory>();
+        
+        // 제품 A 생성 및 사용
+        auto productA = factory->CreateProduct("a");
+        std::cout << "Created: " << productA->GetName() << std::endl;
+        productA->Use();
+        
+        // 제품 B 생성 및 사용
+        auto productB = factory->CreateProduct("b");
+        std::cout << "Created: " << productB->GetName() << std::endl;
+        productB->Use();
+        
+        // 잘못된 타입으로 시도
+        auto invalidProduct = factory->CreateProduct("c");
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+    
+    return 0;
+}</code></pre>
+
+                                <h3>4.3 실행 결과</h3>
+                                <pre><code>Product A 초기화 중...
+Created: Product A
+Product A 사용 중...
+Product B 초기화 중...
+Created: Product B
+Product B 사용 중...
+Error: Unknown product type: c</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>5. 팩토리 패턴의 장단점</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>5.1 장점</h3>
+                        <ul>
+                            <li>
+                                <strong>객체 생성 로직을 한 곳에서 관리하여 코드 중복 방지</strong>
+                                <p>객체 생성과 관련된 모든 로직이 팩토리 클래스에 집중되어 있어 코드의 중복을 방지하고 유지보수가 용이합니다.</p>
+                            </li>
+                            <li>
+                                <strong>새로운 제품 타입 추가가 용이</strong>
+                                <p>새로운 제품 타입을 추가할 때 기존 코드를 수정하지 않고도 확장이 가능합니다.</p>
+                            </li>
+                            <li>
+                                <strong>클라이언트 코드와 구체적인 클래스 간의 결합도 감소</strong>
+                                <p>클라이언트는 구체적인 클래스가 아닌 인터페이스에 의존하게 되어 결합도가 낮아집니다.</p>
+                            </li>
+                            <li>
+                                <strong>객체 생성 과정의 일관성 유지</strong>
+                                <p>모든 객체가 동일한 방식으로 생성되므로 일관성이 보장됩니다.</p>
+                            </li>
+                        </ul>
+
+                        <h3>5.2 단점</h3>
+                        <ul>
+                            <li>
+                                <strong>클래스 수가 증가하여 코드가 복잡해질 수 있음</strong>
+                                <p>팩토리 패턴을 적용하면 인터페이스, 구체 클래스, 팩토리 클래스 등 여러 클래스가 추가되어 코드가 복잡해질 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>간단한 객체 생성의 경우 오버엔지니어링이 될 수 있음</strong>
+                                <p>단순한 객체 생성의 경우 팩토리 패턴을 적용하는 것이 불필요한 복잡성을 추가할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>팩토리 클래스가 모든 제품 타입을 알아야 함</strong>
+                                <p>새로운 제품 타입이 추가될 때마다 팩토리 클래스도 수정해야 하는 경우가 발생할 수 있습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        // 언어 탭 전환
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const codeBlocks = document.querySelectorAll('.code-block');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                
+                // 버튼 활성화 상태 변경
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // 코드 블록 표시/숨김
+                codeBlocks.forEach(block => {
+                    block.classList.remove('active');
+                    if (block.id === `${lang}-code`) {
+                        block.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

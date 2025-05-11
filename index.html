@@ -1,13 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>URL에 자바스크립트 작성</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameDev PatternHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<h3>링크의 href에 자바스크립트 작성</h3>
-<hr>
-<a href="javascript:alert('클릭하셨어요?')">
-클릭해보세요</a>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active">홈</a>
+                <a href="patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2>게임 개발자를 위한 디자인 패턴 학습</h2>
+                <p>개념 설명 + 코드 예시 + Unity 미니게임 데모로 쉽게 배우는 게임 디자인 패턴</p>
+                <a href="#patterns" class="cta-button">패턴 살펴보기</a>
+            </div>
+        </section>
+
+        <section class="pattern-overview">
+            <div class="overview-container">
+                <h2>디자인 패턴이란?</h2>
+                <div class="overview-content">
+                    <div class="overview-text">
+                        <p>디자인 패턴은 소프트웨어 개발에서 자주 발생하는 문제에 대한 재사용 가능한 해결책입니다. 1994년 'Gang of Four'(Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides)가 발표한 'Design Patterns: Elements of Reusable Object-Oriented Software'에서 처음 체계적으로 정리되었습니다.</p>
+                        <p>특히 게임 개발에서는 복잡한 게임 로직을 체계적으로 관리하고, 코드의 재사용성과 유지보수성을 높이기 위해 디자인 패턴이 필수적입니다.</p>
+                    </div>
+                    <div class="overview-features">
+                        <div class="feature">
+                            <i class="fas fa-code"></i>
+                            <h3>왜 필요한가?</h3>
+                            <p>복잡한 게임 로직을 체계적으로 관리하고, 코드의 재사용성과 유지보수성을 높입니다.</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-puzzle-piece"></i>
+                            <h3>어떻게 사용하나?</h3>
+                            <p>각 패턴은 특정 상황에 맞춰 적용되며, 게임의 요구사항에 따라 적절한 패턴을 선택합니다.</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-lightbulb"></i>
+                            <h3>누가 만들었나?</h3>
+                            <p>1994년 'Gang of Four'에 의해 체계화되었으며, 이후 다양한 개발자들이 발전시켜왔습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="patterns" class="patterns">
+            <h2>주요 디자인 패턴</h2>
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <h3>Factory</h3>
+                    <p>객체 생성 패턴</p>
+                    <a href="patterns/factory.html" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Object Pool</h3>
+                    <p>자주 생성되고 파괴되는 객체들을 재사용하여 메모리 할당과 가비지 컬렉션의 오버헤드를 줄이는 패턴</p>
+                    <a href="patterns/object-pool.html" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Singleton</h3>
+                    <p>단일 인스턴스 보장 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Command</h3>
+                    <p>명령 캡슐화 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>State</h3>
+                    <p>상태 관리 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Observer</h3>
+                    <p>이벤트 처리 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>MVP/MVVM</h3>
+                    <p>아키텍처 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Strategy</h3>
+                    <p>알고리즘 교체 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Flyweight</h3>
+                    <p>메모리 최적화 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+                <div class="pattern-card">
+                    <h3>Dirty Flag</h3>
+                    <p>성능 최적화 패턴</p>
+                    <a href="#" class="learn-more">자세히 보기</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
