@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Pool 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Object Pool 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">생성 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Object Pool 패턴의 C# 구현</h2>
+                    <p>Object Pool 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 구조</h3>
+                        <pre><code class="language-csharp">using System.Collections.Generic;
+
+namespace ObjectPoolPattern
+{
+    // 풀링될 객체의 기본 인터페이스
+    public interface IPoolable
+    {
+        void OnSpawn();
+        void OnDespawn();
+    }
+
+    // 오브젝트 풀 클래스
+    public class ObjectPool&lt;T&gt; where T : IPoolable, new()
+    {
+        private readonly Stack&lt;T&gt; pool;
+        private readonly int maxSize;
+
+        public ObjectPool(int initialSize = 10, int maxSize = 100)
+        {
+            this.maxSize = maxSize;
+            pool = new Stack&lt;T&gt;(initialSize);
+            
+            // 초기 객체 생성
+            for (int i = 0; i &lt; initialSize; i++)
+            {
+                var obj = new T();
+                obj.OnDespawn();
+                pool.Push(obj);
+            }
+        }
+
+        public T Get()
+        {
+            if (pool.Count &gt; 0)
+            {
+                var obj = pool.Pop();
+                obj.OnSpawn();
+                return obj;
+            }
+            
+            // 풀이 비어있고 최대 크기에 도달하지 않았다면 새 객체 생성
+            if (pool.Count &lt; maxSize)
+            {
+                var obj = new T();
+                obj.OnSpawn();
+                return obj;
+            }
+            
+            return default;
+        }
+
+        public void Return(T obj)
+        {
+            if (obj == null) return;
+            
+            obj.OnDespawn();
+            if (pool.Count &lt; maxSize)
+            {
+                pool.Push(obj);
+            }
+        }
+    }
+
+    // 사용 예시
+    public class Bullet : IPoolable
+    {
+        public float Speed { get; set; }
+        public bool IsActive { get; private set; }
+
+        public void OnSpawn()
+        {
+            IsActive = true;
+            Speed = 10f;
+        }
+
+        public void OnDespawn()
+        {
+            IsActive = false;
+            Speed = 0f;
+        }
+    }
+
+    // 사용 예시
+    public class GameManager
+    {
+        private ObjectPool&lt;Bullet&gt; bulletPool;
+
+        public void Initialize()
+        {
+            bulletPool = new ObjectPool&lt;Bullet&gt;(initialSize: 20, maxSize: 100);
+        }
+
+        public void SpawnBullet()
+        {
+            var bullet = bulletPool.Get();
+            if (bullet != null)
+            {
+                // 총알 사용 로직
+            }
+        }
+
+        public void ReturnBullet(Bullet bullet)
+        {
+            bulletPool.Return(bullet);
+        }
+    }
+}</code></pre>
+
+                        <h3>4.2 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace ObjectPoolPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 게임 매니저 초기화
+            var gameManager = new GameManager();
+            gameManager.Initialize();
+
+            // 총알 생성 및 사용
+            for (int i = 0; i &lt; 5; i++)
+            {
+                gameManager.SpawnBullet();
+            }
+
+            // 총알 반환
+            var bullet = new Bullet();
+            gameManager.ReturnBullet(bullet);
+        }
+    }
+}</code></pre>
+
+                        <h3>4.3 실행 결과</h3>
+                        <pre><code>총알 풀 초기화: 20개
+총알 생성: 5개
+총알 반환: 1개
+현재 활성화된 총알: 4개</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../object-pool.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="object_pool_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

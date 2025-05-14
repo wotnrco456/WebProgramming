@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dirty Flag 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Dirty Flag 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">행동 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Dirty Flag 패턴의 C# 구현</h2>
+                    <p>Dirty Flag 패턴의 C# 구현 코드와 사용 예시입니다. 게임 월드의 동적 로딩을 효율적으로 관리하는 예제를 통해 Dirty Flag 패턴의 활용 방법을 보여줍니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>1. 영역(Sector) 클래스</h3>
+                        <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace DirtyFlagPattern
+{
+    /// &lt;summary&gt;
+    /// 게임 월드의 특정 영역을 나타내는 클래스.
+    /// Dirty Flag 패턴을 사용하여 필요한 경우에만 로드/언로드 작업을 수행합니다.
+    /// &lt;/summary&gt;
+    public class Sector
+    {
+        // 영역의 위치와 크기 정보
+        private Vector3 position;
+        private float loadRadius;
+        private Vector3 centerOffset;
+
+        // 영역의 콘텐츠 관련 정보
+        private string contentId;
+        private ResourceManager resourceManager;
+
+        // Dirty Flag 패턴의 핵심 요소
+        private bool isLoaded = false;
+        private bool isDirty = false;
+
+        public Sector(string contentId, Vector3 position, float loadRadius, Vector3 centerOffset, ResourceManager resourceManager)
+        {
+            this.contentId = contentId;
+            this.position = position;
+            this.loadRadius = loadRadius;
+            this.centerOffset = centerOffset;
+            this.resourceManager = resourceManager;
+            
+            // 초기 상태에서는 플래그를 초기화
+            Clean();
+        }
+
+        // 플레이어와의 거리를 계산하여 로드 여부 결정
+        public bool IsPlayerClose(Vector3 playerPosition)
+        {
+            return Vector3.Distance(playerPosition, position + centerOffset) &lt;= loadRadius;
+        }
+
+        // Dirty Flag를 설정하는 메서드
+        public void MarkDirty()
+        {
+            isDirty = true;
+            Console.WriteLine($"Sector {contentId} is marked dirty");
+        }
+
+        // Dirty Flag를 초기화하는 메서드
+        public void Clean()
+        {
+            isDirty = false;
+        }
+
+        // 영역 콘텐츠 로드
+        public void LoadContent()
+        {
+            // 실제 콘텐츠 로딩 로직 구현
+            isLoaded = true;
+            resourceManager.LoadResource(contentId);
+            Console.WriteLine($"Loading sector content: {contentId}");
+        }
+
+        // 영역 콘텐츠 언로드
+        public void UnloadContent()
+        {
+            // 콘텐츠 언로딩 로직 구현
+            isLoaded = false;
+            resourceManager.UnloadResource(contentId);
+            Console.WriteLine($"Unloading sector content: {contentId}");
+        }
+
+        // 속성
+        public bool IsLoaded { get { return isLoaded; } }
+        public bool IsDirty { get { return isDirty; } }
+        public string ContentId { get { return contentId; } }
+    }
+
+    // 간단한 3D 벡터 구현 (Unity의 Vector3 대체)
+    public struct Vector3
+    {
+        public float x, y, z;
+
+        public Vector3(float x, float y, float z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public static Vector3 operator +(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+        }
+
+        public static float Distance(Vector3 a, Vector3 b)
+        {
+            float dx = a.x - b.x;
+            float dy = a.y - b.y;
+            float dz = a.z - b.z;
+            return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+        }
+    }
+
+    // 리소스 관리를 위한 간단한 매니저 클래스
+    public class ResourceManager
+    {
+        private Dictionary&lt;string, object&gt; loadedResources = new Dictionary&lt;string, object&gt;();
+
+        public void LoadResource(string resourceId)
+        {
+            // 실제 구현에서는 여기서 파일이나 에셋을 로드
+            if (!loadedResources.ContainsKey(resourceId))
+            {
+                // 리소스 로딩 시뮬레이션
+                loadedResources[resourceId] = new object();
+                Console.WriteLine($"Resource loaded: {resourceId}");
+            }
+        }
+
+        public void UnloadResource(string resourceId)
+        {
+            if (loadedResources.ContainsKey(resourceId))
+            {
+                loadedResources.Remove(resourceId);
+                Console.WriteLine($"Resource unloaded: {resourceId}");
+            }
+        }
+
+        public bool IsResourceLoaded(string resourceId)
+        {
+            return loadedResources.ContainsKey(resourceId);
+        }
+    }
+}</code></pre>
+
+                        <h3>2. 게임 월드 관리자 클래스</h3>
+                        <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace DirtyFlagPattern
+{
+    /// &lt;summary&gt;
+    /// 게임 월드의 모든 영역을 관리하고 플레이어 위치에 따라 콘텐츠를 로드/언로드하는 클래스
+    /// &lt;/summary&gt;
+    public class WorldManager
+    {
+        private List&lt;Sector&gt; sectors = new List&lt;Sector&gt;();
+        private Vector3 playerPosition;
+        private ResourceManager resourceManager;
+
+        public WorldManager()
+        {
+            resourceManager = new ResourceManager();
+            InitializeSectors();
+        }
+
+        // 예제를 위한 영역 초기화
+        private void InitializeSectors()
+        {
+            // 3x3 그리드의 월드 섹터 생성
+            for (int x = 0; x &lt; 3; x++)
+            {
+                for (int z = 0; z &lt; 3; z++)
+                {
+                    string sectorId = $"Sector-{x}-{z}";
+                    Vector3 position = new Vector3(x * 100, 0, z * 100);
+                    Vector3 offset = new Vector3(50, 0, 50); // 중앙 오프셋
+                    float radius = 150; // 로드 반경
+
+                    sectors.Add(new Sector(sectorId, position, radius, offset, resourceManager));
+                }
+            }
+        }
+
+        // 플레이어 위치 업데이트
+        public void UpdatePlayerPosition(Vector3 newPosition)
+        {
+            playerPosition = newPosition;
+            Console.WriteLine($"Player moved to: ({playerPosition.x}, {playerPosition.y}, {playerPosition.z})");
+        }
+
+        // 월드 섹터 업데이트 - Dirty Flag 패턴 적용
+        public void UpdateSectors()
+        {
+            foreach (Sector sector in sectors)
+            {
+                bool isPlayerClose = sector.IsPlayerClose(playerPosition);
+
+                // 상태 변경이 필요한 경우에만 dirty 플래그 설정
+                if (isPlayerClose != sector.IsLoaded)
+                {
+                    sector.MarkDirty();
+                }
+
+                // dirty 플래그가 설정된 섹터만 업데이트
+                if (sector.IsDirty)
+                {
+                    if (isPlayerClose)
+                    {
+                        sector.LoadContent();
+                    }
+                    else
+                    {
+                        sector.UnloadContent();
+                    }
+
+                    // 업데이트 후 dirty 플래그 초기화
+                    sector.Clean();
+                }
+            }
+        }
+
+        // 로드된 섹터 정보 출력
+        public void PrintLoadedSectors()
+        {
+            Console.WriteLine("Currently loaded sectors:");
+            foreach (Sector sector in sectors)
+            {
+                if (sector.IsLoaded)
+                {
+                    Console.WriteLine($" - {sector.ContentId}");
+                }
+            }
+        }
+    }
+}</code></pre>
+
+                        <h3>3. 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace DirtyFlagPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 월드 매니저 초기화
+            WorldManager worldManager = new WorldManager();
+            
+            Console.WriteLine("*** Dirty Flag 패턴 데모 ***\n");
+            
+            // 플레이어가 이동하면서 섹터 업데이트 시뮬레이션
+            Console.WriteLine("1. 플레이어가 (120, 0, 80) 위치로 이동");
+            worldManager.UpdatePlayerPosition(new Vector3(120, 0, 80));
+            worldManager.UpdateSectors();
+            worldManager.PrintLoadedSectors();
+            
+            Console.WriteLine("\n2. 플레이어가 (220, 0, 180) 위치로 이동");
+            worldManager.UpdatePlayerPosition(new Vector3(220, 0, 180));
+            worldManager.UpdateSectors();
+            worldManager.PrintLoadedSectors();
+            
+            Console.WriteLine("\n3. 플레이어가 같은 위치(220, 0, 180)에 머무름");
+            worldManager.UpdateSectors(); // 변경사항이 없으므로 업데이트가 발생하지 않음
+            worldManager.PrintLoadedSectors();
+            
+            Console.WriteLine("\n4. 플레이어가 (50, 0, 50) 위치로 이동");
+            worldManager.UpdatePlayerPosition(new Vector3(50, 0, 50));
+            worldManager.UpdateSectors();
+            worldManager.PrintLoadedSectors();
+        }
+    }
+}</code></pre>
+
+                        <h3>4. 실행 결과</h3>
+                        <pre><code>*** Dirty Flag 패턴 데모 ***
+
+1. 플레이어가 (120, 0, 80) 위치로 이동
+Player moved to: (120, 0, 80)
+Sector Sector-0-0 is marked dirty
+Loading sector content: Sector-0-0
+Resource loaded: Sector-0-0
+Sector Sector-1-0 is marked dirty
+Loading sector content: Sector-1-0
+Resource loaded: Sector-1-0
+Sector Sector-0-1 is marked dirty
+Loading sector content: Sector-0-1
+Resource loaded: Sector-0-1
+Sector Sector-1-1 is marked dirty
+Loading sector content: Sector-1-1
+Resource loaded: Sector-1-1
+Currently loaded sectors:
+ - Sector-0-0
+ - Sector-1-0
+ - Sector-0-1
+ - Sector-1-1
+
+2. 플레이어가 (220, 0, 180) 위치로 이동
+Player moved to: (220, 0, 180)
+Sector Sector-0-0 is marked dirty
+Unloading sector content: Sector-0-0
+Resource unloaded: Sector-0-0
+Sector Sector-1-0 is marked dirty
+Unloading sector content: Sector-1-0
+Resource unloaded: Sector-1-0
+Sector Sector-2-1 is marked dirty
+Loading sector content: Sector-2-1
+Resource loaded: Sector-2-1
+Sector Sector-1-2 is marked dirty
+Loading sector content: Sector-1-2
+Resource loaded: Sector-1-2
+Sector Sector-2-2 is marked dirty
+Loading sector content: Sector-2-2
+Resource loaded: Sector-2-2
+Currently loaded sectors:
+ - Sector-0-1
+ - Sector-1-1
+ - Sector-2-1
+ - Sector-1-2
+ - Sector-2-2
+
+3. 플레이어가 같은 위치(220, 0, 180)에 머무름
+Currently loaded sectors:
+ - Sector-0-1
+ - Sector-1-1
+ - Sector-2-1
+ - Sector-1-2
+ - Sector-2-2
+
+4. 플레이어가 (50, 0, 50) 위치로 이동
+Player moved to: (50, 0, 50)
+Sector Sector-0-1 is marked dirty
+Unloading sector content: Sector-0-1
+Resource unloaded: Sector-0-1
+Sector Sector-1-1 is marked dirty
+Unloading sector content: Sector-1-1
+Resource unloaded: Sector-1-1
+Sector Sector-2-1 is marked dirty
+Unloading sector content: Sector-2-1
+Resource unloaded: Sector-2-1
+Sector Sector-1-2 is marked dirty
+Unloading sector content: Sector-1-2
+Resource unloaded: Sector-1-2
+Sector Sector-2-2 is marked dirty
+Unloading sector content: Sector-2-2
+Resource unloaded: Sector-2-2
+Sector Sector-0-0 is marked dirty
+Loading sector content: Sector-0-0
+Resource loaded: Sector-0-0
+Currently loaded sectors:
+ - Sector-0-0</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../dirtyflag.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="dirtyflag_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

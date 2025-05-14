@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Factory 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">생성 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Factory 패턴의 C# 구현</h2>
+                    <p>Factory 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 구조</h3>
+                        <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FactoryPattern
+{
+    // 제품 인터페이스
+    public interface IProduct
+    {
+        string Name { get; }
+        void Initialize();
+        void Use();
+    }
+
+    // 구체적인 제품 클래스들
+    public class ConcreteProductA : IProduct
+    {
+        private string name;
+        public string Name =&gt; name;
+
+        public ConcreteProductA()
+        {
+            name = "Product A";
+        }
+
+        public void Initialize()
+        {
+            Console.WriteLine($"{name} 초기화 중...");
+        }
+
+        public void Use()
+        {
+            Console.WriteLine($"{name} 사용 중...");
+        }
+    }
+
+    public class ConcreteProductB : IProduct
+    {
+        private string name;
+        public string Name =&gt; name;
+
+        public ConcreteProductB()
+        {
+            name = "Product B";
+        }
+
+        public void Initialize()
+        {
+            Console.WriteLine($"{name} 초기화 중...");
+        }
+
+        public void Use()
+        {
+            Console.WriteLine($"{name} 사용 중...");
+        }
+    }
+
+    // 팩토리 인터페이스
+    public interface IFactory
+    {
+        IProduct CreateProduct(string type);
+    }
+
+    // 구체적인 팩토리 클래스
+    public class ConcreteFactory : IFactory
+    {
+        public IProduct CreateProduct(string type)
+        {
+            IProduct product = null;
+
+            switch (type.ToLower())
+            {
+                case "a":
+                    product = new ConcreteProductA();
+                    break;
+                case "b":
+                    product = new ConcreteProductB();
+                    break;
+                default:
+                    throw new ArgumentException($"Unknown product type: {type}");
+            }
+
+            product.Initialize();
+            return product;
+        }
+    }
+}</code></pre>
+
+                        <h3>4.2 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace FactoryPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 팩토리 인스턴스 생성
+            IFactory factory = new ConcreteFactory();
+
+            try
+            {
+                // 제품 A 생성 및 사용
+                IProduct productA = factory.CreateProduct("a");
+                Console.WriteLine($"Created: {productA.Name}");
+                productA.Use();
+
+                // 제품 B 생성 및 사용
+                IProduct productB = factory.CreateProduct("b");
+                Console.WriteLine($"Created: {productB.Name}");
+                productB.Use();
+
+                // 잘못된 타입으로 시도
+                IProduct invalidProduct = factory.CreateProduct("c");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+    }
+}</code></pre>
+
+                        <h3>4.3 실행 결과</h3>
+                        <pre><code>Product A 초기화 중...
+Created: Product A
+Product A 사용 중...
+Product B 초기화 중...
+Created: Product B
+Product B 사용 중...
+Error: Unknown product type: c</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../factory.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="factory_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVP 패턴 - C++ 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>MVP 패턴 - C++ 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">구조 패턴</span>
+                    <span class="language">C++ 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>MVP 패턴의 C++ 구현</h2>
+                    <p>MVP 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 구조</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;functional&gt;
+#include &lt;algorithm&gt;
+#include &lt;memory&gt;
+
+namespace MVPPattern {
+
+    // Model: 데이터와 비즈니스 로직을 관리
+    class HealthModel {
+    private:
+        static const int MIN_HEALTH = 0;
+        static const int MAX_HEALTH = 100;
+        int currentHealth;
+        
+        // C++에서는 이벤트 대신 이벤트리스너 패턴 사용
+        std::vector&lt;std::function&lt;void(int)&gt;&gt; healthChangedListeners;
+        
+    public:
+        HealthModel(int initialHealth = 100) {
+            currentHealth = std::clamp(initialHealth, MIN_HEALTH, MAX_HEALTH);
+        }
+        
+        // 프로퍼티 게터
+        int GetCurrentHealth() const { return currentHealth; }
+        int GetMinimumHealth() const { return MIN_HEALTH; }
+        int GetMaximumHealth() const { return MAX_HEALTH; }
+        
+        // 프로퍼티 세터 - 값이 변경될 때 이벤트 발생
+        void SetCurrentHealth(int value) {
+            currentHealth = std::clamp(value, MIN_HEALTH, MAX_HEALTH);
+            NotifyHealthChanged(); // 상태 변화 알림
+        }
+        
+        // 이벤트 구독 및 구독 취소 기능
+        void AddHealthChangedListener(const std::function&lt;void(int)&gt;& listener) {
+            healthChangedListeners.push_back(listener);
+        }
+        
+        void RemoveHealthChangedListener(const std::function&lt;void(int)&gt;& listener) {
+            // 실제 구현에서는 더 복잡한 제거 로직이 필요함
+            // 여기서는 간단히 구현
+            auto it = std::find_if(healthChangedListeners.begin(), healthChangedListeners.end(),
+                [&listener](const auto& l) { 
+                    // 이걸 실제로 실행할 수는 없지만, 개념을 보여주기 위한 코드
+                    return &l == &listener; 
+                });
+            
+            if (it != healthChangedListeners.end()) {
+                healthChangedListeners.erase(it);
+            }
+        }
+        
+        // 이벤트 발생 함수
+        void NotifyHealthChanged() {
+            for (const auto& listener : healthChangedListeners) {
+                listener(currentHealth);
+            }
+        }
+        
+        // 비즈니스 로직 메서드
+        void Increment(int amount) {
+            SetCurrentHealth(currentHealth + amount);
+        }
+        
+        void Decrement(int amount) {
+            SetCurrentHealth(currentHealth - amount);
+        }
+        
+        void Restore() {
+            SetCurrentHealth(MAX_HEALTH);
+        }
+    };
+    
+    // View 인터페이스: UI 표시 방법 정의
+    class IHealthView {
+    public:
+        virtual ~IHealthView() = default;
+        
+        virtual void UpdateHealthDisplay(int health, int maxHealth) = 0;
+        virtual void SetDamageHandler(const std::function&lt;void(int)&gt;& callback) = 0;
+        virtual void SetHealHandler(const std::function&lt;void(int)&gt;& callback) = 0;
+        virtual void SetResetHandler(const std::function&lt;void()&gt;& callback) = 0;
+    };
+    
+    // Presenter: View와 Model 사이의 중재자
+    class HealthPresenter {
+    private:
+        HealthModel& model;
+        IHealthView& view;
+        std::function&lt;void(int)&gt; healthChangedListener;
+        
+    public:
+        HealthPresenter(HealthModel& model, IHealthView& view) : model(model), view(view) {
+            // Model의 이벤트에 구독
+            healthChangedListener = [this](int health) { this->OnHealthChanged(health); };
+            model.AddHealthChangedListener(healthChangedListener);
+            
+            // View의 이벤트 핸들러 등록
+            view.SetDamageHandler([this](int amount) { this->OnDamage(amount); });
+            view.SetHealHandler([this](int amount) { this->OnHeal(amount); });
+            view.SetResetHandler([this]() { this->OnReset(); });
+            
+            // 초기 UI 업데이트
+            UpdateView();
+        }
+        
+        // 소명자 - 리소스 해제
+        ~HealthPresenter() {
+            model.RemoveHealthChangedListener(healthChangedListener);
+        }
+        
+        // Model 이벤트 처리
+        void OnHealthChanged(int health) {
+            UpdateView();
+        }
+        
+        // View 이벤트 처리
+        void OnDamage(int amount) {
+            model.Decrement(amount);
+        }
+        
+        void OnHeal(int amount) {
+            model.Increment(amount);
+        }
+        
+        void OnReset() {
+            model.Restore();
+        }
+        
+        // View 업데이트
+        void UpdateView() {
+            view.UpdateHealthDisplay(model.GetCurrentHealth(), model.GetMaximumHealth());
+        }
+    };
+}</code></pre>
+
+                        <h3>4.2 사용 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+#include &lt;limits&gt;
+
+// 위에서 정의한 클래스들 포함 (HealthModel, IHealthView, HealthPresenter)
+
+namespace MVPPattern {
+
+    // 콘솔 기반 View 구현
+    class ConsoleHealthView : public IHealthView {
+    private:
+        std::function&lt;void(int)&gt; damageHandler;
+        std::function&lt;void(int)&gt; healHandler;
+        std::function&lt;void()&gt; resetHandler;
+        const int damageAmount = 10;
+        const int healAmount = 5;
+        
+    public:
+        // IHealthView 인터페이스 구현
+        void UpdateHealthDisplay(int health, int maxHealth) override {
+            std::cout &lt;&lt; "\n==========================" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Health Management System" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "==========================" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Health: " &lt;&lt; health &lt;&lt; "/" &lt;&lt; maxHealth &lt;&lt; std::endl;
+            
+            // 체력바 시각화
+            const int barLength = 20;
+            const int filledLength = static_cast&lt;int&gt;((static_cast&lt;float&gt;(health) / maxHealth) * barLength);
+            
+            std::cout &lt;&lt; "[";
+            for (int i = 0; i &lt; barLength; ++i) {
+                if (i &lt; filledLength) {
+                    std::cout &lt;&lt; "#";
+                } else {
+                    std::cout &lt;&lt; "-";
+                }
+            }
+            std::cout &lt;&lt; "]" &lt;&lt; std::endl;
+            
+            // 메뉴 표시
+            std::cout &lt;&lt; "\nOptions:" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "1. Take Damage (" &lt;&lt; damageAmount &lt;&lt; ")" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "2. Heal (" &lt;&lt; healAmount &lt;&lt; ")" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "3. Reset Health" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "0. Exit" &lt;&lt; std::endl;
+        }
+        
+        void SetDamageHandler(const std::function&lt;void(int)&gt;& callback) override {
+            damageHandler = callback;
+        }
+        
+        void SetHealHandler(const std::function&lt;void(int)&gt;& callback) override {
+            healHandler = callback;
+        }
+        
+        void SetResetHandler(const std::function&lt;void()&gt;& callback) override {
+            resetHandler = callback;
+        }
+        
+        // 사용자 입력 처리
+        bool ProcessInput() {
+            std::cout &lt;&lt; "\nEnter your choice: ";
+            int choice;
+            std::cin &gt;&gt; choice;
+            
+            // 입력 오류 처리
+            if (std::cin.fail()) {
+                std::cin.clear(); // 오류 플래그 초기화
+                std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // 버퍼 비우기
+                std::cout &lt;&lt; "Invalid input. Please enter a number." &lt;&lt; std::endl;
+                return true;
+            }
+            
+            switch (choice) {
+                case 1:
+                    if (damageHandler) {
+                        damageHandler(damageAmount);
+                    }
+                    return true;
+                case 2:
+                    if (healHandler) {
+                        healHandler(healAmount);
+                    }
+                    return true;
+                case 3:
+                    if (resetHandler) {
+                        resetHandler();
+                    }
+                    return true;
+                case 0:
+                    return false; // 프로그램 종료
+                default:
+                    std::cout &lt;&lt; "Invalid option. Please try again." &lt;&lt; std::endl;
+                    return true;
+            }
+        }
+    };
+}
+
+// 메인 프로그램
+int main() {
+    using namespace MVPPattern;
+    
+    std::cout &lt;&lt; "MVP Pattern Demo - Health Management System" &lt;&lt; std::endl;
+    
+    // 모델, 뷰, 프리젠터 객체 생성
+    HealthModel model(100);
+    ConsoleHealthView view;
+    
+    // 프리젠터는 스코프를 위해 블록에서 생성
+    {
+        HealthPresenter presenter(model, view);
+        
+        // 애플리케이션 루프
+        bool running = true;
+        while (running) {
+            running = view.ProcessInput();
+        }
+        
+        // presenter는 스코프를 나갈 때 자동으로 소명자 호출
+    }
+    
+    std::cout &lt;&lt; "\nThank you for using the Health Management System. Goodbye!" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+                        <h3>4.3 실행 결과</h3>
+                        <pre><code>MVP Pattern Demo - Health Management System
+
+==========================
+Health Management System
+==========================
+Health: 100/100
+[####################]
+
+Options:
+1. Take Damage (10)
+2. Heal (5)
+3. Reset Health
+0. Exit
+
+Enter your choice: 1
+
+==========================
+Health Management System
+==========================
+Health: 90/100
+[##################--]
+
+Options:
+1. Take Damage (10)
+2. Heal (5)
+3. Reset Health
+0. Exit
+
+Enter your choice: 2
+
+==========================
+Health Management System
+==========================
+Health: 95/100
+[###################-]
+
+Options:
+1. Take Damage (10)
+2. Heal (5)
+3. Reset Health
+0. Exit
+
+Enter your choice: 0
+
+Thank you for using the Health Management System. Goodbye!</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../mvp.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="mvp_csharp.html" class="next-button">C# 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVP 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>MVP 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">구조 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>MVP 패턴의 C# 구현</h2>
+                    <p>MVP 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 구조</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace MVPPattern
+{
+    // Model: 데이터와 비즈니스 로직을 관리
+    public class HealthModel
+    {
+        // 상태 변화 알림을 위한 이벤트
+        public event EventHandler HealthChanged;
+
+        // 상수 정의
+        private const int MinHealth = 0;
+        private const int MaxHealth = 100;
+        
+        // 데이터
+        private int currentHealth;
+
+        // 프로퍼티 - 값이 변경될 때 이벤트 발생
+        public int CurrentHealth
+        {
+            get =&gt; currentHealth;
+            set
+            {
+                currentHealth = Math.Clamp(value, MinHealth, MaxHealth);
+                OnHealthChanged(EventArgs.Empty); // 상태 변화 알림
+            }
+        }
+
+        public int MinimumHealth =&gt; MinHealth;
+        public int MaximumHealth =&gt; MaxHealth;
+
+        // 생성자
+        public HealthModel(int initialHealth = 100)
+        {
+            CurrentHealth = initialHealth;
+        }
+
+        // 비즈니스 로직 메서드
+        public void Increment(int amount)
+        {
+            CurrentHealth += amount;
+        }
+
+        public void Decrement(int amount)
+        {
+            CurrentHealth -= amount;
+        }
+
+        public void Restore()
+        {
+            CurrentHealth = MaxHealth;
+        }
+
+        // 이벤트 호출 메서드
+        protected virtual void OnHealthChanged(EventArgs e)
+        {
+            HealthChanged?.Invoke(this, e);
+        }
+    }
+
+    // View 인터페이스: UI 표시 방법 정의
+    public interface IHealthView
+    {
+        void UpdateHealthDisplay(int health, int maxHealth);
+        void SetDamageHandler(Action&lt;int&gt; damageAction);
+        void SetHealHandler(Action&lt;int&gt; healAction);
+        void SetResetHandler(Action resetAction);
+    }
+
+    // Presenter: View와 Model 사이의 중재자
+    public class HealthPresenter
+    {
+        private readonly HealthModel model;
+        private readonly IHealthView view;
+
+        // 생성자
+        public HealthPresenter(HealthModel model, IHealthView view)
+        {
+            this.model = model;
+            this.view = view;
+
+            // Model의 이벤트에 구독
+            model.HealthChanged += OnHealthChanged;
+
+            // View의 이벤트 핸들러 등록
+            view.SetDamageHandler(OnDamage);
+            view.SetHealHandler(OnHeal);
+            view.SetResetHandler(OnReset);
+
+            // 초기 UI 업데이트
+            UpdateView();
+        }
+
+        // Model 이벤트 처리
+        private void OnHealthChanged(object sender, EventArgs e)
+        {
+            UpdateView();
+        }
+
+        // View 이벤트 처리
+        private void OnDamage(int amount)
+        {
+            model.Decrement(amount);
+        }
+
+        private void OnHeal(int amount)
+        {
+            model.Increment(amount);
+        }
+
+        private void OnReset()
+        {
+            model.Restore();
+        }
+
+        // View 업데이트
+        private void UpdateView()
+        {
+            view.UpdateHealthDisplay(model.CurrentHealth, model.MaximumHealth);
+        }
+
+        // 리소스 해제
+        public void Dispose()
+        {
+            model.HealthChanged -= OnHealthChanged;
+        }
+    }
+}</code></pre>
+
+                        <h3>4.2 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace MVPPattern.Example
+{
+    // 콘솔 UI 구현
+    public class ConsoleHealthView : IHealthView
+    {
+        private Action&lt;int&gt; damageAction;
+        private Action&lt;int&gt; healAction;
+        private Action resetAction;
+        private readonly int damageAmount = 10;
+        private readonly int healAmount = 5;
+
+        // IHealthView 인터페이스 구현
+        public void UpdateHealthDisplay(int health, int maxHealth)
+        {
+            Console.WriteLine("\n========== Health Status ==========");
+            Console.WriteLine($"Health: {health}/{maxHealth}");
+
+            // 체력바 시각화
+            int barLength = 20;
+            int filledLength = (int)((float)health / maxHealth * barLength);
+
+            Console.Write("[");
+            for (int i = 0; i &lt; barLength; i++)
+            {
+                if (i &lt; filledLength)
+                    Console.Write("#");
+                else
+                    Console.Write("-");
+            }
+            Console.WriteLine("]\n");
+
+            // 메뉴 표시
+            Console.WriteLine($"1. Take Damage ({damageAmount})");
+            Console.WriteLine($"2. Heal ({healAmount})");
+            Console.WriteLine("3. Reset Health");
+            Console.WriteLine("0. Exit");
+        }
+
+        public void SetDamageHandler(Action&lt;int&gt; damageAction)
+        {
+            this.damageAction = damageAction;
+        }
+
+        public void SetHealHandler(Action&lt;int&gt; healAction)
+        {
+            this.healAction = healAction;
+        }
+
+        public void SetResetHandler(Action resetAction)
+        {
+            this.resetAction = resetAction;
+        }
+
+        // 사용자 입력 처리
+        public bool ProcessUserInput()
+        {
+            Console.Write("\nSelect an option: ");
+            string input = Console.ReadLine();
+
+            if (int.TryParse(input, out int choice))
+            {
+                switch (choice)
+                {
+                    case 1:
+                        damageAction?.Invoke(damageAmount);
+                        return true;
+                    case 2:
+                        healAction?.Invoke(healAmount);
+                        return true;
+                    case 3:
+                        resetAction?.Invoke();
+                        return true;
+                    case 0:
+                        return false;
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        return true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter a number.");
+                return true;
+            }
+        }
+    }
+
+    // 예제 프로그램
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine("MVP Pattern - Health Management System");
+            Console.WriteLine("------------------------------------");
+
+            // MVP 구성 요소 생성
+            HealthModel model = new HealthModel(100);
+            ConsoleHealthView view = new ConsoleHealthView();
+            HealthPresenter presenter = new HealthPresenter(model, view);
+
+            // 프로그램 실행
+            bool running = true;
+            while (running)
+            {
+                running = view.ProcessUserInput();
+            }
+
+            // 종료
+            presenter.Dispose();
+            Console.WriteLine("\nProgram terminated. Thank you for using the Health Management System.");
+        }
+    }
+}</code></pre>
+
+                        <h3>4.3 실행 결과</h3>
+                        <pre><code>MVP Pattern - Health Management System
+------------------------------------
+
+========== Health Status ==========
+Health: 100/100
+[####################]
+
+1. Take Damage (10)
+2. Heal (5)
+3. Reset Health
+0. Exit
+
+Select an option: 1
+
+========== Health Status ==========
+Health: 90/100
+[##################--]
+
+1. Take Damage (10)
+2. Heal (5)
+3. Reset Health
+0. Exit
+
+Select an option: 2
+
+========== Health Status ==========
+Health: 95/100
+[###################-]
+
+1. Take Damage (10)
+2. Heal (5)
+3. Reset Health
+0. Exit
+
+Select an option: 0
+
+Program terminated. Thank you for using the Health Management System.</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../mvp.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="mvp_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

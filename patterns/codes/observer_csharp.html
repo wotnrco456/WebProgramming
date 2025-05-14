@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observer 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Observer 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">행동 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Observer 패턴의 C# 구현</h2>
+                    <p>Observer 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 Subject 구현</h3>
+                        <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace ObserverPattern
+{
+    // Observer 인터페이스: 관찰자들이 구현해야 하는 인터페이스
+    public interface IObserver
+    {
+        void Update(ISubject subject);
+    }
+
+    // Subject 인터페이스: 관찰 대상이 되는 객체가 구현해야 하는 인터페이스
+    public interface ISubject
+    {
+        void RegisterObserver(IObserver observer);
+        void RemoveObserver(IObserver observer);
+        void NotifyObservers();
+    }
+
+    // 기본 Subject 구현
+    public class Subject : ISubject
+    {
+        private readonly List&lt;IObserver&gt; observers = new List&lt;IObserver&gt;();
+        private int state;
+
+        // 상태 속성 - 변경 시 관찰자들에게 통지
+        public int State
+        {
+            get =&gt; state;
+            set
+            {
+                if (state != value)
+                {
+                    state = value;
+                    NotifyObservers();
+                }
+            }
+        }
+
+        // 관찰자 등록
+        public void RegisterObserver(IObserver observer)
+        {
+            if (!observers.Contains(observer))
+            {
+                observers.Add(observer);
+            }
+        }
+
+        // 관찰자 해제
+        public void RemoveObserver(IObserver observer)
+        {
+            observers.Remove(observer);
+        }
+
+        // 모든 관찰자에게 통지
+        public void NotifyObservers()
+        {
+            foreach (var observer in observers)
+            {
+                observer.Update(this);
+            }
+        }
+    }
+
+    // 이벤트 기반 Subject 구현
+    public class EventSubject
+    {
+        // 이벤트 정의
+        public event EventHandler&lt;StateChangedEventArgs&gt; StateChanged;
+
+        private int state;
+
+        // 상태 속성
+        public int State
+        {
+            get =&gt; state;
+            set
+            {
+                if (state != value)
+                {
+                    state = value;
+                    OnStateChanged(new StateChangedEventArgs(state));
+                }
+            }
+        }
+
+        // 이벤트 호출 메서드
+        protected virtual void OnStateChanged(StateChangedEventArgs e)
+        {
+            StateChanged?.Invoke(this, e);
+        }
+    }
+
+    // 이벤트 인자 클래스
+    public class StateChangedEventArgs : EventArgs
+    {
+        public int State { get; }
+
+        public StateChangedEventArgs(int state)
+        {
+            State = state;
+        }
+    }
+}</code></pre>
+
+                        <h3>4.2 기본 Observer 구현</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace ObserverPattern
+{
+    // 전통적인 Observer 구현
+    public class ConcreteObserver : IObserver
+    {
+        private readonly string name;
+        private int state;
+
+        public ConcreteObserver(string name)
+        {
+            this.name = name;
+        }
+
+        // IObserver 인터페이스 구현
+        public void Update(ISubject subject)
+        {
+            if (subject is Subject concreteSubject)
+            {
+                state = concreteSubject.State;
+                Console.WriteLine($"{name} 관찰자: 새로운 상태를 받았습니다 - {state}");
+            }
+        }
+    }
+
+    // 이벤트 기반 Observer 구현
+    public class EventObserver
+    {
+        private readonly string name;
+        private int state;
+
+        public EventObserver(string name, EventSubject subject)
+        {
+            this.name = name;
+            
+            // 이벤트에 구독
+            subject.StateChanged += OnStateChanged;
+        }
+
+        // 이벤트 핸들러
+        private void OnStateChanged(object sender, StateChangedEventArgs e)
+        {
+            state = e.State;
+            Console.WriteLine($"{name} 관찰자: 새로운 상태를 받았습니다 - {state}");
+        }
+    }
+}</code></pre>
+
+                        <h3>4.3 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace ObserverPattern.Example
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Observer 패턴 예제 - 전통적 방식");
+            Console.WriteLine("---------------------------");
+
+            // 1. 전통적인 Observer 패턴
+            Subject subject = new Subject();
+
+            // 관찰자 생성 및 등록
+            ConcreteObserver observer1 = new ConcreteObserver("Observer 1");
+            ConcreteObserver observer2 = new ConcreteObserver("Observer 2");
+            ConcreteObserver observer3 = new ConcreteObserver("Observer 3");
+
+            subject.RegisterObserver(observer1);
+            subject.RegisterObserver(observer2);
+            subject.RegisterObserver(observer3);
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[Subject의 상태를 5로 변경]");
+            subject.State = 5;
+
+            // 관찰자 제거
+            Console.WriteLine("\n[Observer 2 제거]");
+            subject.RemoveObserver(observer2);
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[Subject의 상태를 10으로 변경]");
+            subject.State = 10;
+
+            Console.WriteLine("\n\nObserver 패턴 예제 - 이벤트 기반 방식");
+            Console.WriteLine("---------------------------");
+
+            // 2. 이벤트 기반 Observer 패턴
+            EventSubject eventSubject = new EventSubject();
+
+            // 관찰자 생성 및 구독
+            EventObserver eventObserver1 = new EventObserver("Event Observer 1", eventSubject);
+            EventObserver eventObserver2 = new EventObserver("Event Observer 2", eventSubject);
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[EventSubject의 상태를 20으로 변경]");
+            eventSubject.State = 20;
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[EventSubject의 상태를 30으로 변경]");
+            eventSubject.State = 30;
+
+            Console.WriteLine("\n프로그램 종료...");
+        }
+    }
+
+    // 예제: 날씨 시스템 구현
+    public class WeatherStation
+    {
+        public static void RunExample()
+        {
+            // 날씨 데이터 Subject 생성
+            WeatherData weatherData = new WeatherData();
+
+            // 날씨 표시 구현체 생성
+            CurrentConditionsDisplay currentDisplay = new CurrentConditionsDisplay(weatherData);
+            StatisticsDisplay statisticsDisplay = new StatisticsDisplay(weatherData);
+            ForecastDisplay forecastDisplay = new ForecastDisplay(weatherData);
+
+            // 날씨 정보 업데이트
+            Console.WriteLine("\n\n날씨 정보 업데이트 예제");
+            Console.WriteLine("---------------------------");
+            weatherData.SetMeasurements(27, 65, 1013); // 온도, 습도, 기압
+            Console.WriteLine("---------------------------");
+            weatherData.SetMeasurements(28, 70, 1010);
+        }
+    }
+
+    // 날씨 정보 Subject
+    public class WeatherData : ISubject
+    {
+        private readonly List&lt;IObserver&gt; observers = new List&lt;IObserver&gt;();
+        private float temperature;
+        private float humidity;
+        private float pressure;
+
+        public float Temperature =&gt; temperature;
+        public float Humidity =&gt; humidity;
+        public float Pressure =&gt; pressure;
+
+        public void RegisterObserver(IObserver observer)
+        {
+            observers.Add(observer);
+        }
+
+        public void RemoveObserver(IObserver observer)
+        {
+            observers.Remove(observer);
+        }
+
+        public void NotifyObservers()
+        {
+            foreach (var observer in observers)
+            {
+                observer.Update(this);
+            }
+        }
+
+        // 새로운 날씨 정보 설정
+        public void SetMeasurements(float temperature, float humidity, float pressure)
+        {
+            this.temperature = temperature;
+            this.humidity = humidity;
+            this.pressure = pressure;
+            NotifyObservers();
+        }
+    }
+
+    // 현재 날씨 표시 구현체
+    public class CurrentConditionsDisplay : IObserver
+    {
+        private float temperature;
+        private float humidity;
+
+        public CurrentConditionsDisplay(ISubject weatherData)
+        {
+            weatherData.RegisterObserver(this);
+        }
+
+        public void Update(ISubject subject)
+        {
+            if (subject is WeatherData weatherData)
+            {
+                temperature = weatherData.Temperature;
+                humidity = weatherData.Humidity;
+                Display();
+            }
+        }
+
+        public void Display()
+        {
+            Console.WriteLine($"현재 날씨 표시: {temperature}°C, {humidity}% 습도");
+        }
+    }
+
+    // 통계 표시 구현체
+    public class StatisticsDisplay : IObserver
+    {
+        private float maxTemp = float.MinValue;
+        private float minTemp = float.MaxValue;
+        private float tempSum;
+        private int numReadings;
+
+        public StatisticsDisplay(ISubject weatherData)
+        {
+            weatherData.RegisterObserver(this);
+        }
+
+        public void Update(ISubject subject)
+        {
+            if (subject is WeatherData weatherData)
+            {
+                float temp = weatherData.Temperature;
+                tempSum += temp;
+                numReadings++;
+
+                if (temp &gt; maxTemp) maxTemp = temp;
+                if (temp &lt; minTemp) minTemp = temp;
+
+                Display();
+            }
+        }
+
+        public void Display()
+        {
+            Console.WriteLine($"통계 표시: 평균/최고/최저 온도 = {tempSum / numReadings:F1}/{maxTemp}/{minTemp}");
+        }
+    }
+
+    // 날씨 예보 표시 구현체
+    public class ForecastDisplay : IObserver
+    {
+        private float currentPressure = 1013.0f;
+        private float lastPressure;
+
+        public ForecastDisplay(ISubject weatherData)
+        {
+            weatherData.RegisterObserver(this);
+        }
+
+        public void Update(ISubject subject)
+        {
+            if (subject is WeatherData weatherData)
+            {
+                lastPressure = currentPressure;
+                currentPressure = weatherData.Pressure;
+                Display();
+            }
+        }
+
+        public void Display()
+        {
+            Console.Write("날씨 예보: ");
+            if (currentPressure &gt; lastPressure)
+            {
+                Console.WriteLine("향상된 날씨가 예상됩니다!");
+            }
+            else if (currentPressure == lastPressure)
+            {
+                Console.WriteLine("현재와 비슷한 날씨가 지속됩니다.");
+            }
+            else
+            {
+                Console.WriteLine("더 추운 날씨와 비가 예상됩니다.");
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../observer.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="observer_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

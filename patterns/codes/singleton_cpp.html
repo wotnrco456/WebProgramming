@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singleton 패턴 - C++ 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Singleton 패턴 - C++ 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">생성 패턴</span>
+                    <span class="language">C++ 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Singleton 패턴의 C++ 구현</h2>
+                    <p>Singleton 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 Singleton</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+
+class Singleton {
+private:
+    // 정적 인스턴스 포인터
+    static Singleton* instance;
+    
+    // private 생성자로 외부에서의 인스턴스 생성 방지
+    Singleton() {
+        std::cout &lt;&lt; "Singleton 인스턴스가 생성되었습니다." &lt;&lt; std::endl;
+    }
+    
+    // 복사 생성자와 할당 연산자를 private으로 선언하여 복제 방지
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+    
+public:
+    // 인스턴스 접근 메서드
+    static Singleton* getInstance() {
+        if (instance == nullptr) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+    
+    // 싱글톤에서 제공하는 메서드 예시
+    void doSomething() {
+        std::cout &lt;&lt; "Singleton이 작업을 수행 중입니다." &lt;&lt; std::endl;
+    }
+    
+    // 인스턴스 정리 (메모리 누수 방지)
+    static void release() {
+        if (instance != nullptr) {
+            delete instance;
+            instance = nullptr;
+        }
+    }
+};
+
+// 정적 멤버 변수 초기화
+Singleton* Singleton::instance = nullptr;</code></pre>
+
+                        <h3>4.2 안전한 Singleton (C++11 이상)</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;mutex&gt;
+
+class ThreadSafeSingleton {
+private:
+    static std::unique_ptr&lt;ThreadSafeSingleton&gt; instance;
+    static std::mutex mutex;
+    
+    // private 생성자
+    ThreadSafeSingleton() {
+        std::cout &lt;&lt; "ThreadSafeSingleton 인스턴스가 생성되었습니다." &lt;&lt; std::endl;
+    }
+    
+    // 복사 및 할당 방지
+    ThreadSafeSingleton(const ThreadSafeSingleton&) = delete;
+    ThreadSafeSingleton& operator=(const ThreadSafeSingleton&) = delete;
+    
+public:
+    // 인스턴스 접근 메서드 (스레드 안전)
+    static ThreadSafeSingleton& getInstance() {
+        std::lock_guard&lt;std::mutex&gt; lock(mutex);
+        if (instance == nullptr) {
+            instance.reset(new ThreadSafeSingleton());
+        }
+        return *instance;
+    }
+    
+    void doSomething() {
+        std::cout &lt;&lt; "ThreadSafeSingleton이 작업을 수행 중입니다." &lt;&lt; std::endl;
+    }
+};
+
+// 정적 멤버 변수 초기화
+std::unique_ptr&lt;ThreadSafeSingleton&gt; ThreadSafeSingleton::instance = nullptr;
+std::mutex ThreadSafeSingleton::mutex;</code></pre>
+
+                        <h3>4.3 사용 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include "singleton.h"  // 위의 싱글톤 클래스가 정의된 헤더 파일
+
+int main() {
+    // 기본 싱글톤 사용 예시
+    Singleton* singleton1 = Singleton::getInstance();
+    Singleton* singleton2 = Singleton::getInstance();
+    
+    std::cout &lt;&lt; "singleton1과 singleton2는 같은 인스턴스인가? " 
+              &lt;&lt; (singleton1 == singleton2 ? "True" : "False") &lt;&lt; std::endl;
+    
+    singleton1-&gt;doSomething();
+    
+    // 스레드 안전한 싱글톤 사용 예시
+    ThreadSafeSingleton& safeSingleton = ThreadSafeSingleton::getInstance();
+    safeSingleton.doSomething();
+    
+    // 기본 싱글톤 메모리 해제 (스마트 포인터를 사용하지 않는 경우)
+    Singleton::release();
+    
+    return 0;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../singleton.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="singleton_csharp.html" class="next-button">C# 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

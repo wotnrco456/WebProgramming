@@ -163,6 +163,60 @@ code {
     word-break: break-word;
 }
 
+/* 코드 언어 버튼 스타일 */
+.code-language-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+}
+
+.code-language-btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.code-language-btn:hover {
+    background-color: #2980b9;
+}
+
+/* 네비게이션 버튼 스타일 */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.back-button, .next-button {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--primary-color);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.back-button {
+    background-color: #7f8c8d;
+}
+
+.back-button:hover {
+    background-color: #6c7a7a;
+}
+
+.next-button:hover {
+    background-color: #1a242f;
+}
+
 /* 데모 컨테이너 스타일 */
 .demo-container {
     background: var(--light-bg);
@@ -199,6 +253,20 @@ code {
 .pattern-pros-cons li p {
     margin: 0;
     color: #666;
+}
+
+/* 코드 섹션 스타일 */
+.code-section {
+    background-color: var(--light-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.code-section h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.3rem;
 }
 
 /* 반응형 디자인 - 패턴 상세 페이지 */
@@ -248,5 +316,14 @@ code {
 
     pre, code {
         font-size: 0.8rem;
+    }
+
+    .navigation-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .back-button, .next-button {
+        text-align: center;
     }
 }

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Command 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">행동 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Command 패턴의 C# 구현</h2>
+                    <p>Command 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 구조</h3>
+                        <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace CommandPattern
+{
+    // Command 인터페이스
+    public interface ICommand
+    {
+        void Execute();
+        void Undo();
+    }
+
+    // Receiver - 명령이 실행될 대상
+    public class Robot
+    {
+        private int x = 0;
+        private int y = 0;
+
+        public void Move(int deltaX, int deltaY)
+        {
+            x += deltaX;
+            y += deltaY;
+            Console.WriteLine($"로봇이 ({x}, {y}) 위치로 이동했습니다.");
+        }
+    }
+
+    // Concrete Command - 로봇 이동 명령
+    public class MoveCommand : ICommand
+    {
+        private Robot robot;
+        private int deltaX;
+        private int deltaY;
+
+        public MoveCommand(Robot robot, int deltaX, int deltaY)
+        {
+            this.robot = robot;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+        }
+
+        public void Execute()
+        {
+            robot.Move(deltaX, deltaY);
+        }
+
+        public void Undo()
+        {
+            robot.Move(-deltaX, -deltaY);
+        }
+    }
+
+    // Invoker - 명령 실행을 요청하는 클래스
+    public class CommandInvoker
+    {
+        private Stack&lt;ICommand&gt; undoStack = new Stack&lt;ICommand&gt;();
+        private Stack&lt;ICommand&gt; redoStack = new Stack&lt;ICommand&gt;();
+
+        public void ExecuteCommand(ICommand command)
+        {
+            command.Execute();
+            undoStack.Push(command);
+            redoStack.Clear(); // 새 명령 실행 시 redo 스택 비우기
+        }
+
+        public void Undo()
+        {
+            if (undoStack.Count > 0)
+            {
+                ICommand command = undoStack.Pop();
+                command.Undo();
+                redoStack.Push(command);
+            }
+            else
+            {
+                Console.WriteLine("취소할 명령이 없습니다.");
+            }
+        }
+
+        public void Redo()
+        {
+            if (redoStack.Count > 0)
+            {
+                ICommand command = redoStack.Pop();
+                command.Execute();
+                undoStack.Push(command);
+            }
+            else
+            {
+                Console.WriteLine("재실행할 명령이 없습니다.");
+            }
+        }
+    }
+}</code></pre>
+
+                        <h3>4.2 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace CommandPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Receiver 생성
+            Robot robot = new Robot();
+            
+            // Invoker 생성
+            CommandInvoker invoker = new CommandInvoker();
+            
+            // 명령 생성 및 실행
+            ICommand moveRight = new MoveCommand(robot, 1, 0);
+            invoker.ExecuteCommand(moveRight);
+            
+            ICommand moveUp = new MoveCommand(robot, 0, 1);
+            invoker.ExecuteCommand(moveUp);
+            
+            // 취소(Undo) 실행
+            Console.WriteLine("\n--- 명령 취소 ---");
+            invoker.Undo();
+            
+            // 재실행(Redo) 실행
+            Console.WriteLine("\n--- 명령 재실행 ---");
+            invoker.Redo();
+            
+            // 더 많은 명령 실행
+            ICommand moveLeft = new MoveCommand(robot, -1, 0);
+            invoker.ExecuteCommand(moveLeft);
+            
+            // 연속된 취소 실행
+            Console.WriteLine("\n--- 연속 취소 ---");
+            invoker.Undo();
+            invoker.Undo();
+        }
+    }
+}</code></pre>
+
+                        <h3>4.3 복합 명령(매크로) 구현</h3>
+                        <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace CommandPattern
+{
+    // 복합 명령(매크로) 클래스
+    public class MacroCommand : ICommand
+    {
+        private List&lt;ICommand&gt; commands;
+        
+        public MacroCommand()
+        {
+            commands = new List&lt;ICommand&gt;();
+        }
+        
+        public void AddCommand(ICommand command)
+        {
+            commands.Add(command);
+        }
+        
+        public void Execute()
+        {
+            foreach (var command in commands)
+            {
+                command.Execute();
+            }
+        }
+        
+        public void Undo()
+        {
+            // 역순으로 명령 취소
+            for (int i = commands.Count - 1; i >= 0; i--)
+            {
+                commands[i].Undo();
+            }
+        }
+    }
+    
+    // 사용 예
+    class MacroExample
+    {
+        static void Example()
+        {
+            Robot robot = new Robot();
+            CommandInvoker invoker = new CommandInvoker();
+            
+            // 매크로 명령 생성
+            MacroCommand squarePattern = new MacroCommand();
+            
+            // 정사각형 패턴을 그리는 명령들 추가
+            squarePattern.AddCommand(new MoveCommand(robot, 1, 0));
+            squarePattern.AddCommand(new MoveCommand(robot, 0, 1));
+            squarePattern.AddCommand(new MoveCommand(robot, -1, 0));
+            squarePattern.AddCommand(new MoveCommand(robot, 0, -1));
+            
+            // 매크로 실행
+            Console.WriteLine("--- 정사각형 패턴 실행 ---");
+            invoker.ExecuteCommand(squarePattern);
+            
+            // 매크로 취소 (전체가 한 번에 취소됨)
+            Console.WriteLine("\n--- 정사각형 패턴 취소 ---");
+            invoker.Undo();
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../command.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="command_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

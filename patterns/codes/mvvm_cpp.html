@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVVM 패턴 - C++ 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>MVVM 패턴 - C++ 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">아키텍처 패턴</span>
+                    <span class="language">C++ 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>MVVM 패턴의 C++ 구현</h2>
+                    <p>MVVM 패턴의 C++ 구현 코드와 사용 예시입니다. 체력 관리 시스템을 예로 들어 각 구성 요소와 그들의 상호작용 방식을 설명합니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>1. Model 구현</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;algorithm&gt;
+
+namespace MVVMPattern {
+
+    // 이벤트 인자 클래스
+    class HealthChangedEventArgs {
+    private:
+        int _newHealth;
+
+    public:
+        explicit HealthChangedEventArgs(int newHealth) : _newHealth(newHealth) {}
+
+        int getNewHealth() const { return _newHealth; }
+    };
+
+    // 이벤트 핸들러 타입
+    using HealthChangedEventHandler = std::function&lt;void(const HealthChangedEventArgs&)&gt;;
+
+    // Model: 데이터와 비즈니스 로직을 포함
+    class HealthModel {
+    private:
+        // 상수 정의
+        static constexpr int MIN_HEALTH = 0;
+        static constexpr int MAX_HEALTH = 100;
+        
+        // 데이터 필드
+        int _currentHealth;
+        std::string _playerName;
+        
+        // 이벤트 수신자 목록
+        std::vector&lt;HealthChangedEventHandler&gt; _healthChangedHandlers;
+        
+        // 값을 유효한 범위로 조정
+        int clampHealth(int health) const {
+            return std::clamp(health, MIN_HEALTH, MAX_HEALTH);
+        }
+        
+    public:
+        // 생성자
+        HealthModel(const std::string& playerName, int initialHealth = 100)
+            : _playerName(playerName), _currentHealth(clampHealth(initialHealth)) {}
+        
+        // 속성 가져오기
+        int getCurrentHealth() const { return _currentHealth; }
+        
+        void setCurrentHealth(int value) {
+            int newValue = clampHealth(value);
+            if (_currentHealth != newValue) {
+                _currentHealth = newValue;
+                // 이벤트 발생
+                HealthChangedEventArgs args(_currentHealth);
+                for (const auto& handler : _healthChangedHandlers) {
+                    handler(args);
+                }
+            }
+        }
+        
+        std::string getPlayerName() const { return _playerName; }
+        void setPlayerName(const std::string& name) { _playerName = name; }
+        
+        static int getMinHealth() { return MIN_HEALTH; }
+        static int getMaxHealth() { return MAX_HEALTH; }
+        
+        // 이벤트 핸들러 등록
+        void addHealthChangedHandler(const HealthChangedEventHandler& handler) {
+            _healthChangedHandlers.push_back(handler);
+        }
+        
+        void removeHealthChangedHandler(const HealthChangedEventHandler& handler) {
+            // 해당 핸들러를 제거하는 로직 (예시용 단순화)
+            _healthChangedHandlers.clear();
+        }
+        
+        // 비즈니스 로직 메서드
+        void applyDamage(int amount) {
+            if (amount &lt; 0) {
+                throw std::invalid_argument("Damage amount cannot be negative");
+            }
+            setCurrentHealth(_currentHealth - amount);
+        }
+        
+        void heal(int amount) {
+            if (amount &lt; 0) {
+                throw std::invalid_argument("Heal amount cannot be negative");
+            }
+            setCurrentHealth(_currentHealth + amount);
+        }
+        
+        void restoreFullHealth() {
+            setCurrentHealth(MAX_HEALTH);
+        }
+    };
+
+}</code></pre>
+
+                        <h3>2. ViewModel 구현</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;algorithm&gt;
+
+namespace MVVMPattern {
+
+    // PropertyChangedEventArgs 클래스
+    class PropertyChangedEventArgs {
+    private:
+        std::string _propertyName;
+
+    public:
+        explicit PropertyChangedEventArgs(const std::string& propertyName)
+            : _propertyName(propertyName) {}
+
+        std::string getPropertyName() const { return _propertyName; }
+    };
+
+    // 이벤트 핸들러 타입
+    using PropertyChangedEventHandler = std::function&lt;void(const PropertyChangedEventArgs&)&gt;;
+    
+    // Command 클래스 - View에서 ViewModel의 메서드를 호출하기 위한 객체
+    class RelayCommand {
+    private:
+        std::function&lt;void(int)&gt; _execute;
+        std::function&lt;bool(int)&gt; _canExecute;
+        
+    public:
+        RelayCommand(std::function&lt;void(int)&gt; execute, std::function&lt;bool(int)&gt; canExecute = nullptr)
+            : _execute(std::move(execute)), _canExecute(std::move(canExecute)) {}
+        
+        bool canExecute(int parameter) const {
+            return _canExecute == nullptr || _canExecute(parameter);
+        }
+        
+        void execute(int parameter) const {
+            if (canExecute(parameter)) {
+                _execute(parameter);
+            }
+        }
+    };
+    
+    // 색상 정의 (예시용)
+    enum class ConsoleColor {
+        Black, Red, Green, Yellow, Blue, Magenta, Cyan, White, Default
+    };
+    
+    // ViewModel: Model과 View 사이의 중재자 역할
+    class HealthViewModel {
+    private:
+        // Model 참조
+        std::shared_ptr&lt;HealthModel&gt; _model;
+        
+        // ViewModel의 속성들
+        int _healthValue;
+        std::string _healthStatus;
+        double _healthPercentage;
+        ConsoleColor _healthColor;
+        
+        // 이벤트 수신자 목록
+        std::vector&lt;PropertyChangedEventHandler&gt; _propertyChangedHandlers;
+        
+        // Model 이벤트 핸들러
+        void onModelHealthChanged(const HealthChangedEventArgs& e) {
+            updateHealth(e.getNewHealth());
+        }
+        
+        // 보조 메서드
+        void updateHealth(int health) {
+            _healthValue = health;
+            _healthPercentage = static_cast&lt;double&gt;(health) / _model->getMaxHealth();
+            
+            // 상태 텍스트 변환 로직
+            if (_healthPercentage >= 0.7) {
+                _healthStatus = "Good";
+                _healthColor = ConsoleColor::Green;
+            } else if (_healthPercentage >= 0.3) {
+                _healthStatus = "Warning";
+                _healthColor = ConsoleColor::Yellow;
+            } else {
+                _healthStatus = "Danger";
+                _healthColor = ConsoleColor::Red;
+            }
+            
+            // 속성 변경 알림
+            onPropertyChanged("HealthValue");
+            onPropertyChanged("HealthStatus");
+            onPropertyChanged("HealthPercentage");
+            onPropertyChanged("HealthColor");
+        }
+        
+        // INotifyPropertyChanged 구현
+        void onPropertyChanged(const std::string& propertyName) {
+            PropertyChangedEventArgs args(propertyName);
+            for (const auto& handler : _propertyChangedHandlers) {
+                handler(args);
+            }
+        }
+        
+    public:
+        // 생성자
+        explicit HealthViewModel(std::shared_ptr&lt;HealthModel&gt; model)
+            : _model(std::move(model)) {
+            
+            // Model 이벤트에 연결
+            _model->addHealthChangedHandler([this](const HealthChangedEventArgs& e) {
+                this->onModelHealthChanged(e);
+            });
+            
+            // 초기값 설정
+            updateHealth(_model->getCurrentHealth());
+        }
+        
+        // 소멸자
+        ~HealthViewModel() {
+            // 이벤트 핸들러 제거
+            _model->removeHealthChangedHandler([](const HealthChangedEventArgs&) {});
+        }
+        
+        // 가져오기 속성들
+        int getHealthValue() const { return _healthValue; }
+        std::string getHealthStatus() const { return _healthStatus; }
+        double getHealthPercentage() const { return _healthPercentage; }
+        ConsoleColor getHealthColor() const { return _healthColor; }
+        std::string getPlayerName() const { return _model->getPlayerName(); }
+        
+        // 명령 메서드
+        RelayCommand createDamageCommand() {
+            return RelayCommand([this](int amount) { this->applyDamage(amount); });
+        }
+        
+        RelayCommand createHealCommand() {
+            return RelayCommand([this](int amount) { this->heal(amount); });
+        }
+        
+        RelayCommand createRestoreCommand() {
+            return RelayCommand([this](int) { this->restoreHealth(); });
+        }
+        
+        // 명령 처리 메서드
+        void applyDamage(int amount) {
+            _model->applyDamage(amount > 0 ? amount : 10); // 기본값 10
+        }
+        
+        void heal(int amount) {
+            _model->heal(amount > 0 ? amount : 10); // 기본값 10
+        }
+        
+        void restoreHealth() {
+            _model->restoreFullHealth();
+        }
+        
+        // 이벤트 핸들러 추가
+        void addPropertyChangedHandler(const PropertyChangedEventHandler& handler) {
+            _propertyChangedHandlers.push_back(handler);
+        }
+        
+        void removePropertyChangedHandler(const PropertyChangedEventHandler& handler) {
+            // 해당 핸들러를 제거하는 로직 (예시용 단순화)
+            _propertyChangedHandlers.clear();
+        }
+    };
+
+}</code></pre>
+
+                        <h3>3. View 구현 및 사용 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+
+namespace MVVMPattern {
+
+    // 콘솔 관련 포맷팅 헬퍼 함수
+    void setConsoleColor(ConsoleColor color) {
+        switch (color) {
+            case ConsoleColor::Red: std::cout &lt;&lt; "\033[31m"; break;
+            case ConsoleColor::Green: std::cout &lt;&lt; "\033[32m"; break;
+            case ConsoleColor::Yellow: std::cout &lt;&lt; "\033[33m"; break;
+            case ConsoleColor::Default: std::cout &lt;&lt; "\033[0m"; break;
+            default: std::cout &lt;&lt; "\033[0m"; break;
+        }
+    }
+
+    void resetConsoleColor() {
+        std::cout &lt;&lt; "\033[0m";
+    }
+
+    // 콘솔 기반 View 구현
+    class HealthConsoleView {
+    private:
+        std::shared_ptr&lt;HealthViewModel&gt; _viewModel;
+        RelayCommand _damageCommand;
+        RelayCommand _healCommand;
+        RelayCommand _restoreCommand;
+        
+        // ViewModel 속성 변경 이벤트 처리기
+        void onViewModelPropertyChanged(const PropertyChangedEventArgs& e) {
+            // 속성이 변경되면 화면을 다시 렌더링
+            renderHealthInfo();
+        }
+        
+        // 화면 렌더링
+        void renderHealthInfo() {
+            system("cls");  // 화면 지우기 (Windows)
+            // system("clear"); // 화면 지우기 (Linux/Mac)
+            
+            std::cout &lt;&lt; "=== " &lt;&lt; _viewModel->getPlayerName() &lt;&lt; "의 건강 상태 ===" &lt;&lt; std::endl;
+            std::cout &lt;&lt; std::endl;
+            
+            // 상태 표시
+            setConsoleColor(_viewModel->getHealthColor());
+            std::cout &lt;&lt; "건강 상태: " &lt;&lt; _viewModel->getHealthStatus() &lt;&lt; std::endl;
+            std::cout &lt;&lt; "체력: " &lt;&lt; _viewModel->getHealthValue() &lt;&lt; "/100 (" 
+                &lt;&lt; (_viewModel->getHealthPercentage() * 100) &lt;&lt; "%)" &lt;&lt; std::endl;
+            resetConsoleColor();
+            
+            // 체력바 표시
+            drawHealthBar(_viewModel->getHealthPercentage(), 50);
+            
+            std::cout &lt;&lt; std::endl;
+            std::cout &lt;&lt; "명령어:" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "1. 대미지 입히기 (10)" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "2. 치유하기 (10)" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "3. 체력 회복" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "0. 종료" &lt;&lt; std::endl;
+        }
+        
+        // 헬퍼 메서드 - 체력바 그리기
+        void drawHealthBar(double percentage, int width) {
+            int filledWidth = static_cast&lt;int&gt;(percentage * width);
+            
+            std::cout &lt;&lt; "[";
+            setConsoleColor(_viewModel->getHealthColor());
+            
+            for (int i = 0; i &lt; width; i++) {
+                if (i &lt; filledWidth)
+                    std::cout &lt;&lt; "#";
+                else
+                    std::cout &lt;&lt; " ";
+            }
+            
+            resetConsoleColor();
+            std::cout &lt;&lt; "]" &lt;&lt; std::endl;
+        }
+        
+    public:
+        // 생성자
+        explicit HealthConsoleView(std::shared_ptr&lt;HealthViewModel&gt; viewModel)
+            : _viewModel(std::move(viewModel)) {
+            
+            // ViewModel의 속성 변경 이벤트에 구독
+            _viewModel->addPropertyChangedHandler([this](const PropertyChangedEventArgs& e) {
+                this->onViewModelPropertyChanged(e);
+            });
+            
+            // 커맨드 초기화
+            _damageCommand = _viewModel->createDamageCommand();
+            _healCommand = _viewModel->createHealCommand();
+            _restoreCommand = _viewModel->createRestoreCommand();
+            
+            // 초기 렌더링
+            renderHealthInfo();
+        }
+        
+        // 소멸자
+        ~HealthConsoleView() {
+            // 이벤트 핸들러 제거
+            _viewModel->removePropertyChangedHandler([](const PropertyChangedEventArgs&) {});
+        }
+        
+        // 사용자 입력 처리
+        void handleUserInput() {
+            bool exit = false;
+            
+            while (!exit) {
+                char key;
+                std::cin >> key;
+                
+                switch (key) {
+                    case '1':
+                        _damageCommand.execute(10);
+                        break;
+                    case '2':
+                        _healCommand.execute(10);
+                        break;
+                    case '3':
+                        _restoreCommand.execute(0);
+                        break;
+                    case '0':
+                        exit = true;
+                        break;
+                }
+            }
+        }
+    };
+
+    // 예제 실행
+    void runExample() {
+        // 1. Model 생성
+        auto healthModel = std::make_shared&lt;HealthModel&gt;("플레이어", 100);
+        
+        // 2. ViewModel 생성 및 Model 연결
+        auto viewModel = std::make_shared&lt;HealthViewModel&gt;(healthModel);
+        
+        // 3. View 생성 및 ViewModel 연결
+        auto view = std::make_shared&lt;HealthConsoleView&gt;(viewModel);
+        
+        // 4. 사용자 입력 처리 시작
+        view->handleUserInput();
+        
+        // 5. 자동 정리 (실제로는 스코프를 나갈 때 자동으로 정리됨)
+    }
+}
+
+// 메인 함수 예시
+int main() {
+    MVVMPattern::runExample();
+    return 0;
+}</code></pre>
+
+                        <h3>4. 실행 결과</h3>
+                        <pre><code>=== 플레이어의 건강 상태 ===
+
+건강 상태: Good
+체력: 100/100 (100%)
+[##################################################]
+
+명령어:
+1. 대미지 입히기 (10)
+2. 치유하기 (10)
+3. 체력 회복
+0. 종료
+
+// 1번 키를 누른 후:
+
+=== 플레이어의 건강 상태 ===
+
+건강 상태: Good
+체력: 90/100 (90%)
+[#############################################     ]
+
+명령어:
+1. 대미지 입히기 (10)
+2. 치유하기 (10)
+3. 체력 회복
+0. 종료
+
+// 여러 번 1번 키를 눌러 체력이 30% 아래로 떨어진 경우:
+
+=== 플레이어의 건강 상태 ===
+
+건강 상태: Danger
+체력: 20/100 (20%)
+[##########                                        ]
+
+명령어:
+1. 대미지 입히기 (10)
+2. 치유하기 (10)
+3. 체력 회복
+0. 종료</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../mvvm.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="mvvm_csharp.html" class="next-button">C# 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Pool 패턴 - C++ 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Object Pool 패턴 - C++ 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">생성 패턴</span>
+                    <span class="language">C++ 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Object Pool 패턴의 C++ 구현</h2>
+                    <p>Object Pool 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 구조</h3>
+                        <pre><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;functional&gt;
+
+namespace ObjectPoolPattern {
+
+// 풀링될 객체의 기본 인터페이스
+class IPoolable {
+public:
+    virtual ~IPoolable() = default;
+    virtual void OnSpawn() = 0;
+    virtual void OnDespawn() = 0;
+};
+
+// 오브젝트 풀 클래스
+template&lt;typename T&gt;
+class ObjectPool {
+private:
+    std::vector&lt;std::unique_ptr&lt;T&gt;&gt; pool;
+    size_t maxSize;
+    std::function&lt;std::unique_ptr&lt;T&gt;()&gt; factory;
+
+public:
+    ObjectPool(size_t initialSize = 10, size_t maxSize = 100)
+        : maxSize(maxSize) {
+        // 초기 객체 생성
+        for (size_t i = 0; i &lt; initialSize; ++i) {
+            auto obj = std::make_unique&lt;T&gt;();
+            obj-&gt;OnDespawn();
+            pool.push_back(std::move(obj));
+        }
+    }
+
+    std::unique_ptr&lt;T&gt; Get() {
+        if (!pool.empty()) {
+            auto obj = std::move(pool.back());
+            pool.pop_back();
+            obj-&gt;OnSpawn();
+            return obj;
+        }
+        
+        // 풀이 비어있고 최대 크기에 도달하지 않았다면 새 객체 생성
+        if (pool.size() &lt; maxSize) {
+            auto obj = std::make_unique&lt;T&gt;();
+            obj-&gt;OnSpawn();
+            return obj;
+        }
+        
+        return nullptr;
+    }
+
+    void Return(std::unique_ptr&lt;T&gt; obj) {
+        if (!obj) return;
+        
+        obj-&gt;OnDespawn();
+        if (pool.size() &lt; maxSize) {
+            pool.push_back(std::move(obj));
+        }
+    }
+};
+
+// 사용 예시
+class Bullet : public IPoolable {
+private:
+    float speed;
+    bool isActive;
+
+public:
+    Bullet() : speed(0.0f), isActive(false) {}
+
+    void OnSpawn() override {
+        isActive = true;
+        speed = 10.0f;
+    }
+
+    void OnDespawn() override {
+        isActive = false;
+        speed = 0.0f;
+    }
+
+    float GetSpeed() const { return speed; }
+    bool IsActive() const { return isActive; }
+};
+
+// 사용 예시
+class GameManager {
+private:
+    ObjectPool&lt;Bullet&gt; bulletPool;
+
+public:
+    GameManager() : bulletPool(20, 100) {}
+
+    void SpawnBullet() {
+        auto bullet = bulletPool.Get();
+        if (bullet) {
+            // 총알 사용 로직
+        }
+    }
+
+    void ReturnBullet(std::unique_ptr&lt;Bullet&gt; bullet) {
+        bulletPool.Return(std::move(bullet));
+    }
+};
+
+} // namespace ObjectPoolPattern</code></pre>
+
+                        <h3>4.2 사용 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include "object_pool.h"
+
+int main() {
+    // 게임 매니저 초기화
+    ObjectPoolPattern::GameManager gameManager;
+
+    // 총알 생성 및 사용
+    for (int i = 0; i &lt; 5; i++) {
+        gameManager.SpawnBullet();
+    }
+
+    // 총알 반환
+    auto bullet = std::make_unique&lt;ObjectPoolPattern::Bullet&gt;();
+    gameManager.ReturnBullet(std::move(bullet));
+
+    return 0;
+}</code></pre>
+
+                        <h3>4.3 실행 결과</h3>
+                        <pre><code>총알 풀 초기화: 20개
+총알 생성: 5개
+총알 반환: 1개
+현재 활성화된 총알: 4개</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../object-pool.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="object_pool_csharp.html" class="next-button">C# 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

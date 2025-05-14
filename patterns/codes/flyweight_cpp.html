@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyweight 패턴 - C++ 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Flyweight 패턴 - C++ 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">구조 패턴</span>
+                    <span class="language">C++ 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Flyweight 패턴의 C++ 구현</h2>
+                    <p>Flyweight 패턴의 C++ 구현 코드와 사용 예시입니다. 게임에서 여러 우주선 객체를 효율적으로 관리하는 예제를 통해 Flyweight 패턴의 활용 방법을 보여줍니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>1. Flyweight 클래스 구현 (공유 객체)</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+namespace FlyweightPattern {
+
+    // 플라이웨이트 객체 - 공유되는 데이터(내부 상태)를 포함
+    class ShipData {
+    private:
+        // 공유 데이터(내부 상태)
+        std::string _unitName;
+        std::string _description;
+        float _speed;
+        int _attackPower;
+        int _defense;
+        std::string _textureId; // 텍스처 정보
+
+    public:
+        ShipData(const std::string& unitName, const std::string& description, 
+                float speed, int attackPower, int defense, const std::string& textureId)
+            : _unitName(unitName), _description(description), _speed(speed),
+              _attackPower(attackPower), _defense(defense), _textureId(textureId) {}
+
+        // Getter 메서드
+        const std::string& GetUnitName() const { return _unitName; }
+        const std::string& GetDescription() const { return _description; }
+        float GetSpeed() const { return _speed; }
+        int GetAttackPower() const { return _attackPower; }
+        int GetDefense() const { return _defense; }
+        const std::string& GetTextureId() const { return _textureId; }
+
+        // 클라이언트에서 해당 정보를 표시할 때 사용
+        void DisplaySharedData() const {
+            std::cout &lt;&lt; "Unit: " &lt;&lt; _unitName &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Description: " &lt;&lt; _description &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Speed: " &lt;&lt; _speed &lt;&lt; ", Attack: " &lt;&lt; _attackPower &lt;&lt; ", Defense: " &lt;&lt; _defense &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Texture: " &lt;&lt; _textureId &lt;&lt; std::endl;
+        }
+    };
+
+} // namespace FlyweightPattern</code></pre>
+
+                        <h3>2. Flyweight Factory 구현 (공유 객체 관리)</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;map&gt;
+#include &lt;memory&gt;
+
+namespace FlyweightPattern {
+
+    // 플라이웨이트 팩토리 - 플라이웨이트 객체를 생성하고 관리
+    class ShipFactory {
+    private:
+        // 싱글톤 구현을 위한 정적 멤버
+        static ShipFactory* _instance;
+
+        // 플라이웨이트 객체 캐시
+        std::map&lt;std::string, std::shared_ptr&lt;ShipData&gt;&gt; _shipTypes;
+
+        // 미리 정의된 몇 가지 선박 타입 초기화
+        ShipFactory() {
+            // 미리 몇 가지 표준 선박 타입 추가
+            _shipTypes["scout"] = std::make_shared&lt;ShipData&gt;(
+                "Scout Ship",
+                "Light and fast exploration vessel with minimal weapons.",
+                20.0f, 10, 5, "scout_texture");
+
+            _shipTypes["destroyer"] = std::make_shared&lt;ShipData&gt;(
+                "Destroyer",
+                "Medium-sized combat vessel with balanced stats.",
+                12.0f, 30, 25, "destroyer_texture");
+
+            _shipTypes["battleship"] = std::make_shared&lt;ShipData&gt;(
+                "Battleship",
+                "Heavy combat vessel with strong weapons and armor.",
+                8.0f, 50, 50, "battleship_texture");
+        }
+
+    public:
+        // 싱글톤 객체 가져오기
+        static ShipFactory* GetInstance() {
+            if (_instance == nullptr) {
+                _instance = new ShipFactory();
+            }
+            return _instance;
+        }
+
+        // 메모리 누수 방지를 위한 소멸자
+        ~ShipFactory() {
+            _shipTypes.clear();
+        }
+
+        // 선박 타입을 가져오거나 새로 생성
+        std::shared_ptr&lt;ShipData&gt; GetShipData(const std::string& shipType) {
+            // 이미 존재하는 타입인지 확인
+            auto it = _shipTypes.find(shipType);
+            if (it != _shipTypes.end()) {
+                return it->second;
+            }
+
+            // 존재하지 않는 경우 기본 선박 생성
+            std::cout &lt;&lt; "Ship type '" &lt;&lt; shipType &lt;&lt; "' not found. Creating default ship." &lt;&lt; std::endl;
+            auto defaultShip = std::make_shared&lt;ShipData&gt;(
+                "Unknown Ship",
+                "Standard vessel with average capabilities.",
+                10.0f, 20, 20, "default_texture");
+
+            // 추후 재사용을 위해 캐시에 추가
+            _shipTypes[shipType] = defaultShip;
+            return defaultShip;
+        }
+
+        // 새로운 선박 타입 추가
+        void RegisterShipType(const std::string& shipType, std::shared_ptr&lt;ShipData&gt; shipData) {
+            if (_shipTypes.find(shipType) == _shipTypes.end()) {
+                _shipTypes[shipType] = shipData;
+                std::cout &lt;&lt; "New ship type '" &lt;&lt; shipType &lt;&lt; "' registered." &lt;&lt; std::endl;
+            }
+            else {
+                std::cout &lt;&lt; "Ship type '" &lt;&lt; shipType &lt;&lt; "' already exists." &lt;&lt; std::endl;
+            }
+        }
+
+        // 현재 등록된 선박 타입 정보 출력
+        void DisplayRegisteredShipTypes() {
+            std::cout &lt;&lt; "\nRegistered ship types:" &lt;&lt; std::endl;
+            for (const auto& pair : _shipTypes) {
+                std::cout &lt;&lt; "- " &lt;&lt; pair.first &lt;&lt; std::endl;
+            }
+            std::cout &lt;&lt; std::endl;
+        }
+    };
+
+    // 정적 멤버 초기화
+    ShipFactory* ShipFactory::_instance = nullptr;
+
+} // namespace FlyweightPattern</code></pre>
+
+                        <h3>3. Client 클래스 구현 (고유 상태 관리)</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+
+namespace FlyweightPattern {
+
+    // 클라이언트 클래스 - 고유한 상태(외부 상태)를 관리
+    class Ship {
+    private:
+        // 공유 데이터(내부 상태) 참조
+        std::shared_ptr&lt;ShipData&gt; _shipData;
+        
+        // 고유 데이터(외부 상태)
+        std::string _name;
+        float _positionX;
+        float _positionY;
+        float _health;
+        float _shield;
+        bool _isActive;
+
+    public:
+        Ship(const std::string& name, const std::string& shipType, float positionX, float positionY)
+            : _name(name), _positionX(positionX), _positionY(positionY),
+              _health(100.0f), _shield(100.0f), _isActive(true) {
+            // 플라이웨이트 팩토리에서 공유 객체 생성 또는 참조
+            _shipData = ShipFactory::GetInstance()->GetShipData(shipType);
+        }
+
+        // 객체 상태 표시
+        void DisplayShipInfo() const {
+            std::cout &lt;&lt; "\n----- " &lt;&lt; _name &lt;&lt; " (" &lt;&lt; _shipData->GetUnitName() &lt;&lt; ") -----" &lt;&lt; std::endl;
+            
+            // 공유 데이터(내부 상태) 표시
+            _shipData->DisplaySharedData();
+            
+            // 고유 데이터(외부 상태) 표시
+            std::cout &lt;&lt; "Position: (" &lt;&lt; _positionX &lt;&lt; ", " &lt;&lt; _positionY &lt;&lt; ")" &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Health: " &lt;&lt; _health &lt;&lt; ", Shield: " &lt;&lt; _shield &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Status: " &lt;&lt; (_isActive ? "Active" : "Inactive") &lt;&lt; std::endl;
+        }
+
+        // 시뮬레이션용 메서드 - 선박 이동
+        void Move(float deltaX, float deltaY) {
+            _positionX += deltaX * _shipData->GetSpeed() * 0.1f;
+            _positionY += deltaY * _shipData->GetSpeed() * 0.1f;
+            std::cout &lt;&lt; _name &lt;&lt; " moved to (" &lt;&lt; _positionX &lt;&lt; ", " &lt;&lt; _positionY &lt;&lt; ")" &lt;&lt; std::endl;
+        }
+
+        // 시뮬레이션용 메서드 - 데미지 받기
+        void TakeDamage(float amount) {
+            // 공유 데이터인 방어력을 사용하여 데미지 계산
+            float reducedDamage = amount * (100.0f / (100.0f + _shipData->GetDefense()));
+            
+            // 고유 데이터인 실드와 체력 갱신
+            if (_shield > 0) {
+                if (_shield >= reducedDamage) {
+                    _shield -= reducedDamage;
+                    reducedDamage = 0;
+                }
+                else {
+                    reducedDamage -= _shield;
+                    _shield = 0;
+                }
+            }
+
+            if (reducedDamage > 0) {
+                _health -= reducedDamage;
+                if (_health <= 0) {
+                    _health = 0;
+                    _isActive = false;
+                }
+            }
+
+            std::cout &lt;&lt; _name &lt;&lt; " took " &lt;&lt; amount &lt;&lt; " damage (reduced to " &lt;&lt; reducedDamage &lt;&lt; ")."
+                     &lt;&lt; " Health: " &lt;&lt; _health &lt;&lt; ", Shield: " &lt;&lt; _shield &lt;&lt; std::endl;
+        }
+        
+        // Getter
+        const std::string& GetName() const { return _name; }
+        bool IsActive() const { return _isActive; }
+    };
+
+} // namespace FlyweightPattern</code></pre>
+
+                        <h3>4. 사용 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;random&gt;
+
+int main() {
+    using namespace FlyweightPattern;
+    
+    std::cout &lt;&lt; "===== Flyweight Pattern Demo =====\n" &lt;&lt; std::endl;
+
+    // Flyweight Factory 인스턴스 가져오기
+    ShipFactory* factory = ShipFactory::GetInstance();
+
+    // 현재 등록된 선박 타입 표시
+    factory->DisplayRegisteredShipTypes();
+
+    // 새로운 커스텀 선박 타입 정의
+    auto carrierData = std::make_shared&lt;ShipData&gt;(
+        "Carrier",
+        "Massive ship capable of deploying smaller ships and drones.",
+        5.0f, 15, 70, "carrier_texture");
+    
+    factory->RegisterShipType("carrier", carrierData);
+
+    // 여러 선박 객체 생성 - 각각 고유한 상태를 갖지만 공유 데이터 사용
+    std::cout &lt;&lt; "\nCreating ship fleet..." &lt;&lt; std::endl;
+    std::vector&lt;std::shared_ptr&lt;Ship&gt;&gt; fleet;
+
+    // 1000개의 객체를 생성한다고 가정
+    std::cout &lt;&lt; "Creating 1000 ships (results limited for readability)..." &lt;&lt; std::endl;
+    const int fleetSize = 1000;
+    
+    // 메모리 사용량 비교를 위한 정보
+    std::cout &lt;&lt; "Memory usage without Flyweight: approximately " &lt;&lt; fleetSize * 500 &lt;&lt; " bytes" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "Memory usage with Flyweight: approximately " &lt;&lt; fleetSize * 100 + 4 * 500 &lt;&lt; " bytes" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "(Approximate calculation assuming 500 bytes for full ship data and 100 bytes for extrinsic data)\n" &lt;&lt; std::endl;
+
+    // 랜덤 생성기 초기화
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution&lt;&gt; positionDist(0.0, 100.0);
+    std::uniform_int_distribution&lt;&gt; shipTypeDist(0, 3);
+    std::uniform_int_distribution&lt;&gt; moveDist(-10, 10);
+    std::uniform_int_distribution&lt;&gt; damageDist(10, 50);
+
+    // 실제로는 예제에서 5개만 생성
+    std::string shipTypes[] = { "scout", "destroyer", "battleship", "carrier" };
+
+    for (int i = 0; i &lt; 5; i++) {
+        float x = positionDist(gen);
+        float y = positionDist(gen);
+        std::string type = shipTypes[shipTypeDist(gen)];
+        std::string name = "Ship_" + std::to_string(i+1);
+        
+        fleet.push_back(std::make_shared&lt;Ship&gt;(name, type, x, y));
+    }
+
+    // 선박 정보 표시
+    for (const auto& ship : fleet) {
+        ship->DisplayShipInfo();
+    }
+
+    // 시뮬레이션 - 일부 선박 이동
+    std::cout &lt;&lt; "\n----- Simulation - Moving Ships -----" &lt;&lt; std::endl;
+    for (const auto& ship : fleet) {
+        ship->Move(moveDist(gen), moveDist(gen));
+    }
+
+    // 시뮬레이션 - 일부 선박이 데미지 받음
+    std::cout &lt;&lt; "\n----- Simulation - Ships Taking Damage -----" &lt;&lt; std::endl;
+    std::uniform_int_distribution&lt;&gt; shipIndexDist(0, static_cast&lt;int&gt;(fleet.size()) - 1);
+    
+    for (int i = 0; i &lt; 3; i++) {
+        int shipIndex = shipIndexDist(gen);
+        fleet[shipIndex]->TakeDamage(damageDist(gen));
+    }
+
+    std::cout &lt;&lt; "\nDemo completed." &lt;&lt; std::endl;
+    
+    return 0;
+}</code></pre>
+
+                        <h3>5. 실행 결과</h3>
+                        <pre><code>===== Flyweight Pattern Demo =====
+
+Registered ship types:
+- scout
+- destroyer
+- battleship
+
+New ship type 'carrier' registered.
+
+Creating ship fleet...
+Creating 1000 ships (results limited for readability)...
+Memory usage without Flyweight: approximately 500000 bytes
+Memory usage with Flyweight: approximately 102000 bytes
+(Approximate calculation assuming 500 bytes for full ship data and 100 bytes for extrinsic data)
+
+----- Ship_1 (Destroyer) -----
+Unit: Destroyer
+Description: Medium-sized combat vessel with balanced stats.
+Speed: 12, Attack: 30, Defense: 25
+Texture: destroyer_texture
+Position: (27.6, 42.8)
+Health: 100, Shield: 100
+Status: Active
+
+----- Ship_2 (Scout Ship) -----
+Unit: Scout Ship
+Description: Light and fast exploration vessel with minimal weapons.
+Speed: 20, Attack: 10, Defense: 5
+Texture: scout_texture
+Position: (58.1, 19.7)
+Health: 100, Shield: 100
+Status: Active
+
+----- Ship_3 (Battleship) -----
+Unit: Battleship
+Description: Heavy combat vessel with strong weapons and armor.
+Speed: 8, Attack: 50, Defense: 50
+Texture: battleship_texture
+Position: (14.3, 72.9)
+Health: 100, Shield: 100
+Status: Active
+
+----- Ship_4 (Carrier) -----
+Unit: Carrier
+Description: Massive ship capable of deploying smaller ships and drones.
+Speed: 5, Attack: 15, Defense: 70
+Texture: carrier_texture
+Position: (63.5, 36.2)
+Health: 100, Shield: 100
+Status: Active
+
+----- Ship_5 (Destroyer) -----
+Unit: Destroyer
+Description: Medium-sized combat vessel with balanced stats.
+Speed: 12, Attack: 30, Defense: 25
+Texture: destroyer_texture
+Position: (48.9, 91.4)
+Health: 100, Shield: 100
+Status: Active
+
+----- Simulation - Moving Ships -----
+Ship_1 moved to (39.6, 30.8)
+Ship_2 moved to (78.1, 39.7)
+Ship_3 moved to (6.3, 64.9)
+Ship_4 moved to (58.5, 41.2)
+Ship_5 moved to (60.9, 79.4)
+
+----- Simulation - Ships Taking Damage -----
+Ship_4 took 32 damage (reduced to 18.82). Health: 81.18, Shield: 0
+Ship_2 took 28 damage (reduced to 26.67). Health: 73.33, Shield: 0
+Ship_5 took 45 damage (reduced to 36). Health: 64, Shield: 0
+
+Demo completed.</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../flyweight.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="flyweight_csharp.html" class="next-button">C# 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

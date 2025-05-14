@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singleton 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Singleton 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">생성 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>Singleton 패턴의 C# 구현</h2>
+                    <p>Singleton 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 Singleton</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace SingletonPattern
+{
+    // 기본 싱글톤 클래스
+    public class Singleton
+    {
+        // 유일한 인스턴스를 저장하는 정적 변수
+        private static Singleton _instance;
+
+        // 외부에서 인스턴스에 접근할 수 있는 프로퍼티
+        public static Singleton Instance
+        {
+            get
+            {
+                // 인스턴스가 없으면 새로 생성
+                if (_instance == null)
+                {
+                    _instance = new Singleton();
+                }
+                return _instance;
+            }
+        }
+
+        // 생성자를 private으로 선언하여 외부에서 인스턴스 생성 방지
+        private Singleton()
+        {
+            Console.WriteLine("Singleton 인스턴스가 생성되었습니다.");
+        }
+
+        // 싱글톤에서 제공하는 메서드 예시
+        public void DoSomething()
+        {
+            Console.WriteLine("Singleton이 작업을 수행 중입니다.");
+        }
+    }
+}</code></pre>
+
+                        <h3>4.2 스레드 안전한 Singleton</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace SingletonPattern
+{
+    // 스레드 안전한 싱글톤 구현
+    public class ThreadSafeSingleton
+    {
+        private static volatile ThreadSafeSingleton _instance;
+        private static readonly object _lock = new object();
+
+        public static ThreadSafeSingleton Instance
+        {
+            get
+            {
+                // 이중 체크 잠금(Double-Check Locking) 패턴 사용
+                if (_instance == null)
+                {
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new ThreadSafeSingleton();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        private ThreadSafeSingleton()
+        {
+            Console.WriteLine("ThreadSafeSingleton 인스턴스가 생성되었습니다.");
+        }
+
+        public void DoSomething()
+        {
+            Console.WriteLine("ThreadSafeSingleton이 작업을 수행 중입니다.");
+        }
+    }
+}</code></pre>
+
+                        <h3>4.3 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace SingletonPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 기본 싱글톤 사용 예시
+            Singleton singleton1 = Singleton.Instance;
+            Singleton singleton2 = Singleton.Instance;
+            
+            Console.WriteLine($"singleton1과 singleton2는 같은 인스턴스인가? {singleton1 == singleton2}");
+            singleton1.DoSomething();
+
+            // 스레드 안전한 싱글톤 사용 예시
+            ThreadSafeSingleton safeSingleton = ThreadSafeSingleton.Instance;
+            safeSingleton.DoSomething();
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../singleton.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="singleton_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

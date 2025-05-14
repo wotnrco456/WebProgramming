@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State 패턴 - C++ 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>State 패턴 - C++ 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">행동 패턴</span>
+                    <span class="language">C++ 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>State 패턴의 C++ 구현</h2>
+                    <p>State 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>4.1 기본 구조</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+#include &lt;cmath&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+#include &lt;typeinfo&gt;
+
+// 전방 선언
+class Character;
+
+// 상태 인터페이스
+class IState {
+public:
+    virtual ~IState() = default;
+    
+    virtual void Enter() = 0;  // 상태 진입 시 실행할 로직
+    virtual void Execute() = 0; // 상태 유지 중 매 프레임 실행할 로직
+    virtual void Exit() = 0;   // 상태 종료 시 실행할 로직
+};
+
+// 대기 상태
+class IdleState : public IState {
+private:
+    Character* character;
+    
+public:
+    IdleState(Character* character);
+    
+    void Enter() override;
+    void Execute() override;
+    void Exit() override;
+};
+
+// 걷기 상태
+class WalkState : public IState {
+private:
+    Character* character;
+    
+public:
+    WalkState(Character* character);
+    
+    void Enter() override;
+    void Execute() override;
+    void Exit() override;
+};
+
+// 점프 상태
+class JumpState : public IState {
+private:
+    Character* character;
+    
+public:
+    JumpState(Character* character);
+    
+    void Enter() override;
+    void Execute() override;
+    void Exit() override;
+};
+
+// 컨텍스트 클래스
+class Character {
+private:
+    std::shared_ptr&lt;IState&gt; currentState;
+    std::vector&lt;std::function&lt;void(std::shared_ptr&lt;IState&gt;)&gt;&gt; stateChangedCallbacks;
+    
+public:
+    std::shared_ptr&lt;IdleState&gt; idleState;
+    std::shared_ptr&lt;WalkState&gt; walkState;
+    std::shared_ptr&lt;JumpState&gt; jumpState;
+    
+    // 캐릭터 속성
+    bool isGrounded = true;
+    float horizontalInput = 0.0f;
+    bool jumpPressed = false;
+    
+    Character() {
+        // 상태 객체 초기화
+        idleState = std::make_shared&lt;IdleState&gt;(this);
+        walkState = std::make_shared&lt;WalkState&gt;(this);
+        jumpState = std::make_shared&lt;JumpState&gt;(this);
+        
+        // 초기 상태 설정
+        TransitionToState(idleState);
+    }
+    
+    // 상태 전환 메서드
+    void TransitionToState(std::shared_ptr&lt;IState&gt; newState) {
+        if (currentState) {
+            currentState->Exit();
+        }
+        
+        currentState = newState;
+        currentState->Enter();
+        
+        // 상태 변경 콜백 호출
+        for (auto&amp; callback : stateChangedCallbacks) {
+            callback(currentState);
+        }
+    }
+    
+    // 상태 업데이트 메서드
+    void Update() {
+        if (currentState) {
+            currentState->Execute();
+        }
+    }
+    
+    // 상태 변경 콜백 등록
+    void AddStateChangedCallback(std::function&lt;void(std::shared_ptr&lt;IState&gt;)&gt; callback) {
+        stateChangedCallbacks.push_back(callback);
+    }
+};
+
+// 상태 클래스 구현
+IdleState::IdleState(Character* character) : character(character) {}
+
+void IdleState::Enter() {
+    std::cout &lt;&lt; "대기 상태 시작" &lt;&lt; std::endl;
+}
+
+void IdleState::Execute() {
+    // 대기 상태에서의 전환 조건 검사
+    if (!character->isGrounded) {
+        character->TransitionToState(character->jumpState);
+        return;
+    }
+    
+    if (std::abs(character->horizontalInput) > 0.1f) {
+        character->TransitionToState(character->walkState);
+        return;
+    }
+}
+
+void IdleState::Exit() {
+    std::cout &lt;&lt; "대기 상태 종료" &lt;&lt; std::endl;
+}
+
+WalkState::WalkState(Character* character) : character(character) {}
+
+void WalkState::Enter() {
+    std::cout &lt;&lt; "걷기 상태 시작" &lt;&lt; std::endl;
+}
+
+void WalkState::Execute() {
+    // 걷기 상태에서의 전환 조건 검사
+    if (!character->isGrounded) {
+        character->TransitionToState(character->jumpState);
+        return;
+    }
+    
+    if (std::abs(character->horizontalInput) &lt; 0.1f) {
+        character->TransitionToState(character->idleState);
+        return;
+    }
+    
+    if (character->jumpPressed &amp;&amp; character->isGrounded) {
+        character->TransitionToState(character->jumpState);
+        return;
+    }
+    
+    // 걷기 로직 실행
+    std::cout &lt;&lt; "캐릭터가 " &lt;&lt; character->horizontalInput &lt;&lt; " 방향으로 걷는 중" &lt;&lt; std::endl;
+}
+
+void WalkState::Exit() {
+    std::cout &lt;&lt; "걷기 상태 종료" &lt;&lt; std::endl;
+}
+
+JumpState::JumpState(Character* character) : character(character) {}
+
+void JumpState::Enter() {
+    std::cout &lt;&lt; "점프 상태 시작" &lt;&lt; std::endl;
+    // 점프 시작 로직
+}
+
+void JumpState::Execute() {
+    // 점프 상태에서의 전환 조건 검사
+    if (character->isGrounded) {
+        if (std::abs(character->horizontalInput) > 0.1f) {
+            character->TransitionToState(character->walkState);
+        }
+        else {
+            character->TransitionToState(character->idleState);
+        }
+        return;
+    }
+    
+    // 점프 중 로직 실행
+    std::cout &lt;&lt; "캐릭터가 점프 중" &lt;&lt; std::endl;
+}
+
+void JumpState::Exit() {
+    std::cout &lt;&lt; "점프 상태 종료" &lt;&lt; std::endl;
+    character->jumpPressed = false;
+}</code></pre>
+
+                        <h3>4.2 사용 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;typeinfo&gt;
+
+int main() {
+    // 캐릭터 생성
+    Character character;
+    
+    // 상태 변경 콜백 등록
+    character.AddStateChangedCallback([](std::shared_ptr&lt;IState&gt; state) {
+        std::cout &lt;&lt; "상태 변경됨: " &lt;&lt; typeid(*state).name() &lt;&lt; std::endl;
+    });
+    
+    // 대기 상태 시작 (초기 상태)
+    std::cout &lt;&lt; "\n--- 초기 상태(대기) ---" &lt;&lt; std::endl;
+    character.Update();
+    
+    // 걷기 상태로 전환
+    std::cout &lt;&lt; "\n--- 걷기 시작 ---" &lt;&lt; std::endl;
+    character.horizontalInput = 1.0f;
+    character.Update();
+    
+    // 걷기 상태 유지
+    std::cout &lt;&lt; "\n--- 걷기 유지 ---" &lt;&lt; std::endl;
+    character.Update();
+    
+    // 점프 상태로 전환
+    std::cout &lt;&lt; "\n--- 점프 시작 ---" &lt;&lt; std::endl;
+    character.jumpPressed = true;
+    character.isGrounded = false;
+    character.Update();
+    
+    // 착지 후 대기 상태로 전환
+    std::cout &lt;&lt; "\n--- 착지(대기) ---" &lt;&lt; std::endl;
+    character.horizontalInput = 0.0f;
+    character.isGrounded = true;
+    character.Update();
+    
+    return 0;
+}</code></pre>
+
+                        <h3>4.3 계층적 상태 시스템 구현</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;unordered_map&gt;
+#include &lt;typeindex&gt;
+#include &lt;typeinfo&gt;
+
+// 상태 머신 클래스
+class StateMachine {
+private:
+    std::unordered_map&lt;std::type_index, std::shared_ptr&lt;IState&gt;&gt; states;
+    std::shared_ptr&lt;IState&gt; currentState;
+    
+public:
+    // 상태 등록
+    template&lt;typename T&gt;
+    void RegisterState(std::shared_ptr&lt;T&gt; state) {
+        states[std::type_index(typeid(T))] = state;
+    }
+    
+    // 특정 타입의 상태로 전환
+    template&lt;typename T&gt;
+    void TransitionTo() {
+        auto it = states.find(std::type_index(typeid(T)));
+        if (it != states.end()) {
+            if (currentState) {
+                currentState->Exit();
+            }
+            currentState = it->second;
+            currentState->Enter();
+        }
+    }
+    
+    // 상태 업데이트
+    void Update() {
+        if (currentState) {
+            currentState->Execute();
+        }
+    }
+};
+
+// 전방 선언
+class MovementState;
+
+// 걷기 하위 상태
+class WalkingSubState : public IState {
+private:
+    MovementState* parentState;
+    
+public:
+    WalkingSubState(MovementState* parentState);
+    
+    void Enter() override;
+    void Execute() override;
+    void Exit() override;
+};
+
+// 달리기 하위 상태
+class RunningSubState : public IState {
+private:
+    MovementState* parentState;
+    
+public:
+    RunningSubState(MovementState* parentState);
+    
+    void Enter() override;
+    void Execute() override;
+    void Exit() override;
+};
+
+// 복합 상태 - 이동 상태
+class MovementState : public IState {
+protected:
+    Character* character;
+    StateMachine stateMachine;
+    
+public:
+    MovementState(Character* character) : character(character) {
+        // 하위 상태 등록
+        stateMachine.RegisterState(std::make_shared&lt;WalkingSubState&gt;(this));
+        stateMachine.RegisterState(std::make_shared&lt;RunningSubState&gt;(this));
+    }
+    
+    void Enter() override {
+        std::cout &lt;&lt; "이동 상태 시작" &lt;&lt; std::endl;
+        
+        // 기본 하위 상태 설정
+        stateMachine.TransitionTo&lt;WalkingSubState&gt;();
+    }
+    
+    void Execute() override {
+        // 상위 상태에서의 전환 조건 검사
+        if (!character->isGrounded) {
+            character->TransitionToState(character->jumpState);
+            return;
+        }
+        
+        if (std::abs(character->horizontalInput) &lt; 0.1f) {
+            character->TransitionToState(character->idleState);
+            return;
+        }
+        
+        // 하위 상태 업데이트
+        stateMachine.Update();
+    }
+    
+    void Exit() override {
+        std::cout &lt;&lt; "이동 상태 종료" &lt;&lt; std::endl;
+    }
+    
+    // 달리기 전환 메서드
+    void StartRunning() {
+        stateMachine.TransitionTo&lt;RunningSubState&gt;();
+    }
+    
+    // 걷기 전환 메서드
+    void StartWalking() {
+        stateMachine.TransitionTo&lt;WalkingSubState&gt;();
+    }
+    
+    // character 게터
+    Character* GetCharacter() const {
+        return character;
+    }
+};
+
+// 하위 상태 구현
+WalkingSubState::WalkingSubState(MovementState* parentState) : parentState(parentState) {}
+
+void WalkingSubState::Enter() {
+    std::cout &lt;&lt; "걷기 하위 상태 시작" &lt;&lt; std::endl;
+}
+
+void WalkingSubState::Execute() {
+    std::cout &lt;&lt; "캐릭터가 걷는 중" &lt;&lt; std::endl;
+    
+    // 달리기 상태로 전환 조건 검사
+    Character* character = parentState->GetCharacter();
+    if (std::abs(character->horizontalInput) > 0.8f) {
+        parentState->StartRunning();
+    }
+}
+
+void WalkingSubState::Exit() {
+    std::cout &lt;&lt; "걷기 하위 상태 종료" &lt;&lt; std::endl;
+}
+
+RunningSubState::RunningSubState(MovementState* parentState) : parentState(parentState) {}
+
+void RunningSubState::Enter() {
+    std::cout &lt;&lt; "달리기 하위 상태 시작" &lt;&lt; std::endl;
+}
+
+void RunningSubState::Execute() {
+    std::cout &lt;&lt; "캐릭터가 달리는 중" &lt;&lt; std::endl;
+    
+    // 걷기 상태로 전환 조건 검사
+    Character* character = parentState->GetCharacter();
+    if (std::abs(character->horizontalInput) &lt;= 0.8f) {
+        parentState->StartWalking();
+    }
+}
+
+void RunningSubState::Exit() {
+    std::cout &lt;&lt; "달리기 하위 상태 종료" &lt;&lt; std::endl;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../state.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="state_csharp.html" class="next-button">C# 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

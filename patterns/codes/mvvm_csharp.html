@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVVM 패턴 - C# 코드</title>
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../index.html">홈</a>
+                <a href="../../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>MVVM 패턴 - C# 코드</h1>
+                <div class="pattern-meta">
+                    <span class="category">아키텍처 패턴</span>
+                    <span class="language">C# 구현</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>MVVM 패턴의 C# 구현</h2>
+                    <p>MVVM 패턴의 C# 구현 코드와 사용 예시입니다. 체력 관리 시스템을 예로 들어 각 구성 요소와 그들의 상호작용 방식을 설명합니다.</p>
+                    
+                    <div class="code-section">
+                        <h3>1. Model 구현</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace MVVMPattern
+{
+    // Model: 데이터와 비즈니스 로직을 포함
+    public class HealthModel
+    {
+        // 상수 정의
+        private const int MinHealth = 0;
+        private const int MaxHealth = 100;
+        
+        // 속성 및 필드
+        private int _currentHealth;
+        private string _playerName;
+        
+        // 이벤트 정의: 데이터 변경 시 ViewModel에 알림
+        public event EventHandler&lt;HealthChangedEventArgs&gt; HealthChanged;
+        
+        // 속성
+        public int CurrentHealth
+        {
+            get =&gt; _currentHealth;
+            private set
+            {
+                if (_currentHealth == value) return;
+                
+                _currentHealth = value;
+                // 값이 변경되면 이벤트 발생
+                OnHealthChanged(new HealthChangedEventArgs(_currentHealth));
+            }
+        }
+        
+        public string PlayerName
+        {
+            get =&gt; _playerName;
+            set
+            {
+                if (_playerName == value) return;
+                _playerName = value;
+            }
+        }
+        
+        public int MinHealthValue =&gt; MinHealth;
+        public int MaxHealthValue =&gt; MaxHealth;
+        
+        // 생성자
+        public HealthModel(string playerName, int initialHealth = 100)
+        {
+            _playerName = playerName;
+            _currentHealth = ClampHealth(initialHealth);
+        }
+        
+        // 비즈니스 로직 메서드
+        public void ApplyDamage(int amount)
+        {
+            if (amount &lt; 0) throw new ArgumentException("Damage amount cannot be negative", nameof(amount));
+            CurrentHealth = ClampHealth(CurrentHealth - amount);
+        }
+        
+        public void Heal(int amount)
+        {
+            if (amount &lt; 0) throw new ArgumentException("Heal amount cannot be negative", nameof(amount));
+            CurrentHealth = ClampHealth(CurrentHealth + amount);
+        }
+        
+        public void RestoreFullHealth()
+        {
+            CurrentHealth = MaxHealth;
+        }
+        
+        // Helper 메서드
+        private int ClampHealth(int health)
+        {
+            return Math.Clamp(health, MinHealth, MaxHealth);
+        }
+        
+        // 이벤트 헬퍼 메서드
+        protected virtual void OnHealthChanged(HealthChangedEventArgs e)
+        {
+            HealthChanged?.Invoke(this, e);
+        }
+    }
+    
+    // 이벤트 인자 클래스
+    public class HealthChangedEventArgs : EventArgs
+    {
+        public int NewHealth { get; }
+        
+        public HealthChangedEventArgs(int newHealth)
+        {
+            NewHealth = newHealth;
+        }
+    }
+}</code></pre>
+
+                        <h3>2. ViewModel 구현</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace MVVMPattern
+{
+    // ViewModel: Model과 View 사이의 중재자 역할
+    public class HealthViewModel : INotifyPropertyChanged
+    {
+        // INotifyPropertyChanged 인터페이스 구현
+        public event PropertyChangedEventHandler PropertyChanged;
+        
+        // Model 참조
+        private readonly HealthModel _model;
+        
+        // ViewModel의 속성들
+        private int _healthValue;
+        private string _healthStatus;
+        private double _healthPercentage;
+        private ConsoleColor _healthColor;
+        
+        // 명령(Command) 패턴 구현 - UI로부터 이벤트 수신
+        public RelayCommand ApplyDamageCommand { get; }
+        public RelayCommand HealCommand { get; }
+        public RelayCommand RestoreCommand { get; }
+        
+        // View에 바인딩될 속성들
+        public int HealthValue
+        {
+            get =&gt; _healthValue;
+            private set
+            {
+                if (_healthValue == value) return;
+                _healthValue = value;
+                OnPropertyChanged(nameof(HealthValue));
+            }
+        }
+        
+        public string HealthStatus
+        {
+            get =&gt; _healthStatus;
+            private set
+            {
+                if (_healthStatus == value) return;
+                _healthStatus = value;
+                OnPropertyChanged(nameof(HealthStatus));
+            }
+        }
+        
+        public double HealthPercentage
+        {
+            get =&gt; _healthPercentage;
+            private set
+            {
+                if (Math.Abs(_healthPercentage - value) &lt; 0.001) return;
+                _healthPercentage = value;
+                OnPropertyChanged(nameof(HealthPercentage));
+            }
+        }
+        
+        public ConsoleColor HealthColor
+        {
+            get =&gt; _healthColor;
+            private set
+            {
+                if (_healthColor == value) return;
+                _healthColor = value;
+                OnPropertyChanged(nameof(HealthColor));
+            }
+        }
+        
+        public string PlayerName =&gt; _model.PlayerName;
+        
+        // 생성자
+        public HealthViewModel(HealthModel model)
+        {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            
+            // Model 이벤트에 연결
+            _model.HealthChanged += OnModelHealthChanged;
+            
+            // 커맨드 초기화
+            ApplyDamageCommand = new RelayCommand(param =&gt; ApplyDamage(param));
+            HealCommand = new RelayCommand(param =&gt; Heal(param));
+            RestoreCommand = new RelayCommand(_ =&gt; RestoreHealth());
+            
+            // 초기값 설정
+            UpdateHealth(_model.CurrentHealth);
+        }
+        
+        // Model 이벤트 핸들러
+        private void OnModelHealthChanged(object sender, HealthChangedEventArgs e)
+        {
+            UpdateHealth(e.NewHealth);
+        }
+        
+        // 보조 메서드 - 속성 업데이트 및 변환
+        private void UpdateHealth(int health)
+        {
+            HealthValue = health;
+            HealthPercentage = (double)health / _model.MaxHealthValue;
+            
+            // 상태 텍스트 변환 로직
+            HealthStatus = HealthPercentage switch
+            {
+                &gt;= 0.7 =&gt; "Good",
+                &gt;= 0.3 =&gt; "Warning",
+                _ =&gt; "Danger"
+            };
+            
+            // 상태 색상 변환 로직
+            HealthColor = HealthPercentage switch
+            {
+                &gt;= 0.7 =&gt; ConsoleColor.Green,
+                &gt;= 0.3 =&gt; ConsoleColor.Yellow,
+                _ =&gt; ConsoleColor.Red
+            };
+        }
+        
+        // 명령(Command) 처리 메서드
+        private void ApplyDamage(object param)
+        {
+            if (param is int damage)
+            {
+                _model.ApplyDamage(damage);
+            }
+            else if (int.TryParse(param?.ToString(), out int damageValue))
+            {
+                _model.ApplyDamage(damageValue);
+            }
+            else
+            {
+                _model.ApplyDamage(10); // 기본값
+            }
+        }
+        
+        private void Heal(object param)
+        {
+            if (param is int healAmount)
+            {
+                _model.Heal(healAmount);
+            }
+            else if (int.TryParse(param?.ToString(), out int healValue))
+            {
+                _model.Heal(healValue);
+            }
+            else
+            {
+                _model.Heal(10); // 기본값
+            }
+        }
+        
+        private void RestoreHealth()
+        {
+            _model.RestoreFullHealth();
+        }
+        
+        // INotifyPropertyChanged 구현
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        
+        // 리소스 정리
+        public void Dispose()
+        {
+            _model.HealthChanged -= OnModelHealthChanged;
+        }
+    }
+    
+    // 필요한 추가 클래스들
+    
+    // INotifyPropertyChanged - ViewModel이 View에 속성 변경을 알리는 인터페이스
+    public interface INotifyPropertyChanged
+    {
+        event PropertyChangedEventHandler PropertyChanged;
+    }
+    
+    public delegate void PropertyChangedEventHandler(object sender, PropertyChangedEventArgs e);
+    
+    public class PropertyChangedEventArgs : EventArgs
+    {
+        public string PropertyName { get; }
+        
+        public PropertyChangedEventArgs(string propertyName)
+        {
+            PropertyName = propertyName;
+        }
+    }
+    
+    // Command 패턴 구현 - UI에서 ViewModel의 메소드를 호출하기 위한 객체
+    public class RelayCommand
+    {
+        private readonly Action&lt;object&gt; _execute;
+        private readonly Func&lt;object, bool&gt; _canExecute;
+        
+        public RelayCommand(Action&lt;object&gt; execute, Func&lt;object, bool&gt; canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+        
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute == null || _canExecute(parameter);
+        }
+        
+        public void Execute(object parameter)
+        {
+            _execute(parameter);
+        }
+    }
+}</code></pre>
+
+                        <h3>3. View 구현 및 사용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace MVVMPattern
+{
+    // 간단한 콘솔 기반 View 구현
+    public class HealthConsoleView
+    {
+        private readonly HealthViewModel _viewModel;
+        
+        public HealthConsoleView(HealthViewModel viewModel)
+        {
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            
+            // ViewModel의 속성 변경 이벤트에 구독
+            _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            
+            // 초기 렌더링
+            RenderHealthInfo();
+        }
+        
+        // ViewModel 속성 변경 이벤트 처리기
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // 속성이 변경되면 화면을 다시 렌더링
+            RenderHealthInfo();
+        }
+        
+        // 화면 렌더링 메서드
+        private void RenderHealthInfo()
+        {
+            Console.Clear();
+            Console.WriteLine($"=== {_viewModel.PlayerName}의 건강 상태 ===");
+            Console.WriteLine();
+            
+            // 상태 표시
+            Console.ForegroundColor = _viewModel.HealthColor;
+            Console.WriteLine($"건강 상태: {_viewModel.HealthStatus}");
+            Console.WriteLine($"체력: {_viewModel.HealthValue}/100 ({_viewModel.HealthPercentage:P0})");
+            Console.ResetColor();
+            
+            // 체력바 표시
+            DrawHealthBar(_viewModel.HealthPercentage, 50);
+            
+            Console.WriteLine();
+            Console.WriteLine("명령어:");
+            Console.WriteLine("1. 대미지 입히기 (10)\n2. 치유하기 (10)\n3. 체력 회복\n0. 종료");
+        }
+        
+        // 체력바 그리기 헬퍼 메서드
+        private void DrawHealthBar(double percentage, int width)
+        {
+            int filledWidth = (int)(percentage * width);
+            
+            Console.Write("[");
+            Console.ForegroundColor = _viewModel.HealthColor;
+            
+            for (int i = 0; i &lt; width; i++)
+            {
+                if (i &lt; filledWidth)
+                    Console.Write("█");
+                else
+                    Console.Write(" ");
+            }
+            
+            Console.ResetColor();
+            Console.WriteLine("]");
+        }
+        
+        // 사용자 입력 처리
+        public void HandleUserInput()
+        {
+            bool exit = false;
+            
+            while (!exit)
+            {
+                var key = Console.ReadKey(true).KeyChar;
+                
+                switch (key)
+                {
+                    case '1':
+                        _viewModel.ApplyDamageCommand.Execute(10);
+                        break;
+                    case '2':
+                        _viewModel.HealCommand.Execute(10);
+                        break;
+                    case '3':
+                        _viewModel.RestoreCommand.Execute(null);
+                        break;
+                    case '0':
+                        exit = true;
+                        break;
+                }
+            }
+        }
+        
+        // 리소스 정리
+        public void Dispose()
+        {
+            _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+    }
+    
+    // 프로그램 실행 예제
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            // 1. Model 생성
+            var healthModel = new HealthModel("플레이어", 100);
+            
+            // 2. ViewModel 생성 및 Model 연결
+            var viewModel = new HealthViewModel(healthModel);
+            
+            // 3. View 생성 및 ViewModel 연결
+            var view = new HealthConsoleView(viewModel);
+            
+            // 4. 사용자 입력 처리 시작
+            view.HandleUserInput();
+            
+            // 5. 정리
+            view.Dispose();
+            viewModel.Dispose();
+        }
+    }
+}</code></pre>
+
+                        <h3>4. 실행 결과</h3>
+                        <pre><code>=== 플레이어의 건강 상태 ===
+
+건강 상태: Good
+체력: 100/100 (100%)
+[██████████████████████████████████████████████████]
+
+명령어:
+1. 대미지 입히기 (10)
+2. 치유하기 (10)
+3. 체력 회복
+0. 종료
+
+// 1번 키를 누른 후:
+
+=== 플레이어의 건강 상태 ===
+
+건강 상태: Good
+체력: 90/100 (90%)
+[█████████████████████████████████████████████     ]
+
+명령어:
+1. 대미지 입히기 (10)
+2. 치유하기 (10)
+3. 체력 회복
+0. 종료
+
+// 여러 번 1번 키를 눌러 체력이 30% 아래로 떨어진 경우:
+
+=== 플레이어의 건강 상태 ===
+
+건강 상태: Danger
+체력: 20/100 (20%)
+[██████████                                        ]
+
+명령어:
+1. 대미지 입히기 (10)
+2. 치유하기 (10)
+3. 체력 회복
+0. 종료</code></pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <a href="../mvvm.html" class="back-button">패턴 설명으로 돌아가기</a>
+                        <a href="mvvm_cpp.html" class="next-button">C++ 코드 보기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>
