@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dirty Flag 패턴 - GameDev PatternHub</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">홈</a>
+                <a href="../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Dirty Flag 패턴</h1>
+                <div class="pattern-meta">
+                    <span class="category">행동 패턴</span>
+                    <span class="difficulty">난이도: ★★☆☆☆</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>패턴 개요</h2>
+                    <p>Dirty Flag 패턴은 객체의 상태가 변경되었을 때 이를 표시하고, 필요한 경우에만 업데이트 연산을 수행하도록 하는 최적화 패턴입니다. 게임 개발에서는 리소스 집약적인 계산이나 렌더링 작업을 최소화하기 위해 널리 사용됩니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 장점</h3>
+                        <ul>
+                            <li>불필요한 연산 방지로 성능 향상</li>
+                            <li>연산이 필요한 객체만 선택적으로 업데이트</li>
+                            <li>복잡한 시스템에서 상태 변경 추적 용이</li>
+                            <li>메모리나 CPU 집약적인 연산의 최적화</li>
+                        </ul>
+                    </div>
+
+                    <div class="pattern-use-cases">
+                        <h3>사용 사례</h3>
+                        <ul>
+                            <li>게임 월드의 동적 로딩 및 언로딩</li>
+                            <li>물리 시뮬레이션에서 변경된 객체만 업데이트</li>
+                            <li>GUI 시스템에서 변경된 요소만 다시 그리기</li>
+                            <li>게임 상태 저장 시 변경된 데이터만 저장</li>
+                            <li>네트워크 동기화에서 변경된 데이터만 전송</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>1. Dirty Flag 패턴의 기본 개념</h2>
+                    <p>Dirty Flag 패턴의 핵심은 다음과 같습니다:</p>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li>객체의 상태가 변경되었을 때 'dirty' 플래그를 설정</li>
+                            <li>필요한 시점에 dirty 플래그가 설정된 객체만 업데이트 수행</li>
+                            <li>업데이트 후 dirty 플래그를 초기화(clean)</li>
+                            <li>변경되지 않은 객체에 대한 불필요한 처리 회피</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>2. 왜 Dirty Flag 패턴을 사용해야 하는가?</h2>
+                    <div class="pattern-benefits">
+                        <h3>2.1 성능 최적화</h3>
+                        <p>게임에서는 많은 객체들이 매 프레임마다 업데이트되어야 합니다. Dirty Flag 패턴을 사용하면 변경된 객체만 선택적으로 업데이트하여 CPU와 메모리 리소스를 절약할 수 있습니다.</p>
+                        
+                        <h3>2.2 효율적인 리소스 관리</h3>
+                        <p>특히 리소스 집약적인 작업(예: 텍스처 업데이트, 경로 계산, 물리 시뮬레이션)에서 모든 객체를 매번 업데이트하는 것은 비효율적입니다. Dirty Flag를 사용하면 필요한 객체만 업데이트할 수 있습니다.</p>
+                        
+                        <h3>2.3 상태 변경 추적</h3>
+                        <p>복잡한 게임 시스템에서 어떤 객체의 상태가 변경되었는지 추적하기 어려울 수 있습니다. Dirty Flag는 상태 변경을 명시적으로 표시하여 추적을 용이하게 합니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>3. 어떤 상황에서 사용해야 하는가?</h2>
+                    <div class="pattern-use-cases">
+                        <h3>3.1 동적 레벨 로딩</h3>
+                        <p>플레이어 주변의 게임 월드 섹터만 로드하고 다른 부분은 언로드하여 메모리 사용을 최적화할 때 유용합니다.</p>
+                        
+                        <h3>3.2 렌더링 최적화</h3>
+                        <p>변경된 객체나 화면의 특정 부분만 다시 렌더링하여 GPU 사용을 최소화할 수 있습니다.</p>
+                        
+                        <h3>3.3 물리 시뮬레이션</h3>
+                        <p>움직이거나 상호작용하는 객체만 물리 계산을 수행하고 정적인 객체는 건너뛰어 성능을 향상시킵니다.</p>
+                        
+                        <h3>3.4 네트워크 동기화</h3>
+                        <p>멀티플레이어 게임에서 변경된 데이터만 네트워크로 전송하여 대역폭 사용을 최적화합니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>4. 어떻게 구현하는가?</h2>
+                    <div class="code-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-lang="csharp">C#</button>
+                            <button class="tab-btn" data-lang="cpp">C++</button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="code-block active" id="csharp-code">
+                                <h3>4.1 영역(Sector) 클래스</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace DirtyFlagPattern
+{
+    /// &lt;summary&gt;
+    /// 게임 월드의 특정 영역을 나타내는 클래스.
+    /// Dirty Flag 패턴을 사용하여 필요한 경우에만 로드/언로드 작업을 수행합니다.
+    /// &lt;/summary&gt;
+    public class Sector
+    {
+        // 영역의 위치와 크기 정보
+        private Vector3 position;
+        private float loadRadius;
+        private Vector3 centerOffset;
+
+        // 영역의 콘텐츠 관련 정보
+        private string contentId;
+        private ResourceManager resourceManager;
+
+        // Dirty Flag 패턴의 핵심 요소
+        private bool isLoaded = false;
+        private bool isDirty = false;
+
+        public Sector(string contentId, Vector3 position, float loadRadius, Vector3 centerOffset, ResourceManager resourceManager)
+        {
+            this.contentId = contentId;
+            this.position = position;
+            this.loadRadius = loadRadius;
+            this.centerOffset = centerOffset;
+            this.resourceManager = resourceManager;
+            
+            // 초기 상태에서는 플래그를 초기화
+            Clean();
+        }
+
+        // 플레이어와의 거리를 계산하여 로드 여부 결정
+        public bool IsPlayerClose(Vector3 playerPosition)
+        {
+            return Vector3.Distance(playerPosition, position + centerOffset) <= loadRadius;
+        }
+
+        // Dirty Flag를 설정하는 메서드
+        public void MarkDirty()
+        {
+            isDirty = true;
+            Console.WriteLine($"Sector {contentId} is marked dirty");
+        }
+
+        // Dirty Flag를 초기화하는 메서드
+        public void Clean()
+        {
+            isDirty = false;
+        }
+
+        // 영역 콘텐츠 로드
+        public void LoadContent()
+        {
+            // 실제 콘텐츠 로딩 로직 구현
+            isLoaded = true;
+            resourceManager.LoadResource(contentId);
+            Console.WriteLine($"Loading sector content: {contentId}");
+        }
+
+        // 영역 콘텐츠 언로드
+        public void UnloadContent()
+        {
+            // 콘텐츠 언로딩 로직 구현
+            isLoaded = false;
+            resourceManager.UnloadResource(contentId);
+            Console.WriteLine($"Unloading sector content: {contentId}");
+        }
+
+        // 속성
+        public bool IsLoaded { get { return isLoaded; } }
+        public bool IsDirty { get { return isDirty; } }
+        public string ContentId { get { return contentId; } }
+    }
+
+    // 간단한 3D 벡터 구현 (Unity의 Vector3 대체)
+    public struct Vector3
+    {
+        public float x, y, z;
+
+        public Vector3(float x, float y, float z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public static Vector3 operator +(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+        }
+
+        public static float Distance(Vector3 a, Vector3 b)
+        {
+            float dx = a.x - b.x;
+            float dy = a.y - b.y;
+            float dz = a.z - b.z;
+            return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+        }
+    }
+
+    // 리소스 관리를 위한 간단한 매니저 클래스
+    public class ResourceManager
+    {
+        private Dictionary&lt;string, object&gt; loadedResources = new Dictionary&lt;string, object&gt;();
+
+        public void LoadResource(string resourceId)
+        {
+            // 실제 구현에서는 여기서 파일이나 에셋을 로드
+            if (!loadedResources.ContainsKey(resourceId))
+            {
+                // 리소스 로딩 시뮬레이션
+                loadedResources[resourceId] = new object();
+                Console.WriteLine($"Resource loaded: {resourceId}");
+            }
+        }
+
+        public void UnloadResource(string resourceId)
+        {
+            if (loadedResources.ContainsKey(resourceId))
+            {
+                loadedResources.Remove(resourceId);
+                Console.WriteLine($"Resource unloaded: {resourceId}");
+            }
+        }
+
+        public bool IsResourceLoaded(string resourceId)
+        {
+            return loadedResources.ContainsKey(resourceId);
+        }
+    }
+}</code></pre>
+
+                                <h3>4.2 게임 월드 관리자 클래스</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace DirtyFlagPattern
+{
+    /// &lt;summary&gt;
+    /// 게임 월드의 모든 영역을 관리하고 플레이어 위치에 따라 콘텐츠를 로드/언로드하는 클래스
+    /// &lt;/summary&gt;
+    public class WorldManager
+    {
+        private List&lt;Sector&gt; sectors = new List&lt;Sector&gt;();
+        private Vector3 playerPosition;
+        private ResourceManager resourceManager;
+
+        public WorldManager()
+        {
+            resourceManager = new ResourceManager();
+            InitializeSectors();
+        }
+
+        // 예제를 위한 영역 초기화
+        private void InitializeSectors()
+        {
+            // 3x3 그리드의 월드 섹터 생성
+            for (int x = 0; x < 3; x++)
+            {
+                for (int z = 0; z < 3; z++)
+                {
+                    string sectorId = $"Sector-{x}-{z}";
+                    Vector3 position = new Vector3(x * 100, 0, z * 100);
+                    Vector3 offset = new Vector3(50, 0, 50); // 중앙 오프셋
+                    float radius = 150; // 로드 반경
+
+                    sectors.Add(new Sector(sectorId, position, radius, offset, resourceManager));
+                }
+            }
+        }
+
+        // 플레이어 위치 업데이트
+        public void UpdatePlayerPosition(Vector3 newPosition)
+        {
+            playerPosition = newPosition;
+            Console.WriteLine($"Player moved to: ({playerPosition.x}, {playerPosition.y}, {playerPosition.z})");
+        }
+
+        // 월드 섹터 업데이트 - Dirty Flag 패턴 적용
+        public void UpdateSectors()
+        {
+            foreach (Sector sector in sectors)
+            {
+                bool isPlayerClose = sector.IsPlayerClose(playerPosition);
+
+                // 상태 변경이 필요한 경우에만 dirty 플래그 설정
+                if (isPlayerClose != sector.IsLoaded)
+                {
+                    sector.MarkDirty();
+                }
+
+                // dirty 플래그가 설정된 섹터만 업데이트
+                if (sector.IsDirty)
+                {
+                    if (isPlayerClose)
+                    {
+                        sector.LoadContent();
+                    }
+                    else
+                    {
+                        sector.UnloadContent();
+                    }
+
+                    // 업데이트 후 dirty 플래그 초기화
+                    sector.Clean();
+                }
+            }
+        }
+
+        // 로드된 섹터 정보 출력
+        public void PrintLoadedSectors()
+        {
+            Console.WriteLine("Currently loaded sectors:");
+            foreach (Sector sector in sectors)
+            {
+                if (sector.IsLoaded)
+                {
+                    Console.WriteLine($" - {sector.ContentId}");
+                }
+            }
+        }
+    }
+}</code></pre>
+
+                                <h3>4.3 사용 예시</h3>
+                                <pre><code class="language-csharp">using System;
+
+namespace DirtyFlagPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 월드 매니저 초기화
+            WorldManager worldManager = new WorldManager();
+            
+            Console.WriteLine("*** Dirty Flag 패턴 데모 ***\n");
+            
+            // 플레이어가 이동하면서 섹터 업데이트 시뮬레이션
+            Console.WriteLine("1. 플레이어가 (120, 0, 80) 위치로 이동");
+            worldManager.UpdatePlayerPosition(new Vector3(120, 0, 80));
+            worldManager.UpdateSectors();
+            worldManager.PrintLoadedSectors();
+            
+            Console.WriteLine("\n2. 플레이어가 (220, 0, 180) 위치로 이동");
+            worldManager.UpdatePlayerPosition(new Vector3(220, 0, 180));
+            worldManager.UpdateSectors();
+            worldManager.PrintLoadedSectors();
+            
+            Console.WriteLine("\n3. 플레이어가 같은 위치(220, 0, 180)에 머무름");
+            worldManager.UpdateSectors(); // 변경사항이 없으므로 업데이트가 발생하지 않음
+            worldManager.PrintLoadedSectors();
+            
+            Console.WriteLine("\n4. 플레이어가 (50, 0, 50) 위치로 이동");
+            worldManager.UpdatePlayerPosition(new Vector3(50, 0, 50));
+            worldManager.UpdateSectors();
+            worldManager.PrintLoadedSectors();
+        }
+    }
+}</code></pre>
+                            </div>
+
+                            <div class="code-block" id="cpp-code">
+                                <h3>4.1 영역(Sector) 클래스</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+#include &lt;unordered_map&gt;
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
+
+namespace DirtyFlagPattern {
+
+    // 3D 벡터 클래스 (유니티 Vector3 대체)
+    class Vector3 {
+    public:
+        float x, y, z;
+
+        Vector3() : x(0), y(0), z(0) {}
+        Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+        Vector3 operator+(const Vector3& other) const {
+            return Vector3(x + other.x, y + other.y, z + other.z);
+        }
+
+        static float Distance(const Vector3& a, const Vector3& b) {
+            float dx = a.x - b.x;
+            float dy = a.y - b.y;
+            float dz = a.z - b.z;
+            return std::sqrt(dx * dx + dy * dy + dz * dz);
+        }
+    };
+
+    // 리소스 관리를 위한 클래스
+    class ResourceManager {
+    private:
+        std::unordered_map&lt;std::string, std::unique_ptr&lt;void, void(*)(void*)&gt;&gt; loadedResources;
+
+    public:
+        ResourceManager() {}
+
+        void LoadResource(const std::string& resourceId) {
+            // 실제 구현에서는 여기서 파일이나 에셋을 로드
+            if (loadedResources.find(resourceId) == loadedResources.end()) {
+                // 리소스 로딩 시뮬레이션
+                loadedResources[resourceId] = std::unique_ptr&lt;void, void(*)(void*)&gt;(new int(1), [](void* p) { delete static_cast&lt;int*&gt;(p); });
+                std::cout << "Resource loaded: " << resourceId << std::endl;
+            }
+        }
+
+        void UnloadResource(const std::string& resourceId) {
+            auto it = loadedResources.find(resourceId);
+            if (it != loadedResources.end()) {
+                loadedResources.erase(it);
+                std::cout << "Resource unloaded: " << resourceId << std::endl;
+            }
+        }
+
+        bool IsResourceLoaded(const std::string& resourceId) const {
+            return loadedResources.find(resourceId) != loadedResources.end();
+        }
+    };
+
+    // 월드 영역 클래스 - Dirty Flag 패턴 적용
+    class Sector {
+    private:
+        Vector3 position;
+        float loadRadius;
+        Vector3 centerOffset;
+        std::string contentId;
+        ResourceManager* resourceManager;
+
+        // Dirty Flag 패턴의 핵심 요소
+        bool isLoaded;
+        bool isDirty;
+
+    public:
+        Sector(const std::string& contentId, const Vector3& position, float loadRadius, 
+              const Vector3& centerOffset, ResourceManager* resourceManager)
+            : contentId(contentId), position(position), loadRadius(loadRadius), 
+              centerOffset(centerOffset), resourceManager(resourceManager),
+              isLoaded(false), isDirty(false) {}
+
+        // 플레이어와의 거리 계산
+        bool IsPlayerClose(const Vector3& playerPosition) const {
+            return Vector3::Distance(playerPosition, position + centerOffset) <= loadRadius;
+        }
+
+        // Dirty Flag 설정
+        void MarkDirty() {
+            isDirty = true;
+            std::cout << "Sector " << contentId << " is marked dirty" << std::endl;
+        }
+
+        // Dirty Flag 초기화
+        void Clean() {
+            isDirty = false;
+        }
+
+        // 영역 콘텐츠 로드
+        void LoadContent() {
+            isLoaded = true;
+            resourceManager->LoadResource(contentId);
+            std::cout << "Loading sector content: " << contentId << std::endl;
+        }
+
+        // 영역 콘텐츠 언로드
+        void UnloadContent() {
+            isLoaded = false;
+            resourceManager->UnloadResource(contentId);
+            std::cout << "Unloading sector content: " << contentId << std::endl;
+        }
+
+        // 게터 메서드
+        bool IsLoaded() const { return isLoaded; }
+        bool IsDirty() const { return isDirty; }
+        std::string GetContentId() const { return contentId; }
+    };
+}</code></pre>
+
+                                <h3>4.2 게임 월드 관리자 클래스</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+namespace DirtyFlagPattern {
+
+    class WorldManager {
+    private:
+        std::vector&lt;Sector&gt; sectors;
+        Vector3 playerPosition;
+        ResourceManager resourceManager;
+
+        // 예제를 위한 영역 초기화
+        void InitializeSectors() {
+            // 3x3 그리드의 월드 섹터 생성
+            for (int x = 0; x < 3; x++) {
+                for (int z = 0; z < 3; z++) {
+                    std::string sectorId = "Sector-" + std::to_string(x) + "-" + std::to_string(z);
+                    Vector3 position(x * 100.0f, 0.0f, z * 100.0f);
+                    Vector3 offset(50.0f, 0.0f, 50.0f); // 중앙 오프셋
+                    float radius = 150.0f; // 로드 반경
+
+                    sectors.emplace_back(sectorId, position, radius, offset, &resourceManager);
+                }
+            }
+        }
+
+    public:
+        WorldManager() : playerPosition(0, 0, 0) {
+            InitializeSectors();
+        }
+
+        // 플레이어 위치 업데이트
+        void UpdatePlayerPosition(const Vector3& newPosition) {
+            playerPosition = newPosition;
+            std::cout << "Player moved to: (" << playerPosition.x << ", " 
+                      << playerPosition.y << ", " << playerPosition.z << ")" << std::endl;
+        }
+
+        // 월드 섹터 업데이트 - Dirty Flag 패턴 적용
+        void UpdateSectors() {
+            for (auto& sector : sectors) {
+                bool isPlayerClose = sector.IsPlayerClose(playerPosition);
+
+                // 상태 변경이 필요한 경우에만 dirty 플래그 설정
+                if (isPlayerClose != sector.IsLoaded()) {
+                    sector.MarkDirty();
+                }
+
+                // dirty 플래그가 설정된 섹터만 업데이트
+                if (sector.IsDirty()) {
+                    if (isPlayerClose) {
+                        sector.LoadContent();
+                    } else {
+                        sector.UnloadContent();
+                    }
+
+                    // 업데이트 후 dirty 플래그 초기화
+                    sector.Clean();
+                }
+            }
+        }
+
+        // 로드된 섹터 정보 출력
+        void PrintLoadedSectors() {
+            std::cout << "Currently loaded sectors:" << std::endl;
+            for (const auto& sector : sectors) {
+                if (sector.IsLoaded()) {
+                    std::cout << " - " << sector.GetContentId() << std::endl;
+                }
+            }
+        }
+    };
+
+}</code></pre>
+
+                                <h3>4.3 사용 예시</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+
+// 위에서 정의한 DirtyFlagPattern 네임스페이스 사용
+using namespace DirtyFlagPattern;
+
+int main() {
+    // 월드 매니저 초기화
+    WorldManager worldManager;
+    
+    std::cout << "*** Dirty Flag 패턴 데모 ***\n" << std::endl;
+    
+    // 플레이어가 이동하면서 섹터 업데이트 시뮬레이션
+    std::cout << "1. 플레이어가 (120, 0, 80) 위치로 이동" << std::endl;
+    worldManager.UpdatePlayerPosition(Vector3(120.0f, 0.0f, 80.0f));
+    worldManager.UpdateSectors();
+    worldManager.PrintLoadedSectors();
+    
+    std::cout << "\n2. 플레이어가 (220, 0, 180) 위치로 이동" << std::endl;
+    worldManager.UpdatePlayerPosition(Vector3(220.0f, 0.0f, 180.0f));
+    worldManager.UpdateSectors();
+    worldManager.PrintLoadedSectors();
+    
+    std::cout << "\n3. 플레이어가 같은 위치(220, 0, 180)에 머무름" << std::endl;
+    worldManager.UpdateSectors(); // 변경사항이 없으므로 업데이트가 발생하지 않음
+    worldManager.PrintLoadedSectors();
+    
+    std::cout << "\n4. 플레이어가 (50, 0, 50) 위치로 이동" << std::endl;
+    worldManager.UpdatePlayerPosition(Vector3(50.0f, 0.0f, 50.0f));
+    worldManager.UpdateSectors();
+    worldManager.PrintLoadedSectors();
+    
+    return 0;
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>5. Dirty Flag 패턴의 장단점</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>5.1 장점</h3>
+                        <ul>
+                            <li>
+                                <strong>성능 향상</strong>
+                                <p>필요한 객체만 선택적으로 업데이트하여 CPU와 메모리 사용을 최적화합니다.</p>
+                            </li>
+                            <li>
+                                <strong>리소스 효율성</strong>
+                                <p>변경되지 않은 객체에 대한 불필요한 처리를 방지하여 리소스를 절약합니다.</p>
+                            </li>
+                            <li>
+                                <strong>명확한 상태 관리</strong>
+                                <p>객체의 상태 변경을 명시적으로 표시하여 코드의 가독성과 관리성을 향상시킵니다.</p>
+                            </li>
+                        </ul>
+
+                        <h3>5.2 단점</h3>
+                        <ul>
+                            <li>
+                                <strong>추가적인 상태 관리</strong>
+                                <p>dirty 플래그를 관리하기 위한 추가 코드가 필요하며, 이로 인해 코드 복잡성이 증가할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>플래그 관리 오류</strong>
+                                <p>플래그를 적절히 설정하거나 초기화하지 않으면 업데이트가 누락되거나 불필요한 업데이트가 발생할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>디버깅 어려움</strong>
+                                <p>상태 변경 추적이 복잡해질 수 있어 디버깅이 어려워질 수 있습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>6. 주의사항 및 모범 사례</h2>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li>
+                                <strong>명확한 책임 할당</strong>
+                                <p>객체가 자신의 dirty 플래그를 설정하고 다른 객체가 이를 확인하고 업데이트하는 책임을 명확히 구분하세요.</p>
+                            </li>
+                            <li>
+                                <strong>상태 변경 일관성</strong>
+                                <p>상태가 변경될 때마다 항상 dirty 플래그를 설정하도록 일관된 규칙을 유지하세요.</p>
+                            </li>
+                            <li>
+                                <strong>필요한 곳에만 적용</strong>
+                                <p>모든 객체에 Dirty Flag를 적용하면 오히려 오버헤드가 발생할 수 있습니다. 업데이트 비용이 큰 객체에 선택적으로 적용하세요.</p>
+                            </li>
+                            <li>
+                                <strong>의존성 고려</strong>
+                                <p>객체 간 의존성이 있는 경우, 한 객체의 변경이 다른 객체에도 영향을 미칠 수 있으므로 이를 고려한 설계가 필요합니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        // 언어 탭 전환
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const codeBlocks = document.querySelectorAll('.code-block');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                
+                // 버튼 활성화 상태 변경
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // 코드 블록 표시/숨김
+                codeBlocks.forEach(block => {
+                    block.classList.remove('active');
+                    if (block.id === `${lang}-code`) {
+                        block.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

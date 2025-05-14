@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observer 패턴 - GameDev PatternHub</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">홈</a>
+                <a href="../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Observer 패턴</h1>
+                <div class="pattern-meta">
+                    <span class="category">행동 패턴</span>
+                    <span class="difficulty">난이도: ★★☆☆☆</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>패턴 개요</h2>
+                    <p>Observer 패턴은 객체 간의 일대다(one-to-many) 의존성을 정의하여, 하나의 객체 상태가 변경되면 그 객체에 의존하는 모든 객체들이 자동으로 통지받고 갱신되는 디자인 패턴입니다. 주로 발행-구독(Publish-Subscribe) 모델이라고도 불리며, 이벤트 기반 시스템을 구현하는데 널리 사용됩니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 장점</h3>
+                        <ul>
+                            <li>객체 간의 느슨한 결합(Loose Coupling)으로 유연성 향상</li>
+                            <li>이벤트 발생 시 여러 객체에 동시에 알림 가능</li>
+                            <li>상태 변경과 그에 대한 반응이 분리되어 코드 유지보수성 향상</li>
+                            <li>대상 객체의 수정 없이 새로운 관찰자 추가 가능</li>
+                            <li>시스템의 확장성 개선</li>
+                        </ul>
+                    </div>
+
+                    <div class="pattern-use-cases">
+                        <h3>사용 사례</h3>
+                        <ul>
+                            <li>게임 이벤트 시스템 (캐릭터 사망, 레벨 완료 등)</li>
+                            <li>UI 업데이트 (점수 변경, 체력 감소 시 UI 갱신)</li>
+                            <li>오디오 및 시각 효과 트리거 (버튼 클릭 시 효과음 재생)</li>
+                            <li>게임 내 성취 시스템 (목표 달성 시 알림)</li>
+                            <li>멀티플레이어 게임에서 다른 플레이어의 상태 변화 감지</li>
+                            <li>입력 시스템 (키 입력에 따른 다양한 동작 실행)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>1. Observer 패턴의 기본 개념</h2>
+                    <p>Observer 패턴은 다음과 같은 두 가지 주요 구성 요소로 이루어집니다:</p>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li><strong>Subject(주체)</strong> - 관찰 대상으로, 상태가 변경되면 모든 Observer에게 알림을 보냅니다. Observer의 목록을 관리합니다.</li>
+                            <li><strong>Observer(관찰자)</strong> - Subject의 상태 변화를 감지하고 반응하는 객체입니다. Subject로부터 알림을 받으면 특정 동작을 수행합니다.</li>
+                        </ul>
+                    </div>
+                    <p>이 패턴의 핵심은 Subject와 Observer 간의 느슨한 결합(Loose Coupling)으로, 객체들이 서로 상호작용하면서도 독립성을 유지할 수 있게 합니다.</p>
+                </div>
+
+                <div class="content-section">
+                    <h2>2. 왜 Observer 패턴을 사용해야 하는가?</h2>
+                    <div class="pattern-benefits">
+                        <h3>2.1 느슨한 결합</h3>
+                        <p>Subject는 Observer의 구체적인 클래스를 알 필요 없이 인터페이스(또는 이벤트 메커니즘)를 통해 통신합니다. 이로 인해 시스템의 유연성과 확장성이 향상됩니다.</p>
+                        
+                        <h3>2.2 분산된 이벤트 처리</h3>
+                        <p>하나의 이벤트가 발생했을 때 여러 다른 컴포넌트가 이에 반응할 수 있으며, 각 컴포넌트는 자신의 책임에 집중할 수 있습니다.</p>
+                        
+                        <h3>2.3 확장성</h3>
+                        <p>새로운 Observer 클래스를 추가하더라도 Subject를 수정할 필요가 없으므로, 시스템을 쉽게 확장할 수 있습니다.</p>
+                        
+                        <h3>2.4 코드 재사용성</h3>
+                        <p>동일한 이벤트에 대한 여러 반응을 각각의 Observer 클래스로 구현함으로써 코드의 재사용성이 향상됩니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>3. 어떤 상황에서 사용해야 하는가?</h2>
+                    <div class="pattern-use-cases">
+                        <h3>3.1 이벤트 기반 시스템이 필요한 경우</h3>
+                        <p>게임 내 이벤트(적 처치, 아이템 획득 등)가 발생했을 때 여러 시스템(UI, 오디오, 효과 등)이 이에 반응해야 하는 경우 적합합니다.</p>
+                        
+                        <h3>3.2 일대다 의존 관계가 필요한 경우</h3>
+                        <p>하나의 객체 상태 변화가 여러 객체에 영향을 미쳐야 할 때 사용합니다. 예를 들어, 플레이어 체력 변화가 UI, 효과음, 게임 로직 등 여러 시스템에 영향을 줄 때 유용합니다.</p>
+                        
+                        <h3>3.3 시스템 간 결합도를 낮춰야 하는 경우</h3>
+                        <p>서로 다른 시스템(예: UI와 게임 로직)이 직접적인 참조 없이 통신해야 할 때 Observer 패턴을 사용하면 좋습니다.</p>
+                        
+                        <h3>3.4 런타임에 관찰자를 변경해야 하는 경우</h3>
+                        <p>게임 플레이 중에 새로운 관찰자를 추가하거나 제거해야 하는 동적인 시스템에 적합합니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>4. 어떻게 구현하는가?</h2>
+                    <p>Unity에서는 C#의 이벤트와 델리게이트 메커니즘을 활용하여 Observer 패턴을 쉽게 구현할 수 있습니다. 다음은 기본적인 구현 방법입니다:</p>
+                    <div class="code-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-lang="csharp">C#</button>
+                            <button class="tab-btn" data-lang="cpp">C++</button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="code-block active" id="csharp-code">
+                                <h3>4.1 기본 Subject 구현</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace ObserverPattern
+{
+    // Observer 인터페이스: 관찰자들이 구현해야 하는 인터페이스
+    public interface IObserver
+    {
+        void Update(ISubject subject);
+    }
+
+    // Subject 인터페이스: 관찰 대상이 되는 객체가 구현해야 하는 인터페이스
+    public interface ISubject
+    {
+        void RegisterObserver(IObserver observer);
+        void RemoveObserver(IObserver observer);
+        void NotifyObservers();
+    }
+
+    // 기본 Subject 구현
+    public class Subject : ISubject
+    {
+        private readonly List<IObserver> observers = new List<IObserver>();
+        private int state;
+
+        // 상태 속성 - 변경 시 관찰자들에게 통지
+        public int State
+        {
+            get => state;
+            set
+            {
+                if (state != value)
+                {
+                    state = value;
+                    NotifyObservers();
+                }
+            }
+        }
+
+        // 관찰자 등록
+        public void RegisterObserver(IObserver observer)
+        {
+            if (!observers.Contains(observer))
+            {
+                observers.Add(observer);
+            }
+        }
+
+        // 관찰자 해제
+        public void RemoveObserver(IObserver observer)
+        {
+            observers.Remove(observer);
+        }
+
+        // 모든 관찰자에게 통지
+        public void NotifyObservers()
+        {
+            foreach (var observer in observers)
+            {
+                observer.Update(this);
+            }
+        }
+    }
+
+    // 이벤트 기반 Subject 구현
+    public class EventSubject
+    {
+        // 이벤트 정의
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        private int state;
+
+        // 상태 속성
+        public int State
+        {
+            get => state;
+            set
+            {
+                if (state != value)
+                {
+                    state = value;
+                    OnStateChanged(new StateChangedEventArgs(state));
+                }
+            }
+        }
+
+        // 이벤트 호출 메서드
+        protected virtual void OnStateChanged(StateChangedEventArgs e)
+        {
+            StateChanged?.Invoke(this, e);
+        }
+    }
+
+    // 이벤트 인자 클래스
+    public class StateChangedEventArgs : EventArgs
+    {
+        public int State { get; }
+
+        public StateChangedEventArgs(int state)
+        {
+            State = state;
+        }
+    }
+}</code></pre>
+
+                                <h3>4.2 기본 Observer 구현</h3>
+                                <pre><code class="language-csharp">using System;
+
+namespace ObserverPattern
+{
+    // 전통적인 Observer 구현
+    public class ConcreteObserver : IObserver
+    {
+        private readonly string name;
+        private int state;
+
+        public ConcreteObserver(string name)
+        {
+            this.name = name;
+        }
+
+        // IObserver 인터페이스 구현
+        public void Update(ISubject subject)
+        {
+            if (subject is Subject concreteSubject)
+            {
+                state = concreteSubject.State;
+                Console.WriteLine($"{name} 관찰자: 새로운 상태를 받았습니다 - {state}");
+            }
+        }
+    }
+
+    // 이벤트 기반 Observer 구현
+    public class EventObserver
+    {
+        private readonly string name;
+        private int state;
+
+        public EventObserver(string name, EventSubject subject)
+        {
+            this.name = name;
+            
+            // 이벤트에 구독
+            subject.StateChanged += OnStateChanged;
+        }
+
+        // 이벤트 핸들러
+        private void OnStateChanged(object sender, StateChangedEventArgs e)
+        {
+            state = e.State;
+            Console.WriteLine($"{name} 관찰자: 새로운 상태를 받았습니다 - {state}");
+        }
+    }
+}</code></pre>
+
+                                <h3>4.3 사용 예시</h3>
+                                <pre><code class="language-csharp">using System;
+
+namespace ObserverPattern.Example
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Observer 패턴 예제 - 전통적 방식");
+            Console.WriteLine("---------------------------");
+
+            // 1. 전통적인 Observer 패턴
+            Subject subject = new Subject();
+
+            // 관찰자 생성 및 등록
+            ConcreteObserver observer1 = new ConcreteObserver("Observer 1");
+            ConcreteObserver observer2 = new ConcreteObserver("Observer 2");
+            ConcreteObserver observer3 = new ConcreteObserver("Observer 3");
+
+            subject.RegisterObserver(observer1);
+            subject.RegisterObserver(observer2);
+            subject.RegisterObserver(observer3);
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[Subject의 상태를 5로 변경]");
+            subject.State = 5;
+
+            // 관찰자 제거
+            Console.WriteLine("\n[Observer 2 제거]");
+            subject.RemoveObserver(observer2);
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[Subject의 상태를 10으로 변경]");
+            subject.State = 10;
+
+            Console.WriteLine("\n\nObserver 패턴 예제 - 이벤트 기반 방식");
+            Console.WriteLine("---------------------------");
+
+            // 2. 이벤트 기반 Observer 패턴
+            EventSubject eventSubject = new EventSubject();
+
+            // 관찰자 생성 및 구독
+            EventObserver eventObserver1 = new EventObserver("Event Observer 1", eventSubject);
+            EventObserver eventObserver2 = new EventObserver("Event Observer 2", eventSubject);
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[EventSubject의 상태를 20으로 변경]");
+            eventSubject.State = 20;
+
+            // 상태 변경 및 통지
+            Console.WriteLine("\n[EventSubject의 상태를 30으로 변경]");
+            eventSubject.State = 30;
+
+            Console.WriteLine("\n프로그램 종료...");
+        }
+    }
+
+    // 예제: 날씨 시스템 구현
+    public class WeatherStation
+    {
+        public static void RunExample()
+        {
+            // 날씨 데이터 Subject 생성
+            WeatherData weatherData = new WeatherData();
+
+            // 날씨 표시 구현체 생성
+            CurrentConditionsDisplay currentDisplay = new CurrentConditionsDisplay(weatherData);
+            StatisticsDisplay statisticsDisplay = new StatisticsDisplay(weatherData);
+            ForecastDisplay forecastDisplay = new ForecastDisplay(weatherData);
+
+            // 날씨 정보 업데이트
+            Console.WriteLine("\n\n날씨 정보 업데이트 예제");
+            Console.WriteLine("---------------------------");
+            weatherData.SetMeasurements(27, 65, 1013); // 온도, 습도, 기압
+            Console.WriteLine("---------------------------");
+            weatherData.SetMeasurements(28, 70, 1010);
+        }
+    }
+
+    // 날씨 정보 Subject
+    public class WeatherData : ISubject
+    {
+        private readonly List<IObserver> observers = new List<IObserver>();
+        private float temperature;
+        private float humidity;
+        private float pressure;
+
+        public float Temperature => temperature;
+        public float Humidity => humidity;
+        public float Pressure => pressure;
+
+        public void RegisterObserver(IObserver observer)
+        {
+            observers.Add(observer);
+        }
+
+        public void RemoveObserver(IObserver observer)
+        {
+            observers.Remove(observer);
+        }
+
+        public void NotifyObservers()
+        {
+            foreach (var observer in observers)
+            {
+                observer.Update(this);
+            }
+        }
+
+        // 새로운 날씨 정보 설정
+        public void SetMeasurements(float temperature, float humidity, float pressure)
+        {
+            this.temperature = temperature;
+            this.humidity = humidity;
+            this.pressure = pressure;
+            NotifyObservers();
+        }
+    }
+
+    // 현재 날씨 표시 구현체
+    public class CurrentConditionsDisplay : IObserver
+    {
+        private float temperature;
+        private float humidity;
+
+        public CurrentConditionsDisplay(ISubject weatherData)
+        {
+            weatherData.RegisterObserver(this);
+        }
+
+        public void Update(ISubject subject)
+        {
+            if (subject is WeatherData weatherData)
+            {
+                temperature = weatherData.Temperature;
+                humidity = weatherData.Humidity;
+                Display();
+            }
+        }
+
+        public void Display()
+        {
+            Console.WriteLine($"현재 날씨 표시: {temperature}°C, {humidity}% 습도");
+        }
+    }
+
+    // 통계 표시 구현체
+    public class StatisticsDisplay : IObserver
+    {
+        private float maxTemp = float.MinValue;
+        private float minTemp = float.MaxValue;
+        private float tempSum;
+        private int numReadings;
+
+        public StatisticsDisplay(ISubject weatherData)
+        {
+            weatherData.RegisterObserver(this);
+        }
+
+        public void Update(ISubject subject)
+        {
+            if (subject is WeatherData weatherData)
+            {
+                float temp = weatherData.Temperature;
+                tempSum += temp;
+                numReadings++;
+
+                if (temp > maxTemp) maxTemp = temp;
+                if (temp < minTemp) minTemp = temp;
+
+                Display();
+            }
+        }
+
+        public void Display()
+        {
+            Console.WriteLine($"통계 표시: 평균/최고/최저 온도 = {tempSum / numReadings:F1}/{maxTemp}/{minTemp}");
+        }
+    }
+
+    // 날씨 예보 표시 구현체
+    public class ForecastDisplay : IObserver
+    {
+        private float currentPressure = 1013.0f;
+        private float lastPressure;
+
+        public ForecastDisplay(ISubject weatherData)
+        {
+            weatherData.RegisterObserver(this);
+        }
+
+        public void Update(ISubject subject)
+        {
+            if (subject is WeatherData weatherData)
+            {
+                lastPressure = currentPressure;
+                currentPressure = weatherData.Pressure;
+                Display();
+            }
+        }
+
+        public void Display()
+        {
+            Console.Write("날씨 예보: ");
+            if (currentPressure > lastPressure)
+            {
+                Console.WriteLine("향상된 날씨가 예상됩니다!");
+            }
+            else if (currentPressure == lastPressure)
+            {
+                Console.WriteLine("현재와 비슷한 날씨가 지속됩니다.");
+            }
+            else
+            {
+                Console.WriteLine("더 추운 날씨와 비가 예상됩니다.");
+            }
+        }
+    }
+}</code></pre>
+                            </div>
+
+                            <div class="code-block" id="cpp-code">
+                                <h3>4.1 기본 Observer와 Subject 구현</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;functional&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+
+namespace ObserverPattern {
+
+    // 전방 선언
+    class Subject;
+
+    // Observer 인터페이스
+    class Observer {
+    public:
+        virtual ~Observer() = default;
+        virtual void Update(Subject* subject) = 0;
+    };
+
+    // Subject 클래스
+    class Subject {
+    private:
+        std::vector<Observer*> observers;
+        int state;
+
+    public:
+        Subject() : state(0) {}
+
+        void SetState(int newState) {
+            if (state != newState) {
+                state = newState;
+                Notify();
+            }
+        }
+
+        int GetState() const {
+            return state;
+        }
+
+        void Attach(Observer* observer) {
+            auto it = std::find(observers.begin(), observers.end(), observer);
+            if (it == observers.end()) {
+                observers.push_back(observer);
+            }
+        }
+
+        void Detach(Observer* observer) {
+            auto it = std::find(observers.begin(), observers.end(), observer);
+            if (it != observers.end()) {
+                observers.erase(it);
+            }
+        }
+
+        void Notify() {
+            for (Observer* observer : observers) {
+                observer->Update(this);
+            }
+        }
+    };
+
+    // 구체적인 Observer 구현
+    class ConcreteObserver : public Observer {
+    private:
+        std::string name;
+        int observerState;
+
+    public:
+        ConcreteObserver(const std::string& name) : name(name), observerState(0) {}
+
+        void Update(Subject* subject) override {
+            observerState = subject->GetState();
+            std::cout << name << " 관찰자: 새 상태를 받았습니다 - " << observerState << std::endl;
+        }
+    };
+
+    // 이벤트 기반 관찰자 패턴 구현
+    class EventSource {
+    private:
+        // 이벤트 생성자를 위한 리스너 클래스
+        using Listener = std::function<void(int)>;
+        std::vector<Listener> listeners;
+        int state;
+
+    public:
+        EventSource() : state(0) {}
+
+        void AddListener(const Listener& listener) {
+            listeners.push_back(listener);
+        }
+
+        void RemoveListener(const Listener& listener) {
+            // 실제로는 함수 객체를 비교하는 것이 쉽지 않음
+            // 여기서는 간단한 방법으로 구현
+            // 실제 사용시에는 관찰자 ID 등을 사용해야 함
+            // listeners.erase(std::remove_if(...));  // 실제로는 여기에 더 복잡한 코드가 필요
+        }
+
+        void SetState(int newState) {
+            if (state != newState) {
+                state = newState;
+                NotifyListeners();
+            }
+        }
+
+        void NotifyListeners() {
+            for (const auto& listener : listeners) {
+                listener(state);
+            }
+        }
+    };
+}</code></pre>
+
+                                <h3>4.2 사용 예시</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+// 상위 파일에서 정의한 클래스를 사용한다고 가정
+
+using namespace ObserverPattern;
+
+// 예제: 마우스 이벤트 관찰자
+// 실제 프로그램에서는 윈도우 이벤트 등에 연결하게 됨
+class MouseEventObserver : public Observer {
+private:
+    std::string name;
+    
+public:
+    MouseEventObserver(const std::string& name) : name(name) {}
+    
+    void Update(Subject* subject) override {
+        int mouseState = subject->GetState();
+        std::cout << name << ": 마우스 상태 변화 감지 - ";
+        
+        // 예제로 마우스 버튼 클릭 상태를 해석
+        switch (mouseState) {
+            case 1:
+                std::cout << "왼쪽 버튼 클릭" << std::endl;
+                break;
+            case 2:
+                std::cout << "오른쪽 버튼 클릭" << std::endl;
+                break;
+            case 3:
+                std::cout << "가운데 버튼 클릭" << std::endl;
+                break;
+            default:
+                std::cout << "알 수 없는 상태" << std::endl;
+        }
+    }
+};
+
+// 예제: 키보드 이벤트 관찰자
+class KeyboardEventObserver : public Observer {
+private:
+    std::string name;
+    
+public:
+    KeyboardEventObserver(const std::string& name) : name(name) {}
+    
+    void Update(Subject* subject) override {
+        int keyCode = subject->GetState();
+        std::cout << name << ": 키보드 이벤트 감지 - 키 코드 " << keyCode << std::endl;
+    }
+};
+
+// 이벤트 소스를 사용하는 예제
+class EventSourceExample {
+private:
+    EventSource eventSource;
+    
+public:
+    void Run() {
+        std::cout << "\n이벤트 소스 예제" << std::endl;
+        std::cout << "---------------------------" << std::endl;
+        
+        // 두 가지 다른 객체가 이벤트를 구독
+        eventSource.AddListener([](int state) {
+            std::cout << "UI 업데이트: 새 상태 " << state << std::endl;
+        });
+        
+        eventSource.AddListener([](int state) {
+            std::cout << "로깅: 새 상태 " << state << " 기록" << std::endl;
+        });
+        
+        // 상태 변경
+        std::cout << "\n상태를 42로 변경" << std::endl;
+        eventSource.SetState(42);
+        
+        std::cout << "\n상태를 100으로 변경" << std::endl;
+        eventSource.SetState(100);
+    }
+};
+
+// 예제: 날씨 시스템
+class WeatherData : public Subject {
+private:
+    float temperature;
+    float humidity;
+    float pressure;
+    
+public:
+    void SetMeasurements(float temperature, float humidity, float pressure) {
+        this->temperature = temperature;
+        this->humidity = humidity;
+        this->pressure = pressure;
+        
+        // 날씨 데이터가 변경되었음을 통지
+        Notify();
+    }
+    
+    float GetTemperature() const { return temperature; }
+    float GetHumidity() const { return humidity; }
+    float GetPressure() const { return pressure; }
+};
+
+class CurrentConditionsDisplay : public Observer {
+private:
+    float temperature;
+    float humidity;
+    
+public:
+    void Update(Subject* subject) override {
+        if (auto* weatherData = dynamic_cast<WeatherData*>(subject)) {
+            temperature = weatherData->GetTemperature();
+            humidity = weatherData->GetHumidity();
+            Display();
+        }
+    }
+    
+    void Display() const {
+        std::cout << "현재 상태: " << temperature << "\u00b0C, " << humidity << "% 습도" << std::endl;
+    }
+};
+
+// 예제 프로그램
+int main() {
+    std::cout << "Observer 패턴 예제 - C++" << std::endl;
+    std::cout << "=========================" << std::endl;
+    
+    // 1. 기본 Observer/Subject 패턴 예제
+    Subject mouseEvents;
+    
+    // 관찰자 생성
+    auto mouseObserver1 = std::make_unique<MouseEventObserver>("마우스 관찰자 1");
+    auto mouseObserver2 = std::make_unique<MouseEventObserver>("마우스 관찰자 2");
+    auto keyObserver = std::make_unique<KeyboardEventObserver>("키보드 관찰자");
+    
+    // 관찰자 등록
+    mouseEvents.Attach(mouseObserver1.get());
+    mouseEvents.Attach(mouseObserver2.get());
+    mouseEvents.Attach(keyObserver.get());
+    
+    // 상태 변경 시뮬레이션
+    std::cout << "\n[마우스 왼쪽 버튼 클릭]" << std::endl;
+    mouseEvents.SetState(1);
+    
+    // 관찰자 제거
+    std::cout << "\n[마우스 관찰자 2 제거]" << std::endl;
+    mouseEvents.Detach(mouseObserver2.get());
+    
+    // 추가 상태 변경
+    std::cout << "\n[마우스 오른쪽 버튼 클릭]" << std::endl;
+    mouseEvents.SetState(2);
+    
+    // 2. 이벤트 소스 예제
+    EventSourceExample eventExample;
+    eventExample.Run();
+    
+    // 3. 날씨 시스템 예제
+    std::cout << "\n날씨 시스템 예제" << std::endl;
+    std::cout << "---------------------------" << std::endl;
+    
+    WeatherData weatherData;
+    auto currentDisplay = std::make_unique<CurrentConditionsDisplay>();
+    
+    weatherData.Attach(currentDisplay.get());
+    
+    std::cout << "\n[새로운 날씨 정보 업데이트]" << std::endl;
+    weatherData.SetMeasurements(27.5f, 65.0f, 1013.1f);
+    
+    std::cout << "\n[더 더워진 날씨 정보 업데이트]" << std::endl;
+    weatherData.SetMeasurements(30.2f, 70.0f, 1010.3f);
+    
+    return 0;
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>5. Observer 패턴의 장단점</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>5.1 장점</h3>
+                        <ul>
+                            <li>
+                                <strong>느슨한 결합(Loose Coupling)</strong>
+                                <p>Subject와 Observer는 서로의 구체적인 구현에 의존하지 않으므로, 시스템의 유연성과 확장성이 향상됩니다.</p>
+                            </li>
+                            <li>
+                                <strong>개방-폐쇄 원칙(OCP) 준수</strong>
+                                <p>기존 코드를 수정하지 않고도 새로운 Observer 클래스를 추가할 수 있어 확장에 용이합니다.</p>
+                            </li>
+                            <li>
+                                <strong>동적 관계 설정</strong>
+                                <p>런타임에 Observer를 추가하거나 제거할 수 있어 유연한 시스템 구성이 가능합니다.</p>
+                            </li>
+                            <li>
+                                <strong>책임의 분리</strong>
+                                <p>상태 변경 로직과 그에 대한 반응 로직이 분리되어 코드의 단일 책임 원칙(SRP)을 준수합니다.</p>
+                            </li>
+                        </ul>
+
+                        <h3>5.2 단점</h3>
+                        <ul>
+                            <li>
+                                <strong>예측하기 어려운 동작</strong>
+                                <p>Observer들이 순서에 관계없이 알림을 받기 때문에, 알림 순서에 의존하는 로직이 있다면 문제가 발생할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>메모리 누수 가능성</strong>
+                                <p>Observer가 제대로 등록 해제되지 않으면 메모리 누수가 발생할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>성능 이슈</strong>
+                                <p>많은 수의 Observer가 있거나 복잡한 상태 변경이 자주 발생하는 경우, 모든 Observer에게 알림을 보내는 과정에서 성능 저하가 발생할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>디버깅 어려움</strong>
+                                <p>많은 Observer가 얽혀 있는 경우, 특정 동작이 어떤 Observer에 의해 트리거되었는지 추적하기 어려울 수 있습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>6. 게임 개발에서의 Observer 패턴 적용 사례</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>6.1 게임 이벤트 시스템</h3>
+                        <p>플레이어 사망, 레벨 완료, 보스 등장 등의 이벤트가 발생했을 때 UI, 오디오, 카메라 효과 등 다양한 시스템이 이에 반응할 수 있습니다.</p>
+                        
+                        <h3>6.2 UI 업데이트</h3>
+                        <p>플레이어의 체력, 점수, 아이템 인벤토리 등이 변경될 때 UI 요소들이 자동으로 업데이트됩니다.</p>
+                        
+                        <h3>6.3 성취 시스템</h3>
+                        <p>특정 조건이 충족되면(예: 적 100명 처치) 성취 시스템이 이를 감지하고 업적을 해제합니다.</p>
+                        
+                        <h3>6.4 입력 시스템</h3>
+                        <p>버튼 클릭, 키 입력 등이 발생했을 때 여러 게임 시스템(캐릭터 움직임, UI 반응, 소리 재생 등)이 이에 반응할 수 있습니다.</p>
+                        
+                        <h3>6.5 오디오 및 시각 효과</h3>
+                        <p>게임 내 사건(히트, 폭발, 레벨 업 등)이 발생했을 때 적절한 소리와 파티클 효과가 트리거됩니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>7. 주의사항 및 모범 사례</h2>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li>
+                                <strong>Observer 등록 해제</strong>
+                                <p>컴포넌트나 객체가 파괴될 때 반드시 Observer를 등록 해제(unsubscribe)하여 메모리 누수와 null 참조 오류를 방지해야 합니다.</p>
+                            </li>
+                            <li>
+                                <strong>null 체크</strong>
+                                <p>이벤트를 발생시키기 전에 등록된 Observer가 있는지 확인하는 null 체크를 수행하는 것이 좋습니다. C#에서는 ?. 연산자(null 조건 연산자)를 사용하여 간단히 처리할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>순환 알림 방지</strong>
+                                <p>Observer가 알림을 받아 자신의 상태를 변경하고, 이것이 다시 Subject에게 알림을 발생시키는 순환 구조를 피해야 합니다.</p>
+                            </li>
+                            <li>
+                                <strong>과도한 사용 지양</strong>
+                                <p>모든 객체 간 통신에 Observer 패턴을 사용하면 시스템이 복잡해질 수 있으므로, 실제로 일대다 관계가 필요한 경우에만 사용하는 것이 좋습니다.</p>
+                            </li>
+                            <li>
+                                <strong>복잡한 매개변수 전달 고려</strong>
+                                <p>이벤트와 함께 전달해야 할 데이터가 많은 경우, 이벤트 인자(EventArgs)를 확장하여 필요한 데이터를 전달하는 방법을 고려해야 합니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        // 언어 탭 전환
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const codeBlocks = document.querySelectorAll('.code-block');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                
+                // 버튼 활성화 상태 변경
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // 코드 블록 표시/숨김
+                codeBlocks.forEach(block => {
+                    block.classList.remove('active');
+                    if (block.id === `${lang}-code`) {
+                        block.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

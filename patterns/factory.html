@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factory 패턴 - GameDev PatternHub</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pattern-detail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
@@ -425,6 +427,34 @@ Error: Unknown product type: c</code></pre>
                         </ul>
                     </div>
                 </div>
+
+                <div class="content-section">
+                    <h2>6. 주의사항 및 모범 사례</h2>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li>
+                                <strong>적절한 추상화 수준 선택</strong>
+                                <p>팩토리 패턴을 적용할 때는 적절한 추상화 수준을 선택하는 것이 중요합니다. 너무 세분화하면 코드가 복잡해지고, 너무 일반화하면 유연성이 떨어질 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>팩토리 메서드와 추상 팩토리 패턴 구분</strong>
+                                <p>팩토리 메서드는 단일 객체 생성에 집중하고, 추상 팩토리는 관련된 객체 그룹을 생성하는 데 사용됩니다. 상황에 맞는 패턴을 선택하세요.</p>
+                            </li>
+                            <li>
+                                <strong>명확한 제품 인터페이스 설계</strong>
+                                <p>제품 클래스들이 공유하는 인터페이스를 명확하게 설계하여 클라이언트 코드가 구체적인 클래스에 의존하지 않도록 합니다.</p>
+                            </li>
+                            <li>
+                                <strong>매개변수화된 팩토리 메서드 고려</strong>
+                                <p>다양한 종류의 제품을 생성해야 하는 경우, 팩토리 메서드에 매개변수를 전달하여 생성할 제품을 결정하는 방식을 고려할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>객체 재사용과 풀링 고려</strong>
+                                <p>게임에서 자주 생성되고 파괴되는 객체(총알, 파티클 등)의 경우, 팩토리 패턴과 객체 풀 패턴을 결합하여 성능을 최적화할 수 있습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -467,4 +497,4 @@ Error: Unknown product type: c</code></pre>
         });
     </script>
 </body>
-</html> 
+</html>

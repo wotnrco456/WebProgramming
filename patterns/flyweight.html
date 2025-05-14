@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyweight 패턴 - GameDev PatternHub</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">홈</a>
+                <a href="../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Flyweight 패턴</h1>
+                <div class="pattern-meta">
+                    <span class="category">구조 패턴</span>
+                    <span class="difficulty">난이도: ★★★☆☆</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>패턴 개요</h2>
+                    <p>Flyweight 패턴은 많은 수의 유사한 객체를 효율적으로 관리하기 위한 디자인 패턴입니다. 이 패턴은 객체의 공통 상태(intrinsic state)를 공유하여 메모리 사용을 최적화하고, 각 객체가 고유한 상태(extrinsic state)만 개별적으로 관리하도록 합니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 장점</h3>
+                        <ul>
+                            <li>메모리 사용량 대폭 감소</li>
+                            <li>많은 수의 유사 객체 처리 성능 향상</li>
+                            <li>객체 생성 및 초기화 시간 단축</li>
+                            <li>공유 데이터의 일관성 유지</li>
+                            <li>데이터 업데이트 간소화</li>
+                        </ul>
+                    </div>
+
+                    <div class="pattern-use-cases">
+                        <h3>사용 사례</h3>
+                        <ul>
+                            <li>많은 수의 동일한 게임 객체 관리 (총알, 적, 나무 등)</li>
+                            <li>게임 내 타일 기반 지형 렌더링</li>
+                            <li>대규모 파티클 시스템</li>
+                            <li>텍스처 아틀라스와 스프라이트 관리</li>
+                            <li>많은 NPC가 있는 게임에서 NPC 데이터 관리</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>1. Flyweight 패턴의 기본 개념</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>1.1 패턴 구성 요소</h3>
+                        <ul>
+                            <li><strong>Flyweight</strong>: 공유될 수 있는 상태(intrinsic state)를 포함하는 인터페이스나 클래스입니다.</li>
+                            <li><strong>ConcreteFlyweight</strong>: Flyweight 인터페이스를 구현하여 공유 상태를 저장하는 클래스입니다.</li>
+                            <li><strong>FlyweightFactory</strong>: Flyweight 객체를 생성하고 관리하는 팩토리 클래스로, 필요한 Flyweight 객체가 이미 존재하면 재사용합니다.</li>
+                            <li><strong>Client</strong>: Flyweight 객체를 사용하는 클라이언트로, 고유한 상태(extrinsic state)를 유지합니다.</li>
+                        </ul>
+                        
+                        <h3>1.2 내부 상태와 외부 상태</h3>
+                        <p><strong>내부 상태(Intrinsic State)</strong>: 여러 객체 간에 공유할 수 있는 불변(또는 거의 변경되지 않는) 데이터입니다. 메모리에 한 번만 저장됩니다.</p>
+                        <p><strong>외부 상태(Extrinsic State)</strong>: 각 객체마다 고유한 맥락에 따라 변하는 데이터입니다. 객체마다 개별적으로 저장됩니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>2. 왜 Flyweight 패턴을 사용해야 하는가?</h2>
+                    <div class="pattern-benefits">
+                        <h3>2.1 메모리 사용 최적화</h3>
+                        <p>많은 수의 유사한 객체를 생성할 때, 공통 데이터를 공유함으로써 메모리 사용량을 크게 줄일 수 있습니다. 예를 들어, 1000개의 동일한 나무가 필요한 경우, 각 나무의 메시, 텍스처, 셰이더 등은 공유하고 위치와 크기만 개별적으로 관리할 수 있습니다.</p>
+                        
+                        <h3>2.2 성능 향상</h3>
+                        <p>객체 생성 및 초기화에 필요한 시간이 감소하고, 가비지 컬렉션 부담이 줄어들어 전반적인 게임 성능이 향상됩니다.</p>
+                        
+                        <h3>2.3 자원 관리 간소화</h3>
+                        <p>공유 데이터를 중앙에서 관리하므로, 데이터 업데이트가 필요할 때 한 곳만 수정하면 모든 객체에 변경이 반영됩니다.</p>
+                        
+                        <h3>2.4 데이터 일관성</h3>
+                        <p>공유 상태를 통해 모든 객체가 동일한 데이터를 사용하므로 데이터의 일관성이 보장됩니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>3. 어떤 상황에서 사용해야 하는가?</h2>
+                    <div class="pattern-use-cases">
+                        <h3>3.1 많은 수의 유사 객체가 필요한 경우</h3>
+                        <p>게임 내에서 총알, 적 캐릭터, 나무, 돌 등과 같이 많은 수의 유사한 객체가 필요한 경우 Flyweight 패턴을 사용하면 메모리 효율성이 크게 향상됩니다.</p>
+                        
+                        <h3>3.2 객체 생성 비용이 높은 경우</h3>
+                        <p>텍스처나 메시와 같이 생성 비용이 높은 자원을 여러 객체가 공유할 수 있을 때 유용합니다.</p>
+                        
+                        <h3>3.3 메모리 제약이 있는 환경</h3>
+                        <p>모바일 게임이나 메모리가 제한된 플랫폼에서 게임을 개발할 때 필수적인 패턴이 될 수 있습니다.</p>
+                        
+                        <h3>3.4 객체 상태가 내부와 외부로 명확히 구분되는 경우</h3>
+                        <p>객체의 상태가 공유 가능한 부분(내부 상태)과 객체마다 고유한 부분(외부 상태)으로 명확히 구분될 수 있을 때 적합합니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>4. 어떻게 구현하는가?</h2>
+                    <div class="code-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-lang="csharp">C#</button>
+                            <button class="tab-btn" data-lang="cpp">C++</button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="code-block active" id="csharp-code">
+                                <h3>4.1 Flyweight 클래스 구현 (공유 객체)</h3>
+                                <pre><code class="language-csharp">using System;
+
+namespace FlyweightPattern
+{
+    // 플라이웨이트 객체 - 공유되는 데이터(내부 상태)를 포함
+    public class ShipData
+    {
+        // 공유 데이터(내부 상태)
+        public string UnitName { get; private set; }
+        public string Description { get; private set; }
+        public float Speed { get; private set; }
+        public int AttackPower { get; private set; }
+        public int Defense { get; private set; }
+        public string TextureId { get; private set; } // 텍스처 정보
+
+        public ShipData(string unitName, string description, float speed, int attackPower, int defense, string textureId)
+        {
+            UnitName = unitName;
+            Description = description;
+            Speed = speed;
+            AttackPower = attackPower;
+            Defense = defense;
+            TextureId = textureId;
+        }
+
+        // 클라이언트에서 해당 정보를 표시할 때 사용
+        public void DisplaySharedData()
+        {
+            Console.WriteLine($"Unit: {UnitName}");
+            Console.WriteLine($"Description: {Description}");
+            Console.WriteLine($"Speed: {Speed}, Attack: {AttackPower}, Defense: {Defense}");
+            Console.WriteLine($"Texture: {TextureId}");
+        }
+    }
+}</code></pre>
+
+                                <h3>4.2 Flyweight Factory 구현 (공유 객체 관리)</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace FlyweightPattern
+{
+    // 플라이웨이트 팩토리 - 플라이웨이트 객체를 생성하고 관리
+    public class ShipFactory
+    {
+        // 싱글톤 패턴을 결합한 구현
+        private static ShipFactory _instance;
+        public static ShipFactory Instance 
+        { 
+            get 
+            { 
+                if (_instance == null)
+                    _instance = new ShipFactory();
+                return _instance;
+            } 
+        }
+
+        // 플라이웨이트 객체 캐시
+        private Dictionary<string, ShipData> _shipTypes = new Dictionary<string, ShipData>();
+
+        // 미리 정의된 몇 가지 선박 타입 초기화
+        private ShipFactory()
+        {
+            // 미리 몇 가지 표준 선박 타입 추가
+            _shipTypes.Add("scout", new ShipData(
+                "Scout Ship",
+                "Light and fast exploration vessel with minimal weapons.",
+                20.0f, 10, 5, "scout_texture")
+            );
+
+            _shipTypes.Add("destroyer", new ShipData(
+                "Destroyer",
+                "Medium-sized combat vessel with balanced stats.",
+                12.0f, 30, 25, "destroyer_texture")
+            );
+
+            _shipTypes.Add("battleship", new ShipData(
+                "Battleship",
+                "Heavy combat vessel with strong weapons and armor.",
+                8.0f, 50, 50, "battleship_texture")
+            );
+        }
+
+        // 선박 타입을 가져오거나 새로 생성
+        public ShipData GetShipData(string shipType)
+        {
+            // 이미 존재하는 타입인지 확인
+            if (_shipTypes.ContainsKey(shipType))
+            {
+                return _shipTypes[shipType];
+            }
+
+            // 존재하지 않는 경우 기본 선박 생성
+            Console.WriteLine($"Ship type '{shipType}' not found. Creating default ship.");
+            ShipData defaultShip = new ShipData(
+                "Unknown Ship",
+                "Standard vessel with average capabilities.",
+                10.0f, 20, 20, "default_texture");
+            
+            // 추후 재사용을 위해 캐시에 추가
+            _shipTypes.Add(shipType, defaultShip);
+            return defaultShip;
+        }
+
+        // 새로운 선박 타입 추가
+        public void RegisterShipType(string shipType, ShipData shipData)
+        {
+            if (!_shipTypes.ContainsKey(shipType))
+            {
+                _shipTypes.Add(shipType, shipData);
+                Console.WriteLine($"New ship type '{shipType}' registered.");
+            }
+            else
+            {
+                Console.WriteLine($"Ship type '{shipType}' already exists.");
+            }
+        }
+
+        // 현재 등록된 선박 타입 정보 출력
+        public void DisplayRegisteredShipTypes()
+        {
+            Console.WriteLine("\nRegistered ship types:");
+            foreach (var type in _shipTypes.Keys)
+            {
+                Console.WriteLine($"- {type}");
+            }
+            Console.WriteLine();
+        }
+    }
+}</code></pre>
+
+                                <h3>4.3 Client 클래스 구현 (고유 상태 관리)</h3>
+                                <pre><code class="language-csharp">using System;
+
+namespace FlyweightPattern
+{
+    // 클라이언트 클래스 - 고유한 상태(외부 상태)를 관리
+    public class Ship
+    {
+        // 공유 데이터(내부 상태) 참조
+        private ShipData _shipData;
+        
+        // 고유 데이터(외부 상태)
+        private string _name;
+        private float _positionX;
+        private float _positionY;
+        private float _health;
+        private float _shield;
+        private bool _isActive;
+
+        public Ship(string name, string shipType, float positionX, float positionY)
+        {
+            // 플라이웨이트 팩토리에서 공유 객체 생성 또는 참조
+            _shipData = ShipFactory.Instance.GetShipData(shipType);
+            
+            // 고유 데이터 초기화
+            _name = name;
+            _positionX = positionX;
+            _positionY = positionY;
+            _health = 100;
+            _shield = 100;
+            _isActive = true;
+        }
+
+        // 객체 상태 표시
+        public void DisplayShipInfo()
+        {
+            Console.WriteLine($"\n----- {_name} ({_shipData.UnitName}) -----");
+            
+            // 공유 데이터(내부 상태) 표시
+            _shipData.DisplaySharedData();
+            
+            // 고유 데이터(외부 상태) 표시
+            Console.WriteLine($"Position: ({_positionX}, {_positionY})");
+            Console.WriteLine($"Health: {_health}, Shield: {_shield}");
+            Console.WriteLine($"Status: {(_isActive ? "Active" : "Inactive")}");
+        }
+
+        // 시뮬레이션용 메서드 - 선박 이동
+        public void Move(float deltaX, float deltaY)
+        {
+            _positionX += deltaX * _shipData.Speed * 0.1f;
+            _positionY += deltaY * _shipData.Speed * 0.1f;
+            Console.WriteLine($"{_name} moved to ({_positionX}, {_positionY})");
+        }
+
+        // 시뮬레이션용 메서드 - 데미지 받기
+        public void TakeDamage(float amount)
+        {
+            // 공유 데이터인 방어력을 사용하여 데미지 계산
+            float reducedDamage = amount * (100f / (100f + _shipData.Defense));
+            
+            // 고유 데이터인 실드와 체력 갱신
+            if (_shield > 0)
+            {
+                if (_shield >= reducedDamage)
+                {
+                    _shield -= reducedDamage;
+                    reducedDamage = 0;
+                }
+                else
+                {
+                    reducedDamage -= _shield;
+                    _shield = 0;
+                }
+            }
+
+            if (reducedDamage > 0)
+            {
+                _health -= reducedDamage;
+                if (_health <= 0)
+                {
+                    _health = 0;
+                    _isActive = false;
+                }
+            }
+
+            Console.WriteLine($"{_name} took {amount} damage (reduced to {reducedDamage}). Health: {_health}, Shield: {_shield}");
+        }
+    }
+}</code></pre>
+
+                                <h3>4.4 사용 예시</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace FlyweightPattern
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine("===== Flyweight Pattern Demo =====\n");
+
+            // Flyweight Factory 인스턴스 가져오기
+            ShipFactory factory = ShipFactory.Instance;
+
+            // 현재 등록된 선박 타입 표시
+            factory.DisplayRegisteredShipTypes();
+
+            // 새로운 커스텀 선박 타입 정의
+            ShipData carrierData = new ShipData(
+                "Carrier",
+                "Massive ship capable of deploying smaller ships and drones.",
+                5.0f, 15, 70, "carrier_texture");
+            
+            factory.RegisterShipType("carrier", carrierData);
+
+            // 여러 선박 객체 생성 - 각각 고유한 상태를 갖지만 공유 데이터 사용
+            Console.WriteLine("\nCreating ship fleet...");
+            List<Ship> fleet = new List<Ship>();
+
+            // 1000개의 객체를 생성한다고 가정
+            Console.WriteLine("Creating 1000 ships (results limited for readability)...");
+            const int fleetSize = 1000;
+            
+            // 메모리 사용량 비교를 위한 정보
+            Console.WriteLine($"Memory usage without Flyweight: approximately {fleetSize * 500} bytes");
+            Console.WriteLine($"Memory usage with Flyweight: approximately {fleetSize * 100 + 4 * 500} bytes");
+            Console.WriteLine("(Approximate calculation assuming 500 bytes for full ship data and 100 bytes for extrinsic data)\n");
+
+            // 실제로는 예제에서 5개만 생성
+            Random random = new Random();
+            string[] shipTypes = new string[] { "scout", "destroyer", "battleship", "carrier" };
+
+            for (int i = 0; i < 5; i++)
+            {
+                float x = (float)random.NextDouble() * 100;
+                float y = (float)random.NextDouble() * 100;
+                string type = shipTypes[random.Next(shipTypes.Length)];
+                Ship ship = new Ship($"Ship_{i+1}", type, x, y);
+                fleet.Add(ship);
+            }
+
+            // 선박 정보 표시
+            foreach (var ship in fleet)
+            {
+                ship.DisplayShipInfo();
+            }
+
+            // 시뮬레이션 - 일부 선박 이동
+            Console.WriteLine("\n----- Simulation - Moving Ships -----");
+            foreach (var ship in fleet)
+            {
+                ship.Move(random.Next(-10, 10), random.Next(-10, 10));
+            }
+
+            // 시뮬레이션 - 일부 선박이 데미지 받음
+            Console.WriteLine("\n----- Simulation - Ships Taking Damage -----");
+            for (int i = 0; i < 3; i++)
+            {
+                if (fleet.Count > 0)
+                {
+                    int shipIndex = random.Next(fleet.Count);
+                    fleet[shipIndex].TakeDamage(random.Next(10, 50));
+                }
+            }
+
+            Console.WriteLine("\nDemo completed. Press any key to exit.");
+            Console.ReadKey();
+        }
+    }
+}</code></pre>
+                            </div>
+
+                            <div class="code-block" id="cpp-code">
+                                <h3>4.1 Flyweight 클래스 구현 (공유 객체)</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+namespace FlyweightPattern {
+
+    // 플라이웨이트 객체 - 공유되는 데이터(내부 상태)를 포함
+    class ShipData {
+    private:
+        // 공유 데이터(내부 상태)
+        std::string _unitName;
+        std::string _description;
+        float _speed;
+        int _attackPower;
+        int _defense;
+        std::string _textureId; // 텍스처 정보
+
+    public:
+        ShipData(const std::string& unitName, const std::string& description, 
+                float speed, int attackPower, int defense, const std::string& textureId)
+            : _unitName(unitName), _description(description), _speed(speed),
+              _attackPower(attackPower), _defense(defense), _textureId(textureId) {}
+
+        // Getter 메서드
+        const std::string& GetUnitName() const { return _unitName; }
+        const std::string& GetDescription() const { return _description; }
+        float GetSpeed() const { return _speed; }
+        int GetAttackPower() const { return _attackPower; }
+        int GetDefense() const { return _defense; }
+        const std::string& GetTextureId() const { return _textureId; }
+
+        // 클라이언트에서 해당 정보를 표시할 때 사용
+        void DisplaySharedData() const {
+            std::cout << "Unit: " << _unitName << std::endl;
+            std::cout << "Description: " << _description << std::endl;
+            std::cout << "Speed: " << _speed << ", Attack: " << _attackPower << ", Defense: " << _defense << std::endl;
+            std::cout << "Texture: " << _textureId << std::endl;
+        }
+    };
+
+} // namespace FlyweightPattern</code></pre>
+
+                                <h3>4.2 Flyweight Factory 구현 (공유 객체 관리)</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;map&gt;
+#include &lt;memory&gt;
+
+namespace FlyweightPattern {
+
+    // 플라이웨이트 팩토리 - 플라이웨이트 객체를 생성하고 관리
+    class ShipFactory {
+    private:
+        // 싱글톤 구현을 위한 정적 멤버
+        static ShipFactory* _instance;
+
+        // 플라이웨이트 객체 캐시
+        std::map<std::string, std::shared_ptr<ShipData>> _shipTypes;
+
+        // 미리 정의된 몇 가지 선박 타입 초기화
+        ShipFactory() {
+            // 미리 몇 가지 표준 선박 타입 추가
+            _shipTypes["scout"] = std::make_shared<ShipData>(
+                "Scout Ship",
+                "Light and fast exploration vessel with minimal weapons.",
+                20.0f, 10, 5, "scout_texture");
+
+            _shipTypes["destroyer"] = std::make_shared<ShipData>(
+                "Destroyer",
+                "Medium-sized combat vessel with balanced stats.",
+                12.0f, 30, 25, "destroyer_texture");
+
+            _shipTypes["battleship"] = std::make_shared<ShipData>(
+                "Battleship",
+                "Heavy combat vessel with strong weapons and armor.",
+                8.0f, 50, 50, "battleship_texture");
+        }
+
+    public:
+        // 싱글톤 객체 가져오기
+        static ShipFactory* GetInstance() {
+            if (_instance == nullptr) {
+                _instance = new ShipFactory();
+            }
+            return _instance;
+        }
+
+        // 메모리 누수 방지를 위한 소멸자
+        ~ShipFactory() {
+            _shipTypes.clear();
+        }
+
+        // 선박 타입을 가져오거나 새로 생성
+        std::shared_ptr<ShipData> GetShipData(const std::string& shipType) {
+            // 이미 존재하는 타입인지 확인
+            auto it = _shipTypes.find(shipType);
+            if (it != _shipTypes.end()) {
+                return it->second;
+            }
+
+            // 존재하지 않는 경우 기본 선박 생성
+            std::cout << "Ship type '" << shipType << "' not found. Creating default ship." << std::endl;
+            auto defaultShip = std::make_shared<ShipData>(
+                "Unknown Ship",
+                "Standard vessel with average capabilities.",
+                10.0f, 20, 20, "default_texture");
+
+            // 추후 재사용을 위해 캐시에 추가
+            _shipTypes[shipType] = defaultShip;
+            return defaultShip;
+        }
+
+        // 새로운 선박 타입 추가
+        void RegisterShipType(const std::string& shipType, std::shared_ptr<ShipData> shipData) {
+            if (_shipTypes.find(shipType) == _shipTypes.end()) {
+                _shipTypes[shipType] = shipData;
+                std::cout << "New ship type '" << shipType << "' registered." << std::endl;
+            }
+            else {
+                std::cout << "Ship type '" << shipType << "' already exists." << std::endl;
+            }
+        }
+
+        // 현재 등록된 선박 타입 정보 출력
+        void DisplayRegisteredShipTypes() {
+            std::cout << "\nRegistered ship types:" << std::endl;
+            for (const auto& pair : _shipTypes) {
+                std::cout << "- " << pair.first << std::endl;
+            }
+            std::cout << std::endl;
+        }
+    };
+
+    // 정적 멤버 초기화
+    ShipFactory* ShipFactory::_instance = nullptr;
+
+} // namespace FlyweightPattern</code></pre>
+
+                                <h3>4.3 Client 클래스 구현 (고유 상태 관리)</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+
+namespace FlyweightPattern {
+
+    // 클라이언트 클래스 - 고유한 상태(외부 상태)를 관리
+    class Ship {
+    private:
+        // 공유 데이터(내부 상태) 참조
+        std::shared_ptr<ShipData> _shipData;
+        
+        // 고유 데이터(외부 상태)
+        std::string _name;
+        float _positionX;
+        float _positionY;
+        float _health;
+        float _shield;
+        bool _isActive;
+
+    public:
+        Ship(const std::string& name, const std::string& shipType, float positionX, float positionY)
+            : _name(name), _positionX(positionX), _positionY(positionY),
+              _health(100.0f), _shield(100.0f), _isActive(true) {
+            // 플라이웨이트 팩토리에서 공유 객체 생성 또는 참조
+            _shipData = ShipFactory::GetInstance()->GetShipData(shipType);
+        }
+
+        // 객체 상태 표시
+        void DisplayShipInfo() const {
+            std::cout << "\n----- " << _name << " (" << _shipData->GetUnitName() << ") -----" << std::endl;
+            
+            // 공유 데이터(내부 상태) 표시
+            _shipData->DisplaySharedData();
+            
+            // 고유 데이터(외부 상태) 표시
+            std::cout << "Position: (" << _positionX << ", " << _positionY << ")" << std::endl;
+            std::cout << "Health: " << _health << ", Shield: " << _shield << std::endl;
+            std::cout << "Status: " << (_isActive ? "Active" : "Inactive") << std::endl;
+        }
+
+        // 시뮬레이션용 메서드 - 선박 이동
+        void Move(float deltaX, float deltaY) {
+            _positionX += deltaX * _shipData->GetSpeed() * 0.1f;
+            _positionY += deltaY * _shipData->GetSpeed() * 0.1f;
+            std::cout << _name << " moved to (" << _positionX << ", " << _positionY << ")" << std::endl;
+        }
+
+        // 시뮬레이션용 메서드 - 데미지 받기
+        void TakeDamage(float amount) {
+            // 공유 데이터인 방어력을 사용하여 데미지 계산
+            float reducedDamage = amount * (100.0f / (100.0f + _shipData->GetDefense()));
+            
+            // 고유 데이터인 실드와 체력 갱신
+            if (_shield > 0) {
+                if (_shield >= reducedDamage) {
+                    _shield -= reducedDamage;
+                    reducedDamage = 0;
+                }
+                else {
+                    reducedDamage -= _shield;
+                    _shield = 0;
+                }
+            }
+
+            if (reducedDamage > 0) {
+                _health -= reducedDamage;
+                if (_health <= 0) {
+                    _health = 0;
+                    _isActive = false;
+                }
+            }
+
+            std::cout << _name << " took " << amount << " damage (reduced to " << reducedDamage << ")."
+                     << " Health: " << _health << ", Shield: " << _shield << std::endl;
+        }
+        
+        // Getter
+        const std::string& GetName() const { return _name; }
+        bool IsActive() const { return _isActive; }
+    };
+
+} // namespace FlyweightPattern</code></pre>
+
+                                <h3>4.4 사용 예시</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;random&gt;
+
+int main() {
+    using namespace FlyweightPattern;
+    
+    std::cout << "===== Flyweight Pattern Demo =====\n" << std::endl;
+
+    // Flyweight Factory 인스턴스 가져오기
+    ShipFactory* factory = ShipFactory::GetInstance();
+
+    // 현재 등록된 선박 타입 표시
+    factory->DisplayRegisteredShipTypes();
+
+    // 새로운 커스텀 선박 타입 정의
+    auto carrierData = std::make_shared<ShipData>(
+        "Carrier",
+        "Massive ship capable of deploying smaller ships and drones.",
+        5.0f, 15, 70, "carrier_texture");
+    
+    factory->RegisterShipType("carrier", carrierData);
+
+    // 여러 선박 객체 생성 - 각각 고유한 상태를 갖지만 공유 데이터 사용
+    std::cout << "\nCreating ship fleet..." << std::endl;
+    std::vector<std::shared_ptr<Ship>> fleet;
+
+    // 1000개의 객체를 생성한다고 가정
+    std::cout << "Creating 1000 ships (results limited for readability)..." << std::endl;
+    const int fleetSize = 1000;
+    
+    // 메모리 사용량 비교를 위한 정보
+    std::cout << "Memory usage without Flyweight: approximately " << fleetSize * 500 << " bytes" << std::endl;
+    std::cout << "Memory usage with Flyweight: approximately " << fleetSize * 100 + 4 * 500 << " bytes" << std::endl;
+    std::cout << "(Approximate calculation assuming 500 bytes for full ship data and 100 bytes for extrinsic data)\n" << std::endl;
+
+    // 랜덤 생성기 초기화
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> positionDist(0.0, 100.0);
+    std::uniform_int_distribution<> shipTypeDist(0, 3);
+    std::uniform_int_distribution<> moveDist(-10, 10);
+    std::uniform_int_distribution<> damageDist(10, 50);
+
+    // 실제로는 예제에서 5개만 생성
+    std::string shipTypes[] = { "scout", "destroyer", "battleship", "carrier" };
+
+    for (int i = 0; i < 5; i++) {
+        float x = positionDist(gen);
+        float y = positionDist(gen);
+        std::string type = shipTypes[shipTypeDist(gen)];
+        std::string name = "Ship_" + std::to_string(i+1);
+        
+        fleet.push_back(std::make_shared<Ship>(name, type, x, y));
+    }
+
+    // 선박 정보 표시
+    for (const auto& ship : fleet) {
+        ship->DisplayShipInfo();
+    }
+
+    // 시뮬레이션 - 일부 선박 이동
+    std::cout << "\n----- Simulation - Moving Ships -----" << std::endl;
+    for (const auto& ship : fleet) {
+        ship->Move(moveDist(gen), moveDist(gen));
+    }
+
+    // 시뮬레이션 - 일부 선박이 데미지 받음
+    std::cout << "\n----- Simulation - Ships Taking Damage -----" << std::endl;
+    std::uniform_int_distribution<> shipIndexDist(0, static_cast<int>(fleet.size()) - 1);
+    
+    for (int i = 0; i < 3; i++) {
+        int shipIndex = shipIndexDist(gen);
+        fleet[shipIndex]->TakeDamage(damageDist(gen));
+    }
+
+    std::cout << "\nDemo completed." << std::endl;
+    
+    return 0;
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>5. Flyweight 패턴의 장단점</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>5.1 장점</h3>
+                        <ul>
+                            <li>
+                                <strong>메모리 사용량 감소</strong>
+                                <p>많은 객체가 데이터를 공유함으로써 메모리 사용량이 크게 줄어듭니다.</p>
+                            </li>
+                            <li>
+                                <strong>성능 향상</strong>
+                                <p>객체 생성 및 초기화 비용이 감소하고, 가비지 컬렉션 부담이 줄어 성능이 향상됩니다.</p>
+                            </li>
+                            <li>
+                                <strong>데이터 일관성</strong>
+                                <p>공유 데이터를 한 곳에서 관리하므로 데이터 일관성이 향상됩니다.</p>
+                            </li>
+                            <li>
+                                <strong>리소스 관리 용이성</strong>
+                                <p>공유 데이터를 중앙에서 관리하므로 업데이트가 간편합니다.</p>
+                            </li>
+                        </ul>
+
+                        <h3>5.2 단점</h3>
+                        <ul>
+                            <li>
+                                <strong>설계 복잡성 증가</strong>
+                                <p>내부 상태와 외부 상태를 구분하고 관리하는 로직이 추가되어 설계가 복잡해질 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>디버깅 어려움</strong>
+                                <p>공유 데이터의 변경이 여러 객체에 영향을 미치므로 디버깅이 어려울 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>동시성 이슈</strong>
+                                <p>여러 스레드에서 Flyweight 객체에 접근할 경우 동기화 문제가 발생할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>외부 상태 관리 부담</strong>
+                                <p>클라이언트가 외부 상태를 관리해야 하므로 이에 따른 로직이 추가될 수 있습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>6. Flyweight 패턴과 다른 패턴의 관계</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>6.1 Flyweight vs Object Pool</h3>
+                        <p>두 패턴 모두 자원을 재사용하지만, 목적과 방식이 다릅니다. Object Pool은 객체 생성 비용을 줄이기 위해 객체를 재사용하는 반면, Flyweight는 메모리 사용을 줄이기 위해 객체 간에 데이터를 공유합니다.</p>
+                        
+                        <h3>6.2 Flyweight vs Singleton</h3>
+                        <p>Singleton은 클래스의 인스턴스가 하나만 존재하도록 보장하는 반면, Flyweight는 유사한 객체들 간에 공통 데이터를 공유하는 데 중점을 둡니다.</p>
+                        
+                        <h3>6.3 Flyweight와 Factory 패턴</h3>
+                        <p>Flyweight는 종종 Factory 패턴과 함께 사용됩니다. Factory 패턴은 Flyweight 객체를 생성하고 캐싱하는 중요한 역할을 담당합니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>7. 주의사항 및 모범 사례</h2>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li>
+                                <strong>적절한 상태 분리</strong>
+                                <p>내부 상태와 외부 상태를 명확히 구분하여 설계해야 합니다. 변경되지 않는 데이터만 내부 상태로 정의해야 합니다.</p>
+                            </li>
+                            <li>
+                                <strong>불변성 유지</strong>
+                                <p>내부 상태는 불변(immutable)하게 유지하여 여러 객체가 안전하게 공유할 수 있도록 해야 합니다.</p>
+                            </li>
+                            <li>
+                                <strong>적절한 캐싱</strong>
+                                <p>FlyweightFactory는 효율적인 캐싱 메커니즘을 구현하여 기존 Flyweight 객체를 빠르게 찾을 수 있어야 합니다.</p>
+                            </li>
+                            <li>
+                                <strong>과도한 사용 지양</strong>
+                                <p>객체 수가 많지 않거나 메모리 사용량이 크지 않은 경우에는 Flyweight 패턴이 불필요한 복잡성만 추가할 수 있습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        // 언어 탭 전환
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const codeBlocks = document.querySelectorAll('.code-block');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                
+                // 버튼 활성화 상태 변경
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // 코드 블록 표시/숨김
+                codeBlocks.forEach(block => {
+                    block.classList.remove('active');
+                    if (block.id === `${lang}-code`) {
+                        block.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

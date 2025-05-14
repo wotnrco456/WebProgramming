@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Object Pool 패턴 - GameDev PatternHub</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pattern-detail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
@@ -407,16 +409,75 @@ int main() {
 
                 <div class="content-section">
                     <h2>5. 오브젝트 풀 패턴의 장단점</h2>
-                    <ul class="pattern-pros-cons">
-                        <li>
-                            <strong>장점</strong>
-                            <p>메모리 할당/해제 오버헤드 감소, 가비지 컬렉션 부하 감소, 객체 생성 비용 절감, 메모리 사용량 예측 가능</p>
-                        </li>
-                        <li>
-                            <strong>단점</strong>
-                            <p>초기 메모리 사용량 증가, 구현 복잡성 증가, 객체 상태 관리의 어려움, 풀 크기 조정의 어려움</p>
-                        </li>
-                    </ul>
+                    <div class="pattern-pros-cons">
+                        <h3>5.1 장점</h3>
+                        <ul>
+                            <li>
+                                <strong>메모리 할당/해제 오버헤드 감소</strong>
+                                <p>객체가 자주 생성되고 파괴되는 게임에서 이 패턴을 사용하면 제한된 횟수의 객체만 초기화하여 재사용함으로써 메모리 오버헤드를 크게 줄입니다.</p>
+                            </li>
+                            <li>
+                                <strong>성능 향상</strong>
+                                <p>특히 모바일 게임이나 메모리 제한이 있는 플랫폼에서 비용이 많이 드는 객체 생성을 최소화하여 프레임 놀람을 감소시킵니다.</p>
+                            </li>
+                            <li>
+                                <strong>가비지 콜렉션 최소화</strong>
+                                <p>자동 메모리 관리 언어에서는 가비지 콜렉션 발생을 최소화하여 매끄러움 현상을 줄입니다.</p>
+                            </li>
+                            <li>
+                                <strong>메모리 사용량 예측 가능</strong>
+                                <p>최대 풀 크기를 제한함으로써 게임의 메모리 사용량을 예측할 수 있어 안정적인 리소스 관리가 가능합니다.</p>
+                            </li>
+                        </ul>
+
+                        <h3>5.2 단점</h3>
+                        <ul>
+                            <li>
+                                <strong>초기 메모리 사용량 증가</strong>
+                                <p>풀을 초기화할 때 사전에 객체를 생성하기 때문에 초기 메모리 사용량이 증가하며, 이는 메모리가 제한된 환경에서 문제가 될 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>구현 복잡성</strong>
+                                <p>객체 풀 관리 및 상태 초기화 로직을 정확하게 구현해야 하기 때문에 보다 복잡한 코드가 필요합니다.</p>
+                            </li>
+                            <li>
+                                <strong>객체 상태 관리의 어려움</strong>
+                                <p>풀에서 객체를 가져와 사용한 후 반환할 때 객체의 상태를 정확하게 초기화하지 않으면 예상하지 못한 버그가 발생할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>풀 크기 결정의 어려움</strong>
+                                <p>풀의 최적 크기를 선택하는 것이 어려울 수 있어, 너무 작으면 오브젝트 생성이 발생하고 너무 크면 메모리가 낭비됩니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>6. 주의사항 및 모범 사례</h2>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li>
+                                <strong>적절한 풀 크기 선택</strong>
+                                <p>풀 크기를 적절히 선택하는 것이 중요합니다. 기대되는 최대 객체 수를 고려하되, 메모리를 낭비하지 않도록 합니다. 강한 로드 테스트를 통해 최적의 값을 찾아내는 것이 좋습니다.</p>
+                            </li>
+                            <li>
+                                <strong>객체 재사용 시 정확한 초기화</strong>
+                                <p>풀에서 객체를 가져오거나 반환할 때 완전히 초기화하여 이전 사용의 상태가 남아있지 않도록 해야 합니다. OnSpawn()과 OnDespawn() 메서드를 활용해 객체 상태를 입출력합니다.</p>
+                            </li>
+                            <li>
+                                <strong>동적 풀 크기 고려</strong>
+                                <p>유연한 풀 관리를 위해 필요에 따라 호출 패턴에 따라 풀을 동적으로 조절하는 메커니즘을 고려하세요. 하지만 최대 한도를 설정하여 과도한 메모리 사용을 방지해야 합니다.</p>
+                            </li>
+                            <li>
+                                <strong>스레드 안전성 고려</strong>
+                                <p>멀티스레드 환경에서는 동시에 여러 스레드가 풀에 접근할 수 있으므로 스레드 안전한 구현을 고려해야 합니다. 동기화 기법이나 동시성 컬렉션을 사용해 레이스 컨디션을 방지하세요.</p>
+                            </li>
+                            <li>
+                                <strong>리소스 누수 방지</strong>
+                                <p>객체를 사용한 후 풀로 반환하는 것을 잊지 않도록 하세요. 자동으로 객체를 반환하는 메커니즘을 구현하거나, 실수로 반환하지 않는 경우를 추적하는 로깅 시스템을 구현하는 것이 좋습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>
@@ -460,4 +521,4 @@ int main() {
         });
     </script>
 </body>
-</html> 
+</html>

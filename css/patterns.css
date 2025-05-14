@@ -1,0 +1,164 @@
+/* 패턴 목록 페이지 스타일 (patterns.css) */
+
+/* 패턴 목록 페이지 스타일 */
+.patterns-page {
+    padding-top: 80px;
+}
+
+.patterns-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.patterns-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.patterns-header p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.pattern-filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 0.5rem 1.5rem;
+    border: 2px solid var(--white);
+    background: transparent;
+    color: var(--white);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: var(--white);
+    color: var(--primary-color);
+}
+
+.patterns-list {
+    padding: 3rem 2rem;
+}
+
+.pattern-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.pattern-card {
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.pattern-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.pattern-icon {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 2rem;
+    text-align: center;
+}
+
+.pattern-icon i {
+    font-size: 2.5rem;
+}
+
+.pattern-content {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pattern-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+}
+
+.pattern-content p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+    line-height: 1.6;
+}
+
+.pattern-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.tag {
+    background: #f0f2f5;
+    color: #666;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+.learn-more {
+    display: inline-block;
+    margin-top: auto;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+.learn-more:hover {
+    color: var(--primary-color);
+}
+
+/* 패턴 목록 반응형 스타일 */
+@media (max-width: 768px) {
+    .patterns-header {
+        padding: 2rem 1rem;
+    }
+
+    .patterns-header h1 {
+        font-size: 2rem;
+    }
+
+    .patterns-header p {
+        font-size: 1rem;
+    }
+
+    .pattern-filters {
+        gap: 0.5rem;
+    }
+
+    .filter-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .patterns-list {
+        padding: 2rem 1rem;
+    }
+
+    .pattern-cards {
+        grid-template-columns: 1fr;
+    }
+}

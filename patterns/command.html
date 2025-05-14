@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command 패턴 - GameDev PatternHub</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pattern-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">홈</a>
+                <a href="../patterns.html">패턴 목록</a>
+                <a href="#">데모 게임</a>
+                <a href="#">문서</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="pattern-detail">
+        <section class="pattern-header">
+            <div class="container">
+                <h1>Command 패턴</h1>
+                <div class="pattern-meta">
+                    <span class="category">행동 패턴</span>
+                    <span class="difficulty">난이도: ★★★☆☆</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pattern-content">
+            <div class="container">
+                <div class="content-section">
+                    <h2>패턴 개요</h2>
+                    <p>Command 패턴은 요청을 객체로 캡슐화하여 클라이언트와 수신자 간의 의존성을 분리하고, 요청을 큐에 저장하거나 로그로 기록하며, 작업의 취소(undo)와 재실행(redo)을 지원할 수 있게 하는 행동 디자인 패턴입니다. 게임 개발에서는 사용자 입력 처리, 행동 시스템, 히스토리 관리 등에 널리 사용됩니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 장점</h3>
+                        <ul>
+                            <li>작업 실행과 호출을 분리하여 코드의 유연성 향상</li>
+                            <li>작업의 취소(undo)와 재실행(redo) 기능 구현 용이</li>
+                            <li>복잡한 작업을 간단한 작업들로 분해 가능</li>
+                            <li>명령 큐를 통한 지연 실행 및 스케줄링 지원</li>
+                            <li>히스토리 추적 및 로깅 기능 구현 가능</li>
+                        </ul>
+                    </div>
+
+                    <div class="pattern-use-cases">
+                        <h3>사용 사례</h3>
+                        <ul>
+                            <li>게임 내 사용자 입력 및 액션 시스템 구현</li>
+                            <li>취소/재실행 기능이 필요한 에디터 도구 개발</li>
+                            <li>턴 기반 게임의 플레이어 행동 관리</li>
+                            <li>AI 행동 시스템 구현</li>
+                            <li>매크로 및 복합 명령 생성</li>
+                            <li>네트워크 게임에서의 행동 직렬화 및 재생</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>1. Command 패턴의 기본 개념</h2>
+                    <p>Command 패턴의 핵심 구성 요소는 다음과 같습니다:</p>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li><strong>Command 인터페이스</strong> - 명령을 실행하고 취소하는 메서드를 선언</li>
+                            <li><strong>ConcreteCommand</strong> - Command 인터페이스를 구현한 실제 명령 클래스</li>
+                            <li><strong>Invoker(호출자)</strong> - 명령 실행을 요청하는 클래스</li>
+                            <li><strong>Receiver(수신자)</strong> - 명령이 실행될 때 실제 작업을 수행하는 클래스</li>
+                            <li><strong>Client(클라이언트)</strong> - Command 객체를 생성하고 Invoker에 연결하는 클래스</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>2. 왜 Command 패턴을 사용해야 하는가?</h2>
+                    <div class="pattern-benefits">
+                        <h3>2.1 행동의 캡슐화</h3>
+                        <p>게임에서 수행할 모든 작업을 독립적인 객체로 캡슐화함으로써 코드의 모듈화와 재사용성을 높입니다. 이를 통해 다양한 컨텍스트에서 동일한 작업을 쉽게 호출할 수 있습니다.</p>
+                        
+                        <h3>2.2 작업의 취소/재실행 지원</h3>
+                        <p>각 Command 객체가 실행 및 취소 로직을 포함할 수 있어, 작업의 취소(Undo)와 재실행(Redo) 기능을 쉽게 구현할 수 있습니다. 게임 내 전략적 의사결정이나 에디터 도구에 매우 유용합니다.</p>
+                        
+                        <h3>2.3 지연 실행 및 큐잉</h3>
+                        <p>명령을 즉시 실행하지 않고 저장했다가 나중에 실행할 수 있어, 명령 큐나 스케줄러 시스템을 쉽게 구현할 수 있습니다. 이는 턴 기반 게임이나 작업 스케줄링에 유용합니다.</p>
+                        
+                        <h3>2.4 매크로 및 복합 명령</h3>
+                        <p>여러 명령을 하나의 명령으로 조합하여 복잡한 작업을 단순화할 수 있습니다. 이를 통해 매크로 기능이나 AI 행동 패턴을 쉽게 구현할 수 있습니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>3. 어떤 상황에서 사용해야 하는가?</h2>
+                    <div class="pattern-use-cases">
+                        <h3>3.1 사용자 입력 처리</h3>
+                        <p>게임에서 키보드, 마우스, 게임패드 등을 통한 사용자 입력을 처리할 때, 각 입력을 Command 객체로 변환하여 유연하게 처리할 수 있습니다.</p>
+                        
+                        <h3>3.2 히스토리 관리 시스템</h3>
+                        <p>사용자의 행동을 기록하고, 원하는 경우 이전 상태로 되돌리거나 재실행할 수 있는 기능이 필요한 경우에 적합합니다.</p>
+                        
+                        <h3>3.3 AI 행동 시스템</h3>
+                        <p>NPC나 AI 에이전트의 행동을 Command 객체로 구현하여, 행동 계획이나 의사결정 시스템을 유연하게 구성할 수 있습니다.</p>
+                        
+                        <h3>3.4 네트워크 게임 동기화</h3>
+                        <p>플레이어의 행동을 Command 객체로 직렬화하여 네트워크를 통해 전송하고, 다른 클라이언트에서 재생하는 방식으로 게임 상태를 동기화할 수 있습니다.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>4. 어떻게 구현하는가?</h2>
+                    <div class="code-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-lang="csharp">C#</button>
+                            <button class="tab-btn" data-lang="cpp">C++</button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="code-block active" id="csharp-code">
+                                <h3>4.1 기본 구조</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace CommandPattern
+{
+    // Command 인터페이스
+    public interface ICommand
+    {
+        void Execute();
+        void Undo();
+    }
+
+    // Receiver - 명령이 실행될 대상
+    public class Robot
+    {
+        private int x = 0;
+        private int y = 0;
+
+        public void Move(int deltaX, int deltaY)
+        {
+            x += deltaX;
+            y += deltaY;
+            Console.WriteLine($"로봇이 ({x}, {y}) 위치로 이동했습니다.");
+        }
+    }
+
+    // Concrete Command - 로봇 이동 명령
+    public class MoveCommand : ICommand
+    {
+        private Robot robot;
+        private int deltaX;
+        private int deltaY;
+
+        public MoveCommand(Robot robot, int deltaX, int deltaY)
+        {
+            this.robot = robot;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+        }
+
+        public void Execute()
+        {
+            robot.Move(deltaX, deltaY);
+        }
+
+        public void Undo()
+        {
+            robot.Move(-deltaX, -deltaY);
+        }
+    }
+
+    // Invoker - 명령 실행을 요청하는 클래스
+    public class CommandInvoker
+    {
+        private Stack&lt;ICommand&gt; undoStack = new Stack&lt;ICommand&gt;();
+        private Stack&lt;ICommand&gt; redoStack = new Stack&lt;ICommand&gt;();
+
+        public void ExecuteCommand(ICommand command)
+        {
+            command.Execute();
+            undoStack.Push(command);
+            redoStack.Clear(); // 새 명령 실행 시 redo 스택 비우기
+        }
+
+        public void Undo()
+        {
+            if (undoStack.Count > 0)
+            {
+                ICommand command = undoStack.Pop();
+                command.Undo();
+                redoStack.Push(command);
+            }
+            else
+            {
+                Console.WriteLine("취소할 명령이 없습니다.");
+            }
+        }
+
+        public void Redo()
+        {
+            if (redoStack.Count > 0)
+            {
+                ICommand command = redoStack.Pop();
+                command.Execute();
+                undoStack.Push(command);
+            }
+            else
+            {
+                Console.WriteLine("재실행할 명령이 없습니다.");
+            }
+        }
+    }
+}</code></pre>
+
+                                <h3>4.2 사용 예시</h3>
+                                <pre><code class="language-csharp">using System;
+
+namespace CommandPattern
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Receiver 생성
+            Robot robot = new Robot();
+            
+            // Invoker 생성
+            CommandInvoker invoker = new CommandInvoker();
+            
+            // 명령 생성 및 실행
+            ICommand moveRight = new MoveCommand(robot, 1, 0);
+            invoker.ExecuteCommand(moveRight);
+            
+            ICommand moveUp = new MoveCommand(robot, 0, 1);
+            invoker.ExecuteCommand(moveUp);
+            
+            // 취소(Undo) 실행
+            Console.WriteLine("\n--- 명령 취소 ---");
+            invoker.Undo();
+            
+            // 재실행(Redo) 실행
+            Console.WriteLine("\n--- 명령 재실행 ---");
+            invoker.Redo();
+            
+            // 더 많은 명령 실행
+            ICommand moveLeft = new MoveCommand(robot, -1, 0);
+            invoker.ExecuteCommand(moveLeft);
+            
+            // 연속된 취소 실행
+            Console.WriteLine("\n--- 연속 취소 ---");
+            invoker.Undo();
+            invoker.Undo();
+        }
+    }
+}</code></pre>
+
+                                <h3>4.3 복합 명령(매크로) 구현</h3>
+                                <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+namespace CommandPattern
+{
+    // 복합 명령(매크로) 클래스
+    public class MacroCommand : ICommand
+    {
+        private List&lt;ICommand&gt; commands;
+        
+        public MacroCommand()
+        {
+            commands = new List&lt;ICommand&gt;();
+        }
+        
+        public void AddCommand(ICommand command)
+        {
+            commands.Add(command);
+        }
+        
+        public void Execute()
+        {
+            foreach (var command in commands)
+            {
+                command.Execute();
+            }
+        }
+        
+        public void Undo()
+        {
+            // 역순으로 명령 취소
+            for (int i = commands.Count - 1; i >= 0; i--)
+            {
+                commands[i].Undo();
+            }
+        }
+    }
+    
+    // 사용 예
+    class MacroExample
+    {
+        static void Example()
+        {
+            Robot robot = new Robot();
+            CommandInvoker invoker = new CommandInvoker();
+            
+            // 매크로 명령 생성
+            MacroCommand squarePattern = new MacroCommand();
+            
+            // 정사각형 패턴을 그리는 명령들 추가
+            squarePattern.AddCommand(new MoveCommand(robot, 1, 0));
+            squarePattern.AddCommand(new MoveCommand(robot, 0, 1));
+            squarePattern.AddCommand(new MoveCommand(robot, -1, 0));
+            squarePattern.AddCommand(new MoveCommand(robot, 0, -1));
+            
+            // 매크로 실행
+            Console.WriteLine("--- 정사각형 패턴 실행 ---");
+            invoker.ExecuteCommand(squarePattern);
+            
+            // 매크로 취소 (전체가 한 번에 취소됨)
+            Console.WriteLine("\n--- 정사각형 패턴 취소 ---");
+            invoker.Undo();
+        }
+    }
+}</code></pre>
+                            </div>
+
+                            <div class="code-block" id="cpp-code">
+                                <h3>4.1 기본 구조</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stack&gt;
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+
+// Command 인터페이스
+class Command {
+public:
+    virtual ~Command() = default;
+    virtual void execute() = 0;
+    virtual void undo() = 0;
+};
+
+// Receiver - 명령이 실행될 대상
+class Robot {
+private:
+    int x = 0;
+    int y = 0;
+
+public:
+    void move(int deltaX, int deltaY) {
+        x += deltaX;
+        y += deltaY;
+        std::cout << "로봇이 (" << x << ", " << y << ") 위치로 이동했습니다." << std::endl;
+    }
+};
+
+// Concrete Command - 로봇 이동 명령
+class MoveCommand : public Command {
+private:
+    Robot& robot;
+    int deltaX;
+    int deltaY;
+
+public:
+    MoveCommand(Robot& robot, int deltaX, int deltaY)
+        : robot(robot), deltaX(deltaX), deltaY(deltaY) {}
+
+    void execute() override {
+        robot.move(deltaX, deltaY);
+    }
+
+    void undo() override {
+        robot.move(-deltaX, -deltaY);
+    }
+};
+
+// Invoker - 명령 실행을 요청하는 클래스
+class CommandInvoker {
+private:
+    std::stack<std::shared_ptr<Command>> undoStack;
+    std::stack<std::shared_ptr<Command>> redoStack;
+
+public:
+    void executeCommand(std::shared_ptr<Command> command) {
+        command->execute();
+        undoStack.push(command);
+        
+        // 새 명령 실행 시 redo 스택 비우기
+        while (!redoStack.empty()) {
+            redoStack.pop();
+        }
+    }
+
+    void undo() {
+        if (!undoStack.empty()) {
+            auto command = undoStack.top();
+            undoStack.pop();
+            command->undo();
+            redoStack.push(command);
+        } else {
+            std::cout << "취소할 명령이 없습니다." << std::endl;
+        }
+    }
+
+    void redo() {
+        if (!redoStack.empty()) {
+            auto command = redoStack.top();
+            redoStack.pop();
+            command->execute();
+            undoStack.push(command);
+        } else {
+            std::cout << "재실행할 명령이 없습니다." << std::endl;
+        }
+    }
+};</code></pre>
+
+                                <h3>4.2 사용 예시</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+int main() {
+    // Receiver 생성
+    Robot robot;
+    
+    // Invoker 생성
+    CommandInvoker invoker;
+    
+    // 명령 생성 및 실행
+    auto moveRight = std::make_shared<MoveCommand>(robot, 1, 0);
+    invoker.executeCommand(moveRight);
+    
+    auto moveUp = std::make_shared<MoveCommand>(robot, 0, 1);
+    invoker.executeCommand(moveUp);
+    
+    // 취소(Undo) 실행
+    std::cout << "\n--- 명령 취소 ---" << std::endl;
+    invoker.undo();
+    
+    // 재실행(Redo) 실행
+    std::cout << "\n--- 명령 재실행 ---" << std::endl;
+    invoker.redo();
+    
+    // 더 많은 명령 실행
+    auto moveLeft = std::make_shared<MoveCommand>(robot, -1, 0);
+    invoker.executeCommand(moveLeft);
+    
+    // 연속된 취소 실행
+    std::cout << "\n--- 연속 취소 ---" << std::endl;
+    invoker.undo();
+    invoker.undo();
+    
+    return 0;
+}</code></pre>
+
+                                <h3>4.3 복합 명령(매크로) 구현</h3>
+                                <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+
+// 복합 명령(매크로) 클래스
+class MacroCommand : public Command {
+private:
+    std::vector<std::shared_ptr<Command>> commands;
+    
+public:
+    void addCommand(std::shared_ptr<Command> command) {
+        commands.push_back(command);
+    }
+    
+    void execute() override {
+        for (const auto& command : commands) {
+            command->execute();
+        }
+    }
+    
+    void undo() override {
+        // 역순으로 명령 취소
+        for (auto it = commands.rbegin(); it != commands.rend(); ++it) {
+            (*it)->undo();
+        }
+    }
+};
+
+// 사용 예
+void macroExample() {
+    Robot robot;
+    CommandInvoker invoker;
+    
+    // 매크로 명령 생성
+    auto squarePattern = std::make_shared<MacroCommand>();
+    
+    // 정사각형 패턴을 그리는 명령들 추가
+    squarePattern->addCommand(std::make_shared<MoveCommand>(robot, 1, 0));
+    squarePattern->addCommand(std::make_shared<MoveCommand>(robot, 0, 1));
+    squarePattern->addCommand(std::make_shared<MoveCommand>(robot, -1, 0));
+    squarePattern->addCommand(std::make_shared<MoveCommand>(robot, 0, -1));
+    
+    // 매크로 실행
+    std::cout << "--- 정사각형 패턴 실행 ---" << std::endl;
+    invoker.executeCommand(squarePattern);
+    
+    // 매크로 취소 (전체가 한 번에 취소됨)
+    std::cout << "\n--- 정사각형 패턴 취소 ---" << std::endl;
+    invoker.undo();
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>5. Command 패턴의 장단점</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>5.1 장점</h3>
+                        <ul>
+                            <li>
+                                <strong>단일 책임 원칙 준수</strong>
+                                <p>작업을 수행하는 클래스와 작업을 호출하는 클래스가 분리되어 있어, 각 클래스는 단일 책임을 갖습니다.</p>
+                            </li>
+                            <li>
+                                <strong>개방/폐쇄 원칙 준수</strong>
+                                <p>기존 코드를 수정하지 않고도 새로운 명령을 추가할 수 있어 확장성이 뛰어납니다.</p>
+                            </li>
+                            <li>
+                                <strong>작업의 취소/재실행 구현 용이</strong>
+                                <p>각 명령 객체가 자신의 실행 및 취소 로직을 포함하므로, 히스토리 기능을 쉽게 구현할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>복합 명령 생성 가능</strong>
+                                <p>여러 명령을 조합하여 복잡한 작업을 간단하게 만들 수 있습니다.</p>
+                            </li>
+                        </ul>
+
+                        <h3>5.2 단점</h3>
+                        <ul>
+                            <li>
+                                <strong>클래스 수 증가</strong>
+                                <p>각 작업마다 별도의 Command 클래스가 필요하므로, 클래스 수가 증가하여 코드 복잡성이 높아질 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>메모리 사용량 증가</strong>
+                                <p>모든 명령 객체를 저장하는 히스토리 스택을 유지할 경우, 메모리 사용량이 증가할 수 있습니다.</p>
+                            </li>
+                            <li>
+                                <strong>간단한 작업에는 오버헤드</strong>
+                                <p>단순한 작업의 경우, Command 패턴을 적용하면 불필요한 오버헤드가 발생할 수 있습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>6. 주의사항 및 모범 사례</h2>
+                    <div class="pattern-pros-cons">
+                        <ul>
+                            <li>
+                                <strong>명령 객체의 크기 관리</strong>
+                                <p>히스토리 스택이 너무 커지지 않도록 최대 크기를 제한하거나, 주기적으로 오래된 명령을 정리하는 메커니즘을 구현하세요.</p>
+                            </li>
+                            <li>
+                                <strong>상태 의존성 주의</strong>
+                                <p>명령 객체가 외부 상태에 너무 의존적이면 취소/재실행 기능이 예상대로 작동하지 않을 수 있습니다. 필요한 상태 정보를 명령 객체 내부에 저장하는 것이 좋습니다.</p>
+                            </li>
+                            <li>
+                                <strong>성능 고려</strong>
+                                <p>많은 수의 작은 명령들을 처리해야 하는 경우, 명령 객체 풀링(Object Pooling)을 고려하여 메모리 할당 오버헤드를 줄이세요.</p>
+                            </li>
+                            <li>
+                                <strong>명령 직렬화</strong>
+                                <p>네트워크 게임에서 Command 패턴을 사용할 경우, 명령 객체를 직렬화하여 네트워크를 통해 전송할 수 있도록 설계하는 것이 좋습니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // 코드 하이라이팅 초기화
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        // 언어 탭 전환
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const codeBlocks = document.querySelectorAll('.code-block');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                
+                // 버튼 활성화 상태 변경
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // 코드 블록 표시/숨김
+                codeBlocks.forEach(block => {
+                    block.classList.remove('active');
+                    if (block.id === `${lang}-code`) {
+                        block.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
