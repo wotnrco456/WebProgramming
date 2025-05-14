@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/pattern-detail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
@@ -20,6 +23,9 @@
                 <a href="../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -121,8 +127,8 @@
                     
                     <div class="code-tabs">
                         <div class="code-language-buttons">
-                            <a href="codes/factory_csharp.html" class="code-language-btn">C# 코드 보기</a>
-                            <a href="codes/factory_cpp.html" class="code-language-btn">C++ 코드 보기</a>
+                            <a href="codes/factory_csharp.html" class="code-language-btn">C# 코드 보기 <i class="fas fa-code"></i></a>
+                            <a href="codes/factory_cpp.html" class="code-language-btn">C++ 코드 보기 <i class="fas fa-code"></i></a>
                         </div>
                     </div>
                 </div>
@@ -195,13 +201,18 @@
                         </ul>
                     </div>
                 </div>
+                
+                <div class="navigation-buttons">
+                    <a href="../patterns.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 목록으로 돌아가기</a>
+                    <a href="codes/factory_csharp.html" class="next-button">C# 코드 예제 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </section>
     </main>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

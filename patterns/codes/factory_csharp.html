@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factory 패턴 - C# 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Factory 패턴 - C# 코드</h1>
-                <div class="pattern-meta">
+                <h1>Factory 패턴 - C# 구현</h1>
+                <div class="code-meta">
                     <span class="category">생성 패턴</span>
-                    <span class="language">C# 구현</span>
+                    <span class="language">C# 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Factory 패턴의 C# 구현</h2>
-                    <p>Factory 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    <p>Factory 패턴은 객체 생성 로직을 캡슐화하여 유연한 객체 생성이 가능하게 하는 디자인 패턴입니다. 아래는 C#으로 구현한 Factory 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 구조</h3>
+                        <h3>기본 구조</h3>
                         <pre><code class="language-csharp">using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -137,8 +145,10 @@ namespace FactoryPattern
         }
     }
 }</code></pre>
+                    </div>
 
-                        <h3>4.2 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace FactoryPattern
@@ -172,8 +182,10 @@ namespace FactoryPattern
         }
     }
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 실행 결과</h3>
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
                         <pre><code>Product A 초기화 중...
 Created: Product A
 Product A 사용 중...
@@ -185,10 +197,33 @@ Error: Unknown product type: c</code></pre>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../factory.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="factory_cpp.html" class="next-button">C++ 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 Factory 패턴의 기본적인 구현을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>IProduct 인터페이스</strong>: 모든 제품이 구현해야 하는 공통 인터페이스를 정의합니다.</li>
+                            <li><strong>ConcreteProductA, ConcreteProductB</strong>: 구체적인 제품 클래스로, IProduct 인터페이스를 구현합니다.</li>
+                            <li><strong>IFactory 인터페이스</strong>: 제품을 생성하는 메서드를 정의합니다.</li>
+                            <li><strong>ConcreteFactory</strong>: 실제 제품 생성 로직을 구현한 팩토리 클래스입니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>주요 이점</h3>
+                        <ul>
+                            <li><strong>객체 생성의 캡슐화</strong>: 객체를 생성하는 복잡한 로직을 클라이언트 코드로부터 숨깁니다.</li>
+                            <li><strong>느슨한 결합</strong>: 클라이언트는 구체적인 클래스가 아닌 인터페이스에 의존하게 됩니다.</li>
+                            <li><strong>확장성</strong>: 새로운 제품 유형을 쉽게 추가할 수 있습니다.</li>
+                            <li><strong>일관성</strong>: 객체 생성 과정을 일관되게 유지할 수 있습니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../factory.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="factory_cpp.html" class="next-button">C++ 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -196,7 +231,7 @@ Error: Unknown product type: c</code></pre>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

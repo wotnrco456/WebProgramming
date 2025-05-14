@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
@@ -20,6 +23,9 @@
                 <a href="patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -71,57 +77,57 @@
                 <div class="pattern-card">
                     <h3>Factory</h3>
                     <p>객체 생성 패턴</p>
-                    <a href="patterns/factory.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/factory.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>Object Pool</h3>
                     <p>자주 생성되고 파괴되는 객체들을 재사용하여 메모리 할당과 가비지 컬렉션의 오버헤드를 줄이는 패턴</p>
-                    <a href="patterns/object-pool.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/object-pool.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>Singleton</h3>
                     <p>단일 인스턴스 보장 패턴</p>
-                    <a href="patterns/singleton.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/singleton.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>Command</h3>
                     <p>명령 캡슐화 패턴</p>
-                    <a href="patterns/command.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/command.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>State</h3>
                     <p>상태 관리 패턴</p>
-                    <a href="patterns/state.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/state.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>Observer</h3>
                     <p>이벤트 처리 패턴</p>
-                    <a href="patterns/observer.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/observer.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>MVP</h3>
                     <p>모델-뷰-프리젠터 아키텍처 패턴</p>
-                    <a href="patterns/mvp.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/mvp.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>MVVM</h3>
                     <p>모델-뷰-뷰모델 아키텍처 패턴</p>
-                    <a href="patterns/mvvm.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/mvvm.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>Strategy</h3>
                     <p>알고리즘 교체 패턴</p>
-                    <a href="patterns/strategy.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/strategy.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>Flyweight</h3>
                     <p>메모리 최적화 패턴</p>
-                    <a href="patterns/flyweight.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/flyweight.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="pattern-card">
                     <h3>Dirty Flag</h3>
                     <p>성능 최적화 패턴</p>
-                    <a href="patterns/dirtyflag.html" class="learn-more">자세히 보기</a>
+                    <a href="patterns/dirtyflag.html" class="learn-more">자세히 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -129,7 +135,7 @@
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

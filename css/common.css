@@ -1,11 +1,33 @@
 /* 공통 스타일 (common.css) */
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --text-color: #333;
-    --light-bg: #f5f6fa;
-    --white: #ffffff;
+    /* Light Mode (Default) Colors */
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary-color: #0f172a;
+    --accent-color: #2dd4bf;
+    --text-color: #1e293b;
+    --light-text: #64748b;
+    --bg-color: #ffffff;
+    --light-bg: #f8fafc;
+    --border-color: #e2e8f0;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --header-height: 70px;
+}
+
+/* Dark Mode Colors - Will be activated via JavaScript */
+[data-theme="dark"] {
+    --primary-color: #818cf8;
+    --primary-dark: #6366f1;
+    --secondary-color: #e2e8f0;
+    --accent-color: #22d3ee;
+    --text-color: #e2e8f0;
+    --light-text: #94a3b8;
+    --bg-color: #0f172a;
+    --light-bg: #1e293b;
+    --border-color: #334155;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    --hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -15,39 +37,94 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
+    background-color: var(--light-bg);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: all 0.2s ease;
 }
 
 .cta-button {
     display: inline-block;
-    padding: 1rem 2rem;
-    background-color: var(--accent-color);
-    color: var(--white);
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border: none;
+    text-align: center;
+    font-size: 1rem;
 }
 
 .cta-button:hover {
-    background-color: #c0392b;
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
 }
 
-/* 반응형 디자인 - 공통 부분 */
+.section-title {
+    font-size: 2.25rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--secondary-color);
+}
+
+/* Theme Toggle Button - Will be styled later */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--text-color);
+    margin-left: 1rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--primary-color);
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 0 1rem;
+    }
+    .section-title {
+        font-size: 1.75rem;
     }
 }
 
 @media (max-width: 480px) {
     body {
-        font-size: 14px;
+        font-size: 15px;
+    }
+    .section-title {
+        font-size: 1.5rem;
     }
 }

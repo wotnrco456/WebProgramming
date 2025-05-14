@@ -2,39 +2,69 @@
 
 /* 헤더 스타일 */
 .header {
-    background-color: var(--white);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: var(--bg-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
+    transition: all 0.3s ease, background-color 0.3s ease;
+    height: var(--header-height);
 }
 
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 0 1.5rem;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.logo {
+    display: flex;
     align-items: center;
 }
 
 .logo h1 {
-    font-size: 1.5rem;
-    color: var(--primary-color);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    white-space: nowrap;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
 }
 
 .nav-links a {
-    text-decoration: none;
     color: var(--text-color);
     margin-left: 2rem;
     font-weight: 500;
-    transition: color 0.3s ease;
+    position: relative;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-    color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
 }
 
 .mobile-menu-btn {
@@ -43,15 +73,32 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 /* 푸터 */
 .footer {
-    background-color: var(--primary-color);
-    color: var(--white);
-    padding: 2rem;
+    padding: 3rem 0;
     text-align: center;
+    background-color: var(--bg-color);
+    border-top: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.footer p {
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+[data-theme="dark"] .footer p {
+    color: var(--primary-color);
 }
 
 /* 반응형 디자인 - 레이아웃 */
@@ -62,19 +109,22 @@
         top: 100%;
         left: 0;
         width: 100%;
-        background-color: var(--white);
+        background-color: var(--bg-color);
         box-shadow: 0 5px 10px rgba(0,0,0,0.1);
         padding: 1rem;
         text-align: center;
-        flex-direction: row;
-        justify-content: center;
-        gap: 1.5rem;
-        flex-wrap: wrap;
+        flex-direction: column;
     }
 
     .nav-links a {
         margin: 0;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem;
+        display: block;
+        width: 100%;
+    }
+
+    .nav-links a::after {
+        display: none;
     }
 
     .mobile-menu-btn {
@@ -84,7 +134,7 @@
 
 @media (max-width: 480px) {
     .nav-container {
-        padding: 0.5rem;
+        padding: 0 1rem;
     }
 
     .logo h1 {
