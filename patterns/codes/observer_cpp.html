@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Observer 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Observer 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>Observer 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">행동 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Observer 패턴의 C++ 구현</h2>
-                    <p>Observer 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    <p>Observer 패턴은 객체 간의 일대다 의존성을 정의하여 하나의 객체 상태가 변경되면 그 객체에 의존하는 모든 객체들이 자동으로 통지받고 갱신되는 디자인 패턴입니다. 아래는 C++로 구현한 Observer 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 Observer와 Subject 구현</h3>
+                        <h3>기본 Observer와 Subject 구현</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;algorithm&gt;
@@ -126,7 +134,7 @@ namespace ObserverPattern {
     // 이벤트 기반 관찰자 패턴 구현
     class EventSource {
     private:
-        // 이벤트 생성자를 위한 리스너 클래스
+        // 이벤트 처리기를 위한 리스너 클래스
         using Listener = std::function&lt;void(int)&gt;;
         std::vector&lt;Listener&gt; listeners;
         int state;
@@ -159,8 +167,10 @@ namespace ObserverPattern {
         }
     };
 }</code></pre>
+                    </div>
 
-                        <h3>4.2 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;memory&gt;
 #include &lt;string&gt;
@@ -280,9 +290,12 @@ public:
     void Display() const {
         std::cout &lt;&lt; "현재 상태: " &lt;&lt; temperature &lt;&lt; "\u00b0C, " &lt;&lt; humidity &lt;&lt; "% 습도" &lt;&lt; std::endl;
     }
-};
+};</code></pre>
+                    </div>
 
-// 예제 프로그램
+                    <div class="code-section">
+                        <h3>메인 프로그램 예시</h3>
+                        <pre><code class="language-cpp">// 예제 프로그램
 int main() {
     std::cout &lt;&lt; "Observer 패턴 예제 - C++" &lt;&lt; std::endl;
     std::cout &lt;&lt; "=========================" &lt;&lt; std::endl;
@@ -334,13 +347,85 @@ int main() {
     return 0;
 }</code></pre>
                     </div>
+
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
+                        <pre><code>Observer 패턴 예제 - C++
+=========================
+
+[마우스 왼쪽 버튼 클릭]
+마우스 관찰자 1: 마우스 상태 변화 감지 - 왼쪽 버튼 클릭
+마우스 관찰자 2: 마우스 상태 변화 감지 - 왼쪽 버튼 클릭
+키보드 관찰자: 키보드 이벤트 감지 - 키 코드 1
+
+[마우스 관찰자 2 제거]
+
+[마우스 오른쪽 버튼 클릭]
+마우스 관찰자 1: 마우스 상태 변화 감지 - 오른쪽 버튼 클릭
+키보드 관찰자: 키보드 이벤트 감지 - 키 코드 2
+
+이벤트 소스 예제
+---------------------------
+
+상태를 42로 변경
+UI 업데이트: 새 상태 42
+로깅: 새 상태 42 기록
+
+상태를 100으로 변경
+UI 업데이트: 새 상태 100
+로깅: 새 상태 100 기록
+
+날씨 시스템 예제
+---------------------------
+
+[새로운 날씨 정보 업데이트]
+현재 상태: 27.5°C, 65% 습도
+
+[더 더워진 날씨 정보 업데이트]
+현재 상태: 30.2°C, 70% 습도</code></pre>
+                    </div>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../observer.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="observer_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 C++에서 Observer 패턴을 구현하는 방법을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>Observer 인터페이스</strong>: 모든 관찰자가 구현해야 하는 추상 클래스입니다. Update 메서드를 통해 Subject의 상태 변화를 통지받습니다.</li>
+                            <li><strong>Subject 클래스</strong>: 관찰자 목록을 관리하고 상태가 변경될 때 모든 관찰자에게 통지합니다.</li>
+                            <li><strong>ConcreteObserver 클래스</strong>: Observer 인터페이스를 구현한 클래스로, Subject로부터 통지를 받으면 특정 동작을 수행합니다.</li>
+                            <li><strong>EventSource 클래스</strong>: 함수 객체를 사용한 현대적인 이벤트 기반 구현을 보여줍니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 특징</h3>
+                        <ul>
+                            <li><strong>스마트 포인터 활용</strong>: 메모리 관리를 자동화하기 위해 unique_ptr을 사용합니다.</li>
+                            <li><strong>가상 소멸자</strong>: 다형성을 지원하는 베이스 클래스에 가상 소멸자를 사용하여 메모리 누수를 방지합니다.</li>
+                            <li><strong>std::function과 람다</strong>: 현대적인 C++ 기능을 사용하여 간결하고 유연한 이벤트 처리 시스템을 구현합니다.</li>
+                            <li><strong>dynamic_cast</strong>: 런타임 타입 검사를 통해 안전하게 타입 변환을 수행합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>C++에서의 Observer 패턴 장점</h3>
+                        <ul>
+                            <li><strong>객체 지향적 설계</strong>: C++의 클래스와 상속 기능을 활용하여 명확하고 모듈화된 구조를 만들 수 있습니다.</li>
+                            <li><strong>캡슐화와 분리</strong>: Subject와 Observer의 책임을 명확히 분리하여 캡슐화를 강화합니다.</li>
+                            <li><strong>성능 최적화</strong>: C++의 저수준 제어 기능을 활용하여 성능 크리티컬한 게임 시스템에 적합합니다.</li>
+                            <li><strong>템플릿 활용 가능</strong>: 템플릿을 사용하여 타입 안전하고 재사용 가능한 Observer 패턴을 구현할 수 있습니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../observer.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="observer_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -348,7 +433,7 @@ int main() {
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

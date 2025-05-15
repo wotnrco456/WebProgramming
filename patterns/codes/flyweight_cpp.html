@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flyweight 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,22 +37,22 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Flyweight 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>Flyweight 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">구조 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Flyweight 패턴의 C++ 구현</h2>
-                    <p>Flyweight 패턴의 C++ 구현 코드와 사용 예시입니다. 게임에서 여러 우주선 객체를 효율적으로 관리하는 예제를 통해 Flyweight 패턴의 활용 방법을 보여줍니다.</p>
+                    <p>Flyweight 패턴은 많은 수의 유사한 객체를 효율적으로 관리하기 위한 디자인 패턴입니다. 아래는 게임에서 여러 우주선 객체를 효율적으로 관리하는 예제를 통해 Flyweight 패턴의 활용 방법을 보여주는 C++ 코드입니다.</p>
                     
                     <div class="code-section">
                         <h3>1. Flyweight 클래스 구현 (공유 객체)</h3>
@@ -432,10 +440,32 @@ Demo completed.</code></pre>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../flyweight.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="flyweight_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>Flyweight 패턴 C++ 구현 분석</h2>
+                    
+                    <div class="pattern-benefits">
+                        <h3>핵심 구성 요소</h3>
+                        <ul>
+                            <li><strong>Flyweight (ShipData)</strong>: 공유 가능한 내부 상태를 담는 클래스입니다. const 한정자를 통해 불변성을 보장하고, 게터(Getter) 메서드로 접근합니다.</li>
+                            <li><strong>FlyweightFactory (ShipFactory)</strong>: 싱글톤 패턴과 결합하여 구현된 팩토리 클래스로, 플라이웨이트 객체의 생성 및 캐싱을 담당합니다.</li>
+                            <li><strong>Client (Ship)</strong>: 플라이웨이트 객체를 참조하고 고유한 외부 상태를 관리하는 클래스입니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++의 특징적 구현</h3>
+                        <ul>
+                            <li><strong>스마트 포인터</strong>: std::shared_ptr을 사용하여 메모리 관리를 자동화하고 참조 카운팅을 통해 자원을 관리합니다.</li>
+                            <li><strong>STL 컨테이너</strong>: std::map을 사용하여 키-값 쌍으로 플라이웨이트 객체를 효율적으로 저장하고 검색합니다.</li>
+                            <li><strong>const 정확성</strong>: const 멤버 함수와 참조자를 사용하여 불변성을 보장하고 최적화 기회를 제공합니다.</li>
+                            <li><strong>네임스페이스</strong>: 코드를 논리적으로 구분하고 이름 충돌을 방지하기 위해 네임스페이스를 활용합니다.</li>
+                            <li><strong>랜덤 생성</strong>: C++11의 랜덤 생성 라이브러리를 사용하여 예측 가능한 고품질의 난수를 생성합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../flyweight.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="flyweight_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -443,7 +473,7 @@ Demo completed.</code></pre>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

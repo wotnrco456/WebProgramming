@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Observer 패턴 - C# 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Observer 패턴 - C# 코드</h1>
-                <div class="pattern-meta">
+                <h1>Observer 패턴 - C# 구현</h1>
+                <div class="code-meta">
                     <span class="category">행동 패턴</span>
-                    <span class="language">C# 구현</span>
+                    <span class="language">C# 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Observer 패턴의 C# 구현</h2>
-                    <p>Observer 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    <p>Observer 패턴은 객체 간의 일대다 의존성을 정의하여 하나의 객체 상태가 변경되면 그 객체에 의존하는 모든 객체들이 자동으로 통지받고 갱신되는 디자인 패턴입니다. 아래는 C#으로 구현한 Observer 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 Subject 구현</h3>
+                        <h3>기본 Observer와 Subject 인터페이스 구현</h3>
                         <pre><code class="language-csharp">using System;
 using System.Collections.Generic;
 
@@ -111,7 +119,15 @@ namespace ObserverPattern
             }
         }
     }
+}</code></pre>
+                    </div>
 
+                    <div class="code-section">
+                        <h3>이벤트 기반 Observer 패턴 구현</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace ObserverPattern
+{
     // 이벤트 기반 Subject 구현
     public class EventSubject
     {
@@ -151,13 +167,7 @@ namespace ObserverPattern
             State = state;
         }
     }
-}</code></pre>
 
-                        <h3>4.2 기본 Observer 구현</h3>
-                        <pre><code class="language-csharp">using System;
-
-namespace ObserverPattern
-{
     // 전통적인 Observer 구현
     public class ConcreteObserver : IObserver
     {
@@ -202,8 +212,10 @@ namespace ObserverPattern
         }
     }
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace ObserverPattern.Example
@@ -260,166 +272,219 @@ namespace ObserverPattern.Example
             Console.WriteLine("\n프로그램 종료...");
         }
     }
+}</code></pre>
+                    </div>
 
-    // 예제: 날씨 시스템 구현
-    public class WeatherStation
+                    <div class="code-section">
+                        <h3>Unity 게임 개발에서의 적용 예시</h3>
+                        <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace ObserverPattern.Unity
+{
+    // 게임 이벤트 시스템 (Unity 환경 예시)
+    public class GameEventSystem : MonoBehaviour
     {
-        public static void RunExample()
+        // 싱글톤 인스턴스
+        private static GameEventSystem instance;
+        public static GameEventSystem Instance => instance;
+
+        // 게임 이벤트 정의
+        public event Action&lt;int&gt; OnPlayerScoreChanged;
+        public event Action&lt;float&gt; OnPlayerHealthChanged;
+        public event Action OnGameOver;
+        public event Action&lt;GameObject&gt; OnEnemyDefeated;
+
+        private void Awake()
         {
-            // 날씨 데이터 Subject 생성
-            WeatherData weatherData = new WeatherData();
+            // 싱글톤 패턴 구현
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
 
-            // 날씨 표시 구현체 생성
-            CurrentConditionsDisplay currentDisplay = new CurrentConditionsDisplay(weatherData);
-            StatisticsDisplay statisticsDisplay = new StatisticsDisplay(weatherData);
-            ForecastDisplay forecastDisplay = new ForecastDisplay(weatherData);
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
 
-            // 날씨 정보 업데이트
-            Console.WriteLine("\n\n날씨 정보 업데이트 예제");
-            Console.WriteLine("---------------------------");
-            weatherData.SetMeasurements(27, 65, 1013); // 온도, 습도, 기압
-            Console.WriteLine("---------------------------");
-            weatherData.SetMeasurements(28, 70, 1010);
+        // 이벤트 발생 메서드들
+        public void TriggerScoreChanged(int newScore)
+        {
+            OnPlayerScoreChanged?.Invoke(newScore);
+        }
+
+        public void TriggerHealthChanged(float newHealth)
+        {
+            OnPlayerHealthChanged?.Invoke(newHealth);
+            
+            // 체력이 0 이하면 게임 오버 이벤트 발생
+            if (newHealth <= 0)
+            {
+                TriggerGameOver();
+            }
+        }
+
+        public void TriggerGameOver()
+        {
+            OnGameOver?.Invoke();
+        }
+
+        public void TriggerEnemyDefeated(GameObject enemy)
+        {
+            OnEnemyDefeated?.Invoke(enemy);
         }
     }
 
-    // 날씨 정보 Subject
-    public class WeatherData : ISubject
+    // 플레이어 컨트롤러 (Subject 역할)
+    public class PlayerController : MonoBehaviour
     {
-        private readonly List&lt;IObserver&gt; observers = new List&lt;IObserver&gt;();
-        private float temperature;
-        private float humidity;
-        private float pressure;
+        [SerializeField] private float maxHealth = 100f;
+        [SerializeField] private int score = 0;
+        
+        private float currentHealth;
 
-        public float Temperature =&gt; temperature;
-        public float Humidity =&gt; humidity;
-        public float Pressure =&gt; pressure;
-
-        public void RegisterObserver(IObserver observer)
+        private void Start()
         {
-            observers.Add(observer);
+            currentHealth = maxHealth;
         }
 
-        public void RemoveObserver(IObserver observer)
+        // 체력 변경
+        public void TakeDamage(float damage)
         {
-            observers.Remove(observer);
+            currentHealth = Mathf.Max(0, currentHealth - damage);
+            
+            // 이벤트 발생
+            GameEventSystem.Instance.TriggerHealthChanged(currentHealth);
         }
 
-        public void NotifyObservers()
+        // 점수 획득
+        public void AddScore(int points)
         {
-            foreach (var observer in observers)
-            {
-                observer.Update(this);
-            }
+            score += points;
+            
+            // 이벤트 발생
+            GameEventSystem.Instance.TriggerScoreChanged(score);
         }
 
-        // 새로운 날씨 정보 설정
-        public void SetMeasurements(float temperature, float humidity, float pressure)
+        // 적 처치
+        public void DefeatEnemy(GameObject enemy)
         {
-            this.temperature = temperature;
-            this.humidity = humidity;
-            this.pressure = pressure;
-            NotifyObservers();
+            // 적 처치에 따른 점수 획득
+            AddScore(10);
+            
+            // 적 처치 이벤트 발생
+            GameEventSystem.Instance.TriggerEnemyDefeated(enemy);
         }
     }
 
-    // 현재 날씨 표시 구현체
-    public class CurrentConditionsDisplay : IObserver
+    // UI 매니저 (Observer 역할)
+    public class UIManager : MonoBehaviour
     {
-        private float temperature;
-        private float humidity;
+        [SerializeField] private TextMeshProUGUI scoreText;
+        [SerializeField] private Slider healthBar;
+        [SerializeField] private GameObject gameOverPanel;
 
-        public CurrentConditionsDisplay(ISubject weatherData)
+        private void Start()
         {
-            weatherData.RegisterObserver(this);
+            // 이벤트 구독
+            GameEventSystem eventSystem = GameEventSystem.Instance;
+            
+            eventSystem.OnPlayerScoreChanged += UpdateScoreUI;
+            eventSystem.OnPlayerHealthChanged += UpdateHealthUI;
+            eventSystem.OnGameOver += ShowGameOverUI;
+            
+            // 초기 UI 설정
+            gameOverPanel.SetActive(false);
         }
 
-        public void Update(ISubject subject)
+        private void OnDestroy()
         {
-            if (subject is WeatherData weatherData)
+            // 이벤트 구독 해제 (중요!)
+            if (GameEventSystem.Instance != null)
             {
-                temperature = weatherData.Temperature;
-                humidity = weatherData.Humidity;
-                Display();
+                GameEventSystem eventSystem = GameEventSystem.Instance;
+                
+                eventSystem.OnPlayerScoreChanged -= UpdateScoreUI;
+                eventSystem.OnPlayerHealthChanged -= UpdateHealthUI;
+                eventSystem.OnGameOver -= ShowGameOverUI;
             }
         }
 
-        public void Display()
+        // UI 업데이트 함수들
+        private void UpdateScoreUI(int newScore)
         {
-            Console.WriteLine($"현재 날씨 표시: {temperature}°C, {humidity}% 습도");
+            scoreText.text = $"점수: {newScore}";
+        }
+
+        private void UpdateHealthUI(float newHealth)
+        {
+            healthBar.value = newHealth / 100f; // 최대 체력이 100이라고 가정
+        }
+
+        private void ShowGameOverUI()
+        {
+            gameOverPanel.SetActive(true);
         }
     }
 
-    // 통계 표시 구현체
-    public class StatisticsDisplay : IObserver
+    // 효과음 매니저 (Observer 역할)
+    public class AudioManager : MonoBehaviour
     {
-        private float maxTemp = float.MinValue;
-        private float minTemp = float.MaxValue;
-        private float tempSum;
-        private int numReadings;
+        [SerializeField] private AudioClip scoreSound;
+        [SerializeField] private AudioClip damageSound;
+        [SerializeField] private AudioClip gameOverSound;
+        [SerializeField] private AudioClip enemyDefeatSound;
+        
+        private AudioSource audioSource;
 
-        public StatisticsDisplay(ISubject weatherData)
+        private void Start()
         {
-            weatherData.RegisterObserver(this);
+            audioSource = GetComponent&lt;AudioSource&gt;();
+            
+            // 이벤트 구독
+            GameEventSystem eventSystem = GameEventSystem.Instance;
+            
+            eventSystem.OnPlayerScoreChanged += PlayScoreSound;
+            eventSystem.OnPlayerHealthChanged += PlayDamageSound;
+            eventSystem.OnGameOver += PlayGameOverSound;
+            eventSystem.OnEnemyDefeated += PlayEnemyDefeatSound;
         }
 
-        public void Update(ISubject subject)
+        private void OnDestroy()
         {
-            if (subject is WeatherData weatherData)
+            // 이벤트 구독 해제
+            if (GameEventSystem.Instance != null)
             {
-                float temp = weatherData.Temperature;
-                tempSum += temp;
-                numReadings++;
-
-                if (temp &gt; maxTemp) maxTemp = temp;
-                if (temp &lt; minTemp) minTemp = temp;
-
-                Display();
+                GameEventSystem eventSystem = GameEventSystem.Instance;
+                
+                eventSystem.OnPlayerScoreChanged -= PlayScoreSound;
+                eventSystem.OnPlayerHealthChanged -= PlayDamageSound;
+                eventSystem.OnGameOver -= PlayGameOverSound;
+                eventSystem.OnEnemyDefeated -= PlayEnemyDefeatSound;
             }
         }
 
-        public void Display()
+        // 효과음 재생 함수들
+        private void PlayScoreSound(int score)
         {
-            Console.WriteLine($"통계 표시: 평균/최고/최저 온도 = {tempSum / numReadings:F1}/{maxTemp}/{minTemp}");
-        }
-    }
-
-    // 날씨 예보 표시 구현체
-    public class ForecastDisplay : IObserver
-    {
-        private float currentPressure = 1013.0f;
-        private float lastPressure;
-
-        public ForecastDisplay(ISubject weatherData)
-        {
-            weatherData.RegisterObserver(this);
+            audioSource.PlayOneShot(scoreSound);
         }
 
-        public void Update(ISubject subject)
+        private void PlayDamageSound(float health)
         {
-            if (subject is WeatherData weatherData)
-            {
-                lastPressure = currentPressure;
-                currentPressure = weatherData.Pressure;
-                Display();
-            }
+            audioSource.PlayOneShot(damageSound);
         }
 
-        public void Display()
+        private void PlayGameOverSound()
         {
-            Console.Write("날씨 예보: ");
-            if (currentPressure &gt; lastPressure)
-            {
-                Console.WriteLine("향상된 날씨가 예상됩니다!");
-            }
-            else if (currentPressure == lastPressure)
-            {
-                Console.WriteLine("현재와 비슷한 날씨가 지속됩니다.");
-            }
-            else
-            {
-                Console.WriteLine("더 추운 날씨와 비가 예상됩니다.");
-            }
+            audioSource.PlayOneShot(gameOverSound);
+        }
+
+        private void PlayEnemyDefeatSound(GameObject enemy)
+        {
+            audioSource.PlayOneShot(enemyDefeatSound);
         }
     }
 }</code></pre>
@@ -427,10 +492,45 @@ namespace ObserverPattern.Example
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../observer.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="observer_cpp.html" class="next-button">C++ 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 Observer 패턴의 기본적인 구현과 Unity 게임 개발에서의 적용 예시를 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>IObserver 인터페이스</strong>: 모든 관찰자가 구현해야 하는 공통 인터페이스를 정의합니다.</li>
+                            <li><strong>ISubject 인터페이스</strong>: 관찰 대상이 구현해야 하는 인터페이스로, 관찰자의 등록, 제거, 통지 메서드를 정의합니다.</li>
+                            <li><strong>Subject 클래스</strong>: ISubject 인터페이스를 구현한 클래스로, 관찰자 목록을 관리하고 상태가 변경될 때 모든 관찰자에게 통지합니다.</li>
+                            <li><strong>ConcreteObserver 클래스</strong>: IObserver 인터페이스를 구현한 클래스로, Subject로부터 통지를 받으면 특정 동작을 수행합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C#에서의 특징</h3>
+                        <ul>
+                            <li><strong>이벤트와 델리게이트 활용</strong>: C#에서는 이벤트와 델리게이트 메커니즘을 사용하여 Observer 패턴을 더 간결하게 구현할 수 있습니다.</li>
+                            <li><strong>유연한 이벤트 처리</strong>: 여러 이벤트 유형과 매개변수를 쉽게 정의하고 처리할 수 있습니다.</li>
+                            <li><strong>인터페이스 기반 설계</strong>: 인터페이스를 통해 느슨한 결합을 유지합니다.</li>
+                            <li><strong>제네릭 지원</strong>: 제네릭 컬렉션을 사용하여 타입 안전성을 보장합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>Unity에서의 Observer 패턴 적용</h3>
+                        <ul>
+                            <li><strong>이벤트 시스템</strong>: Unity에서는 일반적으로 이벤트 기반 Observer 패턴을 사용하여 게임 이벤트를 처리합니다.</li>
+                            <li><strong>컴포넌트 간 통신</strong>: 서로 다른 컴포넌트 간의 통신을 느슨하게 결합하는 방식으로 구현합니다.</li>
+                            <li><strong>중앙 집중식 이벤트 관리</strong>: 싱글톤 패턴과 함께 사용하여 게임 전체의 이벤트를 중앙에서 관리할 수 있습니다.</li>
+                            <li><strong>메모리 관리</strong>: OnDestroy에서 이벤트 구독을 해제하여 메모리 누수를 방지합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../observer.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="observer_cpp.html" class="next-button">C++ 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -438,7 +538,7 @@ namespace ObserverPattern.Example
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +8,9 @@
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/pattern-detail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
@@ -24,6 +23,9 @@
                 <a href="../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -73,7 +75,7 @@
 
                 <div class="content-section">
                     <h2>1. Strategy 패턴의 기본 개념</h2>
-                    <div class="pattern-pros-cons">
+                    <div class="pattern-types">
                         <h3>1.1 패턴 구성 요소</h3>
                         <ul>
                             <li><strong>Strategy (전략) 인터페이스</strong>: 모든 구체적인 전략이 구현해야 하는 공통 인터페이스를 정의합니다.</li>
@@ -126,8 +128,8 @@
                     
                     <div class="code-tabs">
                         <div class="code-language-buttons">
-                            <a href="codes/strategy_csharp.html" class="code-language-btn">C# 코드 보기</a>
-                            <a href="codes/strategy_cpp.html" class="code-language-btn">C++ 코드 보기</a>
+                            <a href="codes/strategy_csharp.html" class="code-language-btn">C# 코드 보기 <i class="fas fa-code"></i></a>
+                            <a href="codes/strategy_cpp.html" class="code-language-btn">C++ 코드 보기 <i class="fas fa-code"></i></a>
                         </div>
                     </div>
                 </div>
@@ -214,46 +216,21 @@
                         </ul>
                     </div>
                 </div>
+                
+                <div class="navigation-buttons">
+                    <a href="../patterns.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 목록으로 돌아가기</a>
+                    <a href="codes/strategy_csharp.html" class="next-button">C# 코드 예제 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </section>
     </main>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="../js/main.js"></script>
-    <script>
-        // 코드 하이라이팅 초기화
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightBlock(block);
-            });
-        });
-
-        // 언어 탭 전환
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const codeBlocks = document.querySelectorAll('.code-block');
-
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const lang = button.getAttribute('data-lang');
-                
-                // 버튼 활성화 상태 변경
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                // 코드 블록 표시/숨김
-                codeBlocks.forEach(block => {
-                    block.classList.remove('active');
-                    if (block.id === `${lang}-code`) {
-                        block.classList.add('active');
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>

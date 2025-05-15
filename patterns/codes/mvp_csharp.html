@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MVP 패턴 - C# 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>MVP 패턴 - C# 코드</h1>
-                <div class="pattern-meta">
+                <h1>MVP 패턴 - C# 구현</h1>
+                <div class="code-meta">
                     <span class="category">구조 패턴</span>
-                    <span class="language">C# 구현</span>
+                    <span class="language">C# 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>MVP 패턴의 C# 구현</h2>
-                    <p>MVP 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    <p>MVP 패턴은 사용자 인터페이스와 비즈니스 로직을 분리하는 아키텍처 패턴입니다. 아래는 C#으로 구현한 MVP 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 구조</h3>
+                        <h3>기본 구조</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace MVPPattern
@@ -174,10 +182,11 @@ namespace MVPPattern
         {
             model.HealthChanged -= OnHealthChanged;
         }
-    }
-}</code></pre>
+    }</code></pre>
+                    </div>
 
-                        <h3>4.2 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시 - 콘솔 UI 구현</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace MVPPattern.Example
@@ -265,8 +274,15 @@ namespace MVPPattern.Example
                 return true;
             }
         }
-    }
+    }</code></pre>
+                    </div>
 
+                    <div class="code-section">
+                        <h3>메인 프로그램</h3>
+                        <pre><code class="language-csharp">using System;
+
+namespace MVPPattern.Example
+{
     // 예제 프로그램
     public class Program
     {
@@ -291,10 +307,201 @@ namespace MVPPattern.Example
             presenter.Dispose();
             Console.WriteLine("\nProgram terminated. Thank you for using the Health Management System.");
         }
+    }</code></pre>
+                    </div>
+
+                    <div class="code-section">
+                        <h3>Unity에서의 구현 예시</h3>
+                        <pre><code class="language-csharp">using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+namespace MVPPattern.Unity
+{
+    // Model: Unity에서의 체력 모델
+    public class PlayerHealthModel : MonoBehaviour
+    {
+        public event System.EventHandler HealthChanged;
+        public event System.EventHandler PlayerDied;
+
+        [SerializeField] private int maxHealth = 100;
+        private int currentHealth;
+
+        public int CurrentHealth
+        {
+            get => currentHealth;
+            set
+            {
+                int oldHealth = currentHealth;
+                currentHealth = Mathf.Clamp(value, 0, maxHealth);
+                
+                if (oldHealth != currentHealth)
+                {
+                    HealthChanged?.Invoke(this, System.EventArgs.Empty);
+                    
+                    if (currentHealth <= 0)
+                    {
+                        PlayerDied?.Invoke(this, System.EventArgs.Empty);
+                    }
+                }
+            }
+        }
+
+        public int MaxHealth => maxHealth;
+
+        private void Awake()
+        {
+            currentHealth = maxHealth;
+        }
+
+        public void TakeDamage(int amount)
+        {
+            CurrentHealth -= amount;
+        }
+
+        public void Heal(int amount)
+        {
+            CurrentHealth += amount;
+        }
+    }
+
+    // View: Unity UI 요소를 조작하는 뷰
+    public class PlayerHealthView : MonoBehaviour, IHealthView
+    {
+        [SerializeField] private Slider healthBar;
+        [SerializeField] private TextMeshProUGUI healthText;
+        [SerializeField] private GameObject gameOverPanel;
+
+        private System.Action<int> damageAction;
+        private System.Action<int> healAction;
+        private System.Action resetAction;
+
+        public void UpdateHealthDisplay(int health, int maxHealth)
+        {
+            // 슬라이더 값 업데이트
+            if (healthBar != null)
+            {
+                healthBar.value = (float)health / maxHealth;
+            }
+
+            // 텍스트 업데이트
+            if (healthText != null)
+            {
+                healthText.text = $"{health}/{maxHealth}";
+            }
+
+            // 게임 오버 패널 표시
+            if (gameOverPanel != null)
+            {
+                gameOverPanel.SetActive(health <= 0);
+            }
+        }
+
+        public void SetDamageHandler(System.Action<int> damageAction)
+        {
+            this.damageAction = damageAction;
+        }
+
+        public void SetHealHandler(System.Action<int> healAction)
+        {
+            this.healAction = healAction;
+        }
+
+        public void SetResetHandler(System.Action resetAction)
+        {
+            this.resetAction = resetAction;
+        }
+
+        // UI 버튼에 연결할 메서드
+        public void OnDamageButtonClicked()
+        {
+            damageAction?.Invoke(10);
+        }
+
+        public void OnHealButtonClicked()
+        {
+            healAction?.Invoke(5);
+        }
+
+        public void OnResetButtonClicked()
+        {
+            resetAction?.Invoke();
+        }
+    }
+
+    // Presenter: Unity에서의 MVP 패턴 프리젠터
+    public class PlayerHealthPresenter : MonoBehaviour
+    {
+        [SerializeField] private PlayerHealthModel model;
+        [SerializeField] private PlayerHealthView view;
+
+        private void Start()
+        {
+            if (model == null || view == null)
+            {
+                Debug.LogError("Model or View is missing!");
+                return;
+            }
+
+            // Model 이벤트에 구독
+            model.HealthChanged += OnHealthChanged;
+            model.PlayerDied += OnPlayerDied;
+
+            // View 이벤트 핸들러 등록
+            view.SetDamageHandler(OnDamage);
+            view.SetHealHandler(OnHeal);
+            view.SetResetHandler(OnReset);
+
+            // 초기 UI 업데이트
+            UpdateView();
+        }
+
+        private void OnDestroy()
+        {
+            // 이벤트 구독 해제
+            if (model != null)
+            {
+                model.HealthChanged -= OnHealthChanged;
+                model.PlayerDied -= OnPlayerDied;
+            }
+        }
+
+        private void OnHealthChanged(object sender, System.EventArgs e)
+        {
+            UpdateView();
+        }
+
+        private void OnPlayerDied(object sender, System.EventArgs e)
+        {
+            Debug.Log("Player died!");
+            // 게임 오버 처리 로직 추가
+        }
+
+        private void OnDamage(int amount)
+        {
+            model.TakeDamage(amount);
+        }
+
+        private void OnHeal(int amount)
+        {
+            model.Heal(amount);
+        }
+
+        private void OnReset()
+        {
+            model.CurrentHealth = model.MaxHealth;
+        }
+
+        private void UpdateView()
+        {
+            view.UpdateHealthDisplay(model.CurrentHealth, model.MaxHealth);
+        }
     }
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 실행 결과</h3>
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
                         <pre><code>MVP Pattern - Health Management System
 ------------------------------------
 
@@ -336,10 +543,44 @@ Program terminated. Thank you for using the Health Management System.</code></pr
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../mvp.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="mvp_cpp.html" class="next-button">C++ 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 MVP 패턴의 기본적인 구현을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>Model (HealthModel)</strong>: 데이터와 비즈니스 로직을 담당합니다. 체력 값을 관리하고, 값 변경 시 이벤트를 발생시켜 상태 변화를 알립니다.</li>
+                            <li><strong>View (IHealthView)</strong>: 사용자 인터페이스를 담당하는 인터페이스입니다. UI 업데이트와 사용자 입력을 처리하는 방법을 정의합니다.</li>
+                            <li><strong>Presenter (HealthPresenter)</strong>: Model과 View 사이의 중재자 역할을 합니다. Model의 변경사항을 View에 반영하고, View의 입력을 Model에 전달합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C#에서의 특징</h3>
+                        <ul>
+                            <li><strong>이벤트와 델리게이트</strong>: C#의 이벤트 시스템을 활용하여 Model의 상태 변화를 Presenter에 알리고, 사용자 입력을 처리합니다.</li>
+                            <li><strong>인터페이스 기반 설계</strong>: View를 인터페이스로 정의하여 다양한 UI 구현체(콘솔, Unity UI 등)를 쉽게 교체할 수 있습니다.</li>
+                            <li><strong>명확한 의존성</strong>: Presenter가 Model과 View 사이의 관계를 중재하며, Model과 View는 서로에 대한 직접적인 의존성이 없습니다.</li>
+                            <li><strong>리소스 관리</strong>: Dispose 패턴을 통해 이벤트 구독을 해제하여 메모리 누수를 방지합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>Unity에서의 MVP 패턴 적용</h3>
+                        <ul>
+                            <li><strong>컴포넌트 기반 구현</strong>: Model, View, Presenter를 MonoBehaviour 컴포넌트로 구현하여 Unity 게임 오브젝트에 쉽게 연결할 수 있습니다.</li>
+                            <li><strong>UI 상호작용</strong>: Unity UI 시스템과 연동하여 버튼 클릭, 슬라이더 변경 등의 UI 상호작용을 처리합니다.</li>
+                            <li><strong>생명주기 관리</strong>: Unity의 Start, OnDestroy 등의 생명주기 이벤트를 활용하여 MVP 패턴의 초기화와 정리를 관리합니다.</li>
+                            <li><strong>Inspector 통합</strong>: SerializeField 속성을 사용하여 Unity Inspector에서 Model, View, UI 요소를 쉽게 연결할 수 있습니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../mvp.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="mvp_cpp.html" class="next-button">C++ 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -347,7 +588,7 @@ Program terminated. Thank you for using the Health Management System.</code></pr
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

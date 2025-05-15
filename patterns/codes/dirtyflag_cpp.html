@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dirty Flag 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,18 +37,18 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Dirty Flag 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>Dirty Flag 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">행동 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Dirty Flag 패턴의 C++ 구현</h2>
@@ -356,10 +364,57 @@ Currently loaded sectors:
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../dirtyflag.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="dirtyflag_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 Dirty Flag 패턴의 C++ 구현을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>Vector3 클래스</strong>: 3차원 공간에서의 위치를 나타내며, 거리 계산 기능을 제공합니다.</li>
+                            <li><strong>ResourceManager 클래스</strong>: 리소스 로드와 언로드를 처리하며, 스마트 포인터를 활용하여 메모리를 관리합니다.</li>
+                            <li><strong>Sector 클래스</strong>: Dirty Flag 패턴을 적용한 게임 월드의 영역을 나타냅니다.</li>
+                            <li><strong>WorldManager 클래스</strong>: 전체 게임 월드를 관리하고 영역의 로드/언로드를 결정합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 특징</h3>
+                        <ul>
+                            <li><strong>메모리 관리</strong>: 스마트 포인터를 활용하여 안전한 자원 할당 및 해제 관리를 구현합니다.</li>
+                            <li><strong>네임스페이스 구분</strong>: DirtyFlagPattern 네임스페이스를 통해 코드를 구조화하고 이름 충돌을 방지합니다.</li>
+                            <li><strong>객체 지향 설계</strong>: 코드를 적절한 클래스로 분리하여 유지보수성과 확장성을 높이는 설계를 적용합니다.</li>
+                            <li><strong>조건부 업데이트</strong>: 상태 변화를 감지하고 필요한 경우에만 처리하여 성능을 최적화합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>게임 엔진에서의 Dirty Flag 응용</h3>
+                        <ul>
+                            <li><strong>렌더링 파이프라인</strong>: 변경된 오브젝트만 GPU로 데이터를 전송하여 렌더링 성능을 최적화합니다.</li>
+                            <li><strong>물리 시뮬레이션</strong>: 움직이거나 상호작용하는 오브젝트만 물리 계산을 수행하여 CPU 사용을 절약합니다.</li>
+                            <li><strong>네트워크 동기화</strong>: 변경된 게임 상태만 네트워크로 전송하여 대역폭 사용을 최소화합니다.</li>
+                            <li><strong>메모리 관리</strong>: 동적으로 로드/언로드되는 리소스를 효율적으로 관리하여 메모리 사용을 최적화합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>실제 게임 개발에서의 활용 방안</h3>
+                        <ul>
+                            <li><strong>LOD(Level of Detail) 시스템</strong>: 카메라와의 거리에 따라 오브젝트의 상세 수준을 관리하고, 변경이 필요할 때만 메시를 교체합니다.</li>
+                            <li><strong>애니메이션 시스템</strong>: 화면에 보이는 캐릭터나 중요한 애니메이션만 업데이트하여 CPU 사용을 줄입니다.</li>
+                            <li><strong>쉐이더 업데이트</strong>: 머티리얼이나 텍스처가 변경된 경우에만 쉐이더 파라미터를 업데이트합니다.</li>
+                            <li><strong>에디터 도구</strong>: 게임 개발 도구에서 수정된 속성만 저장하여 디스크 I/O와 처리 시간을 절약합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../dirtyflag.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="dirtyflag_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -367,7 +422,7 @@ Currently loaded sectors:
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MVVM 패턴 - C# 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>MVVM 패턴 - C# 코드</h1>
-                <div class="pattern-meta">
+                <h1>MVVM 패턴 - C# 구현</h1>
+                <div class="code-meta">
                     <span class="category">아키텍처 패턴</span>
-                    <span class="language">C# 구현</span>
+                    <span class="language">C# 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>MVVM 패턴의 C# 구현</h2>
-                    <p>MVVM 패턴의 C# 구현 코드와 사용 예시입니다. 체력 관리 시스템을 예로 들어 각 구성 요소와 그들의 상호작용 방식을 설명합니다.</p>
+                    <p>MVVM(Model-View-ViewModel) 패턴은 GUI 애플리케이션을 위한 아키텍처 패턴으로, 프레젠테이션 로직과 비즈니스 로직을 분리하여 유지보수성과 테스트 용이성을 향상시킵니다. 아래는 게임 내 체력 시스템을 C#으로 구현한 MVVM 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>1. Model 구현</h3>
+                        <h3>1. Model (모델) 구현</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace MVVMPattern
@@ -143,8 +151,10 @@ namespace MVVMPattern
     }
 }</code></pre>
 
-                        <h3>2. ViewModel 구현</h3>
+                        <h3>2. ViewModel (뷰모델) 구현</h3>
                         <pre><code class="language-csharp">using System;
+using System.ComponentModel;
+using System.Windows.Input;
 
 namespace MVVMPattern
 {
@@ -164,9 +174,9 @@ namespace MVVMPattern
         private ConsoleColor _healthColor;
         
         // 명령(Command) 패턴 구현 - UI로부터 이벤트 수신
-        public RelayCommand ApplyDamageCommand { get; }
-        public RelayCommand HealCommand { get; }
-        public RelayCommand RestoreCommand { get; }
+        public ICommand ApplyDamageCommand { get; }
+        public ICommand HealCommand { get; }
+        public ICommand RestoreCommand { get; }
         
         // View에 바인딩될 속성들
         public int HealthValue
@@ -312,28 +322,8 @@ namespace MVVMPattern
         }
     }
     
-    // 필요한 추가 클래스들
-    
-    // INotifyPropertyChanged - ViewModel이 View에 속성 변경을 알리는 인터페이스
-    public interface INotifyPropertyChanged
-    {
-        event PropertyChangedEventHandler PropertyChanged;
-    }
-    
-    public delegate void PropertyChangedEventHandler(object sender, PropertyChangedEventArgs e);
-    
-    public class PropertyChangedEventArgs : EventArgs
-    {
-        public string PropertyName { get; }
-        
-        public PropertyChangedEventArgs(string propertyName)
-        {
-            PropertyName = propertyName;
-        }
-    }
-    
-    // Command 패턴 구현 - UI에서 ViewModel의 메소드를 호출하기 위한 객체
-    public class RelayCommand
+    // Command 패턴 구현 - View에서 ViewModel의 메서드를 호출하기 위한 객체
+    public class RelayCommand : ICommand
     {
         private readonly Action&lt;object&gt; _execute;
         private readonly Func&lt;object, bool&gt; _canExecute;
@@ -344,6 +334,8 @@ namespace MVVMPattern
             _canExecute = canExecute;
         }
         
+        public event EventHandler CanExecuteChanged;
+        
         public bool CanExecute(object parameter)
         {
             return _canExecute == null || _canExecute(parameter);
@@ -353,10 +345,15 @@ namespace MVVMPattern
         {
             _execute(parameter);
         }
+        
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 }</code></pre>
 
-                        <h3>3. View 구현 및 사용 예시</h3>
+                        <h3>3. View (뷰) 구현</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace MVVMPattern
@@ -426,15 +423,15 @@ namespace MVVMPattern
         }
         
         // 사용자 입력 처리
-        public void HandleUserInput()
+        public void Run()
         {
             bool exit = false;
             
             while (!exit)
             {
-                var key = Console.ReadKey(true).KeyChar;
+                var key = Console.ReadKey(true);
                 
-                switch (key)
+                switch (key.KeyChar)
                 {
                     case '1':
                         _viewModel.ApplyDamageCommand.Execute(10);
@@ -451,18 +448,15 @@ namespace MVVMPattern
                 }
             }
         }
-        
-        // 리소스 정리
-        public void Dispose()
-        {
-            _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
-        }
     }
-    
-    // 프로그램 실행 예제
-    public class Program
+}</code></pre>
+
+                        <h3>4. 실행 예시</h3>
+                        <pre><code class="language-csharp">namespace MVVMPattern
+{
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
             // 1. Model 생성
             var healthModel = new HealthModel("플레이어", 100);
@@ -473,17 +467,13 @@ namespace MVVMPattern
             // 3. View 생성 및 ViewModel 연결
             var view = new HealthConsoleView(viewModel);
             
-            // 4. 사용자 입력 처리 시작
-            view.HandleUserInput();
-            
-            // 5. 정리
-            view.Dispose();
-            viewModel.Dispose();
+            // 4. 애플리케이션 실행
+            view.Run();
         }
     }
 }</code></pre>
 
-                        <h3>4. 실행 결과</h3>
+                        <h3>5. 실행 결과</h3>
                         <pre><code>=== 플레이어의 건강 상태 ===
 
 건강 상태: Good
@@ -502,7 +492,7 @@ namespace MVVMPattern
 
 건강 상태: Good
 체력: 90/100 (90%)
-[█████████████████████████████████████████████     ]
+[███████████████████████████████████████████████   ]
 
 명령어:
 1. 대미지 입히기 (10)
@@ -527,10 +517,32 @@ namespace MVVMPattern
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../mvvm.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="mvvm_cpp.html" class="next-button">C++ 코드 보기</a>
+                    <h2>MVVM 패턴 구현 분석</h2>
+                    
+                    <div class="pattern-benefits">
+                        <h3>핵심 구성 요소</h3>
+                        <ul>
+                            <li><strong>Model (HealthModel)</strong>: 데이터와 비즈니스 로직을 포함하고 있습니다. 체력 값의 범위 제한, 데미지 적용, 치유 등의 핵심 로직을 구현합니다.</li>
+                            <li><strong>ViewModel (HealthViewModel)</strong>: Model과 View 사이의 중재자 역할을 합니다. Model의 데이터를 View에 적합한 형태로 변환(체력을 퍼센트로, 상태 텍스트, 색상 등)하며, View의 명령을 Model에 전달합니다.</li>
+                            <li><strong>View (HealthConsoleView)</strong>: 사용자에게 정보를 표시하고 입력을 받습니다. ViewModel과 바인딩되어 데이터 변경 시 자동으로 업데이트됩니다.</li>
+                            <li><strong>Command (RelayCommand)</strong>: View에서 ViewModel의 메서드를 호출하기 위한 객체로, MVVM 패턴에서 중요한 역할을 합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>주요 특징</h3>
+                        <ul>
+                            <li><strong>데이터 바인딩</strong>: PropertyChanged 이벤트를 통해 ViewModel의 속성이 변경되면 View가 자동으로 업데이트됩니다.</li>
+                            <li><strong>Command 패턴</strong>: View의 사용자 입력을 ViewModel의 메서드에 연결하여 MVVM의 단방향 데이터 흐름을 유지합니다.</li>
+                            <li><strong>관심사 분리</strong>: UI 로직과 비즈니스 로직이 명확하게 분리되어 있어 유지보수와 테스트가 용이합니다.</li>
+                            <li><strong>상태 변환</strong>: ViewModel에서 체력 값을 시각적 표현(색상, 텍스트 등)으로 변환하는 역할을 담당합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../mvvm.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="mvvm_cpp.html" class="next-button">C++ 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -538,7 +550,7 @@ namespace MVVMPattern
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

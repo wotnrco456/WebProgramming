@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/pattern-detail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
@@ -20,6 +23,9 @@
                 <a href="../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -69,15 +75,16 @@
 
                 <div class="content-section">
                     <h2>1. MVVM 패턴의 구성 요소</h2>
-                    <p>MVVM 패턴은 다음과 같은 세 가지 주요 구성 요소로 이루어집니다:</p>
-                    <div class="pattern-pros-cons">
-                        <ul>
-                            <li><strong>Model(모델)</strong> - 애플리케이션의 데이터와 비즈니스 로직을 담당합니다. 데이터의 저장, 처리, 갱신을 수행하며 ViewModel에 의존하지 않습니다.</li>
-                            <li><strong>View(뷰)</strong> - 사용자에게 정보를 표시하고 입력을 ViewModel에 전달합니다. UI 요소(버튼, 슬라이더 등)를 포함하며 ViewModel과 데이터 바인딩됩니다.</li>
-                            <li><strong>ViewModel(뷰모델)</strong> - View와 Model 사이의 중재자 역할을 합니다. Model의 데이터를 View에 표시하기 적합하게 가공하고, View의 입력을 받아 Model을 업데이트합니다.</li>
-                        </ul>
+                    <div class="pattern-types">
+                        <h3>1.1 Model (모델)</h3>
+                        <p>애플리케이션의 데이터와 비즈니스 로직을 담당합니다. 데이터의 저장, 처리, 갱신을 수행하며 ViewModel에 의존하지 않습니다. 모델은 데이터 소스(데이터베이스, 서버, 파일 등)와 상호작용하여 필요한 데이터를 제공합니다.</p>
+                        
+                        <h3>1.2 View (뷰)</h3>
+                        <p>사용자에게 정보를 표시하고 입력을 ViewModel에 전달합니다. UI 요소(버튼, 슬라이더 등)를 포함하며 ViewModel과 데이터 바인딩됩니다. 뷰는 가능한 한 코드 비하인드(코드의 로직)를 최소화하고 주로 선언적인 방식으로 UI를 정의합니다.</p>
+                        
+                        <h3>1.3 ViewModel (뷰모델)</h3>
+                        <p>View와 Model 사이의 중재자 역할을 합니다. Model의 데이터를 View에 표시하기 적합하게 가공하고, View의 입력을 받아 Model을 업데이트합니다. ViewModel은 View에 독립적이며, Model의 데이터를 View에 적합한 형태로 변환하는 책임을 갖습니다.</p>
                     </div>
-                    <p>이러한 구성 요소들 간의 상호작용을 통해 UI와 비즈니스 로직이 분리되어 유지보수성과 테스트 용이성이 향상됩니다.</p>
                 </div>
 
                 <div class="content-section">
@@ -123,8 +130,8 @@
                     
                     <div class="code-tabs">
                         <div class="code-language-buttons">
-                            <a href="codes/mvvm_csharp.html" class="code-language-btn">C# 코드 보기</a>
-                            <a href="codes/mvvm_cpp.html" class="code-language-btn">C++ 코드 보기</a>
+                            <a href="codes/mvvm_csharp.html" class="code-language-btn">C# 코드 보기 <i class="fas fa-code"></i></a>
+                            <a href="codes/mvvm_cpp.html" class="code-language-btn">C++ 코드 보기 <i class="fas fa-code"></i></a>
                         </div>
                     </div>
                 </div>
@@ -176,7 +183,7 @@
 
                 <div class="content-section">
                     <h2>6. MVVM vs 다른 패턴</h2>
-                    <div class="pattern-comparison">
+                    <div class="pattern-pros-cons">
                         <h3>6.1 MVVM vs MVC (Model-View-Controller)</h3>
                         <p>MVC에서는 Controller가 View와 Model 간의 중재자 역할을 하며, 사용자 입력을 직접 처리합니다. MVVM에서는 ViewModel이 중재자 역할을 하지만, 데이터 바인딩을 통해 View와 통신하므로 View의 업데이트 코드가 줄어듭니다.</p>
                         
@@ -208,13 +215,18 @@
                         </ul>
                     </div>
                 </div>
+                
+                <div class="navigation-buttons">
+                    <a href="../patterns.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 목록으로 돌아가기</a>
+                    <a href="codes/mvvm_csharp.html" class="next-button">C# 코드 예제 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </section>
     </main>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

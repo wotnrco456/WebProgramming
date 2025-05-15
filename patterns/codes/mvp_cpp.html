@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MVP 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>MVP 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>MVP 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">구조 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>MVP 패턴의 C++ 구현</h2>
-                    <p>MVP 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    <p>MVP 패턴은 사용자 인터페이스와 비즈니스 로직을 분리하는 아키텍처 패턴입니다. 아래는 C++로 구현한 MVP 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 구조</h3>
+                        <h3>기본 구조</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;vector&gt;
@@ -156,7 +164,7 @@ namespace MVPPattern {
             UpdateView();
         }
         
-        // 소명자 - 리소스 해제
+        // 소멸자 - 리소스 해제
         ~HealthPresenter() {
             model.RemoveHealthChangedListener(healthChangedListener);
         }
@@ -185,8 +193,10 @@ namespace MVPPattern {
         }
     };
 }</code></pre>
+                    </div>
 
-                        <h3>4.2 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>콘솔 UI 구현</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;memory&gt;
@@ -285,9 +295,12 @@ namespace MVPPattern {
             }
         }
     };
-}
+}</code></pre>
+                    </div>
 
-// 메인 프로그램
+                    <div class="code-section">
+                        <h3>메인 프로그램</h3>
+                        <pre><code class="language-cpp">// 메인 프로그램
 int main() {
     using namespace MVPPattern;
     
@@ -307,14 +320,76 @@ int main() {
             running = view.ProcessInput();
         }
         
-        // presenter는 스코프를 나갈 때 자동으로 소명자 호출
+        // presenter는 스코프를 나갈 때 자동으로 소멸자 호출
     }
     
     std::cout &lt;&lt; "\nThank you for using the Health Management System. Goodbye!" &lt;&lt; std::endl;
     return 0;
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 실행 결과</h3>
+                    <div class="code-section">
+                        <h3>게임 엔진 호환 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;functional&gt;
+#include &lt;memory&gt;
+
+// 게임 엔진 통합을 위한 MVP 패턴 구현 예시
+namespace GameEngine {
+    
+    // 게임에서 사용할 간단한 벡터 클래스
+    struct Vector2 {
+        float x, y;
+        
+        Vector2(float x = 0.0f, float y = 0.0f) : x(x), y(y) {}
+    };
+    
+    // 가상의 게임 엔진 클래스
+    class GameObject {
+    protected:
+        Vector2 position;
+        bool active = true;
+        std::string name;
+        
+    public:
+        GameObject(const std::string& name, const Vector2& pos) : name(name), position(pos) {}
+        virtual ~GameObject() = default;
+        
+        Vector2 GetPosition() const { return position; }
+        void SetPosition(const Vector2& pos) { position = pos; }
+        
+        bool IsActive() const { return active; }
+        void SetActive(bool value) { active = value; }
+        
+        std::string GetName() const { return name; }
+        
+        virtual void Update(float deltaTime) = 0;
+        virtual void Render() = 0;
+    };
+    
+    // 가상의 UI 요소 클래스
+    class UIElement : public GameObject {
+    protected:
+        Vector2 size;
+        
+    public:
+        UIElement(const std::string& name, const Vector2& pos, const Vector2& size)
+            : GameObject(name, pos), size(size) {}
+        
+        Vector2 GetSize() const { return size; }
+        void SetSize(const Vector2& value) { size = value; }
+        
+        virtual bool ContainsPoint(const Vector2& point) const {
+            return (point.x >= position.x && point.x <= position.x + size.x &&
+                    point.y >= position.y && point.y <= position.y + size.y);
+        }
+    };
+}</code></pre>
+                    </div>
+
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
                         <pre><code>MVP Pattern Demo - Health Management System
 
 ==========================
@@ -364,10 +439,44 @@ Thank you for using the Health Management System. Goodbye!</code></pre>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../mvp.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="mvp_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 C++에서 MVP 패턴을 구현하는 방법을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>Model (HealthModel)</strong>: 데이터와 비즈니스 로직을 담당합니다. 체력 값을 관리하고 이벤트 통지를 처리합니다.</li>
+                            <li><strong>View (IHealthView)</strong>: 사용자 인터페이스를 담당하는 인터페이스입니다. UI 업데이트와 사용자 입력 처리 방법을 정의합니다.</li>
+                            <li><strong>Presenter (HealthPresenter)</strong>: Model과 View 사이의 중재자 역할을 합니다. Model의 변경사항을 View에 반영하고, View의 입력을 Model에 전달합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 특징</h3>
+                        <ul>
+                            <li><strong>함수 객체와 람다</strong>: std::function과 람다 표현식을 사용하여 이벤트 처리 메커니즘을 구현합니다.</li>
+                            <li><strong>인터페이스 활용</strong>: 순수 가상 함수를 사용하여 View 인터페이스를 정의하고, 다양한 UI 구현체를 지원합니다.</li>
+                            <li><strong>메모리 관리</strong>: 참조와 포인터를 적절히 사용하여 객체 간의 관계와 생명주기를 관리합니다.</li>
+                            <li><strong>자원 해제</strong>: 소멸자에서 이벤트 구독을 해제하여 메모리 누수를 방지합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>게임 엔진에서의 MVP 패턴 응용</h3>
+                        <ul>
+                            <li><strong>UI 시스템 통합</strong>: 게임 엔진의 UI 요소와 연동하여 플레이어 상태를 효과적으로 표시합니다.</li>
+                            <li><strong>이벤트 기반 아키텍처</strong>: 게임 이벤트와 MVP 패턴의 이벤트 메커니즘을 통합하여 응집력 있는 시스템을 구성합니다.</li>
+                            <li><strong>객체 지향 설계</strong>: 클래스 상속과 인터페이스를 통해 확장 가능하고 유지보수하기 쉬운 코드를 작성합니다.</li>
+                            <li><strong>성능 최적화</strong>: C++의 효율성을 활용하여 게임의 성능 요구사항을 충족시키면서도 코드의 구조를 유지합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../mvp.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="mvp_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -375,7 +484,7 @@ Thank you for using the Health Management System. Goodbye!</code></pre>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

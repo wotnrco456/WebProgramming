@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MVVM 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>MVVM 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>MVVM 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">아키텍처 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>MVVM 패턴의 C++ 구현</h2>
-                    <p>MVVM 패턴의 C++ 구현 코드와 사용 예시입니다. 체력 관리 시스템을 예로 들어 각 구성 요소와 그들의 상호작용 방식을 설명합니다.</p>
+                    <p>MVVM(Model-View-ViewModel) 패턴은 GUI 애플리케이션을 위한 아키텍처 패턴으로, 프레젠테이션 로직과 비즈니스 로직을 분리하여 유지보수성과 테스트 용이성을 향상시킵니다. 아래는 게임 내 체력 시스템을 C++로 구현한 MVVM 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>1. Model 구현</h3>
+                        <h3>1. Model (모델) 구현</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;functional&gt;
@@ -148,15 +156,8 @@ namespace MVVMPattern {
 
 }</code></pre>
 
-                        <h3>2. ViewModel 구현</h3>
-                        <pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;string&gt;
-#include &lt;functional&gt;
-#include &lt;vector&gt;
-#include &lt;memory&gt;
-#include &lt;algorithm&gt;
-
-namespace MVVMPattern {
+                        <h3>2. ViewModel (뷰모델) 구현</h3>
+                        <pre><code class="language-cpp">namespace MVVMPattern {
 
     // PropertyChangedEventArgs 클래스
     class PropertyChangedEventArgs {
@@ -317,12 +318,8 @@ namespace MVVMPattern {
 
 }</code></pre>
 
-                        <h3>3. View 구현 및 사용 예시</h3>
-                        <pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;string&gt;
-#include &lt;memory&gt;
-
-namespace MVVMPattern {
+                        <h3>3. View (뷰) 구현</h3>
+                        <pre><code class="language-cpp">namespace MVVMPattern {
 
     // 콘솔 관련 포맷팅 헬퍼 함수
     void setConsoleColor(ConsoleColor color) {
@@ -448,31 +445,33 @@ namespace MVVMPattern {
         }
     };
 
-    // 예제 실행
-    void runExample() {
-        // 1. Model 생성
-        auto healthModel = std::make_shared&lt;HealthModel&gt;("플레이어", 100);
-        
-        // 2. ViewModel 생성 및 Model 연결
-        auto viewModel = std::make_shared&lt;HealthViewModel&gt;(healthModel);
-        
-        // 3. View 생성 및 ViewModel 연결
-        auto view = std::make_shared&lt;HealthConsoleView&gt;(viewModel);
-        
-        // 4. 사용자 입력 처리 시작
-        view->handleUserInput();
-        
-        // 5. 자동 정리 (실제로는 스코프를 나갈 때 자동으로 정리됨)
-    }
-}
+}</code></pre>
 
-// 메인 함수 예시
+                        <h3>4. 실행 예시</h3>
+                        <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+// MVVM 패턴 구현된 헤더 포함
+// #include "mvvm_pattern.h"
+
+// 메인 함수
 int main() {
-    MVVMPattern::runExample();
+    // 1. Model 생성
+    auto healthModel = std::make_shared&lt;MVVMPattern::HealthModel&gt;("플레이어", 100);
+    
+    // 2. ViewModel 생성 및 Model 연결
+    auto viewModel = std::make_shared&lt;MVVMPattern::HealthViewModel&gt;(healthModel);
+    
+    // 3. View 생성 및 ViewModel 연결
+    auto view = std::make_shared&lt;MVVMPattern::HealthConsoleView&gt;(viewModel);
+    
+    // 4. 사용자 입력 처리 시작
+    view->handleUserInput();
+    
     return 0;
 }</code></pre>
 
-                        <h3>4. 실행 결과</h3>
+                        <h3>5. 실행 결과</h3>
                         <pre><code>=== 플레이어의 건강 상태 ===
 
 건강 상태: Good
@@ -516,10 +515,32 @@ int main() {
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../mvvm.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="mvvm_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>MVVM 패턴 C++ 구현 분석</h2>
+                    
+                    <div class="pattern-benefits">
+                        <h3>핵심 구성 요소</h3>
+                        <ul>
+                            <li><strong>Model (HealthModel)</strong>: 체력 데이터와 비즈니스 로직을 담당합니다. 이벤트 시스템을 통해 데이터 변경을 알립니다.</li>
+                            <li><strong>ViewModel (HealthViewModel)</strong>: Model의 데이터를 View에 적합한 형태로 변환하고, Command 패턴을 통해 사용자 입력을 처리합니다.</li>
+                            <li><strong>View (HealthConsoleView)</strong>: 콘솔 기반 UI를 표시하고 사용자 입력을 ViewModel의 Command로 전달합니다.</li>
+                            <li><strong>Command (RelayCommand)</strong>: View에서 ViewModel의 메서드를 호출하기 위한 패턴으로, 데이터 흐름의 일관성을 유지합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 MVVM 패턴 구현 특징</h3>
+                        <ul>
+                            <li><strong>이벤트 시스템</strong>: C++에서는 표준 이벤트 시스템이 없어 직접 구현해야 합니다. 여기서는 std::function과 std::vector를 사용한 간단한 이벤트 메커니즘을 구현했습니다.</li>
+                            <li><strong>스마트 포인터 활용</strong>: std::shared_ptr를 사용하여 메모리 관리를 안전하게 합니다.</li>
+                            <li><strong>람다 함수</strong>: 이벤트 핸들러를 등록할 때 람다 함수를 활용하여 간결한 코드를 작성했습니다.</li>
+                            <li><strong>템플릿 메서드 패턴</strong>: updateHealth와 같은 메서드에서 데이터 변환 로직을 한 곳에 모아 관리합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../mvvm.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="mvvm_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -527,7 +548,7 @@ int main() {
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

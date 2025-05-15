@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Object Pool 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Object Pool 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>Object Pool 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">생성 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Object Pool 패턴의 C++ 구현</h2>
-                    <p>Object Pool 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    <p>Object Pool 패턴은 자주 생성되고 파괴되는 객체들을 재사용하여 메모리 할당과 가비지 컬렉션의 오버헤드를 줄이는 디자인 패턴입니다. 아래는 C++로 구현한 Object Pool 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 구조</h3>
+                        <h3>기본 구조</h3>
                         <pre><code class="language-cpp">#include &lt;vector&gt;
 #include &lt;memory&gt;
 #include &lt;functional&gt;
@@ -153,8 +161,10 @@ public:
 };
 
 } // namespace ObjectPoolPattern</code></pre>
+                    </div>
 
-                        <h3>4.2 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include "object_pool.h"
 
@@ -173,8 +183,10 @@ int main() {
 
     return 0;
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 실행 결과</h3>
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
                         <pre><code>총알 풀 초기화: 20개
 총알 생성: 5개
 총알 반환: 1개
@@ -183,10 +195,46 @@ int main() {
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../object-pool.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="object_pool_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 C++에서 Object Pool 패턴을 구현하는 방법을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>IPoolable 인터페이스</strong>: 풀링될 모든 객체가 구현해야 하는 인터페이스입니다. 가상 소멸자와 OnSpawn, OnDespawn 메서드를 포함합니다.</li>
+                            <li><strong>ObjectPool 템플릿 클래스</strong>: 제네릭 오브젝트 풀 구현입니다. 객체를 관리하고 재사용합니다.</li>
+                            <li><strong>Bullet 클래스</strong>: IPoolable을 구현한 실제 사용 예시 클래스입니다.</li>
+                            <li><strong>GameManager 클래스</strong>: 오브젝트 풀을 사용하는 매니저 클래스입니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 특징</h3>
+                        <ul>
+                            <li><strong>스마트 포인터 활용</strong>: 메모리 관리를 자동화하기 위해 unique_ptr을 사용합니다.</li>
+                            <li><strong>가상 소멸자</strong>: 다형성을 지원하는 베이스 클래스에 가상 소멸자를 사용하여 메모리 누수를 방지합니다.</li>
+                            <li><strong>템플릿 사용</strong>: 다양한 타입의 객체를 지원하기 위해 템플릿을 사용합니다.</li>
+                            <li><strong>const 정확성</strong>: GetSpeed()와 IsActive() 함수에 const 키워드를 사용하여 불변성을 보장합니다.</li>
+                            <li><strong>move 의미론</strong>: 객체 이동을 위해 std::move를 사용하여 불필요한 복사를 방지합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>C++에서의 Object Pool 패턴 장점</h3>
+                        <ul>
+                            <li><strong>메모리 단편화 방지</strong>: 객체를 재사용함으로써 메모리 할당과 해제로 인한 단편화를 줄입니다.</li>
+                            <li><strong>메모리 할당 최적화</strong>: 빈번한 메모리 할당과 해제 없이 객체를 재사용함으로써 성능을 향상시킵니다.</li>
+                            <li><strong>예측 가능한 메모리 사용</strong>: 최대 풀 크기를 제한함으로써 메모리 사용량을 예측 가능하게 만듭니다.</li>
+                            <li><strong>초기화 오버헤드 감소</strong>: 객체를 재사용함으로써 반복적인 초기화 비용을 줄입니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../object-pool.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="object_pool_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -194,7 +242,7 @@ int main() {
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flyweight 패턴 - C# 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,22 +37,22 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Flyweight 패턴 - C# 코드</h1>
-                <div class="pattern-meta">
+                <h1>Flyweight 패턴 - C# 구현</h1>
+                <div class="code-meta">
                     <span class="category">구조 패턴</span>
-                    <span class="language">C# 구현</span>
+                    <span class="language">C# 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Flyweight 패턴의 C# 구현</h2>
-                    <p>Flyweight 패턴의 C# 구현 코드와 사용 예시입니다. 게임에서 여러 우주선 객체를 효율적으로 관리하는 예제를 통해 Flyweight 패턴의 활용 방법을 보여줍니다.</p>
+                    <p>Flyweight 패턴은 많은 수의 유사한 객체를 효율적으로 관리하기 위한 디자인 패턴입니다. 아래는 게임에서 여러 우주선 객체를 효율적으로 관리하는 예제를 통해 Flyweight 패턴의 활용 방법을 보여주는 C# 코드입니다.</p>
                     
                     <div class="code-section">
                         <h3>1. Flyweight 클래스 구현 (공유 객체)</h3>
@@ -430,10 +438,31 @@ Demo completed. Press any key to exit.</code></pre>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../flyweight.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="flyweight_cpp.html" class="next-button">C++ 코드 보기</a>
+                    <h2>Flyweight 패턴 구현 분석</h2>
+                    
+                    <div class="pattern-benefits">
+                        <h3>핵심 구성 요소</h3>
+                        <ul>
+                            <li><strong>Flyweight (ShipData)</strong>: 여러 객체 간에 공유될 수 있는 내부 상태를 포함하는 클래스입니다. 이 예제에서는 우주선의 이름, 설명, 속도, 공격력, 방어력, 텍스처 정보가 여기에 해당합니다.</li>
+                            <li><strong>FlyweightFactory (ShipFactory)</strong>: Flyweight 객체를 생성하고 관리하는 팩토리 클래스입니다. 이미 생성된 객체는 캐시하여 재사용하며, 싱글톤 패턴을 함께 사용하여 전역 접근점을 제공합니다.</li>
+                            <li><strong>Client (Ship)</strong>: Flyweight 객체를 사용하는 클라이언트 클래스로, 각 개체별 고유한 상태(위치, 체력, 실드 등)를 관리합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>패턴 적용의 이점</h3>
+                        <ul>
+                            <li><strong>메모리 사용량 감소</strong>: 예제에서 볼 수 있듯이, 1000개의 우주선을 생성할 때 Flyweight 패턴을 사용하면 메모리 사용량이 크게 줄어듭니다. 각 객체마다 모든 데이터를 저장하는 대신, 공통 데이터는 한 번만 저장하고 참조합니다.</li>
+                            <li><strong>데이터 일관성</strong>: 공유 데이터가 변경되면 모든 객체에 자동으로 반영되므로 데이터 일관성이 유지됩니다.</li>
+                            <li><strong>객체 생성 및 초기화 비용 감소</strong>: 이미 존재하는 Flyweight 객체를 재사용함으로써 객체 생성 및 초기화 비용이 절감됩니다.</li>
+                            <li><strong>코드 구조화</strong>: 내부 상태와 외부 상태를 명확히 구분함으로써 코드의 구조가 개선되고 유지보수성이 향상됩니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../flyweight.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="flyweight_cpp.html" class="next-button">C++ 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -441,7 +470,7 @@ Demo completed. Press any key to exit.</code></pre>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

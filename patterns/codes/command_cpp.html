@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Command 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Command 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>Command 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">행동 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Command 패턴의 C++ 구현</h2>
-                    <p>Command 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    <p>Command 패턴은 요청을 객체로 캡슐화하여 클라이언트와 수신자 간의 의존성을 분리하고, 작업의 취소와 재실행을 지원할 수 있게 하는 디자인 패턴입니다. 아래는 C++로 구현한 Command 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 구조</h3>
+                        <h3>기본 구조</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;stack&gt;
 #include &lt;memory&gt;
@@ -134,8 +142,10 @@ public:
         }
     }
 };</code></pre>
+                    </div>
 
-                        <h3>4.2 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;memory&gt;
 
@@ -172,8 +182,10 @@ int main() {
     
     return 0;
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 복합 명령(매크로) 구현</h3>
+                    <div class="code-section">
+                        <h3>복합 명령(매크로) 구현</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;memory&gt;
 #include &lt;vector&gt;
@@ -225,13 +237,56 @@ void macroExample() {
     invoker.undo();
 }</code></pre>
                     </div>
+
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
+                        <pre><code>로봇이 (1, 0) 위치로 이동했습니다.
+로봇이 (1, 1) 위치로 이동했습니다.
+
+--- 명령 취소 ---
+로봇이 (1, 0) 위치로 이동했습니다.
+
+--- 명령 재실행 ---
+로봇이 (1, 1) 위치로 이동했습니다.
+
+로봇이 (0, 1) 위치로 이동했습니다.
+
+--- 연속 취소 ---
+로봇이 (1, 1) 위치로 이동했습니다.
+로봇이 (0, 1) 위치로 이동했습니다.</code></pre>
+                    </div>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../command.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="command_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 C++에서 Command 패턴을 구현하는 방법을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>Command 인터페이스</strong>: 명령을 실행하고 취소하는 가상 메서드를 정의합니다.</li>
+                            <li><strong>Receiver (Robot)</strong>: 명령이 실행될 때 실제 작업을 수행하는 클래스입니다.</li>
+                            <li><strong>ConcreteCommand (MoveCommand)</strong>: Command 인터페이스를 구현한 실제 명령 클래스입니다.</li>
+                            <li><strong>Invoker (CommandInvoker)</strong>: 명령 실행을 요청하고, undo/redo 스택을 관리하는 클래스입니다.</li>
+                            <li><strong>MacroCommand</strong>: 여러 명령을 그룹화하여 하나의 명령으로 처리하는 복합 명령 클래스입니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 특징</h3>
+                        <ul>
+                            <li><strong>스마트 포인터 활용</strong>: 메모리 관리를 자동화하기 위해 shared_ptr을 사용합니다.</li>
+                            <li><strong>가상 소멸자</strong>: 다형성을 지원하는 베이스 클래스에 가상 소멸자를 사용하여 메모리 누수를 방지합니다.</li>
+                            <li><strong>참조를 통한 Receiver 전달</strong>: Receiver 객체를 참조로 전달하여 불필요한 복사를 방지합니다.</li>
+                            <li><strong>STL 컨테이너 활용</strong>: 명령 관리를 위해 stack과 vector와 같은 STL 컨테이너를 사용합니다.</li>
+                            <li><strong>반복자 활용</strong>: 매크로 명령의 undo 메서드에서는 역방향 반복자를 사용하여 역순으로 명령을 취소합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../command.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="command_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -239,7 +294,7 @@ void macroExample() {
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

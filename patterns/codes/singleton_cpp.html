@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Singleton 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Singleton 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>Singleton 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">생성 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Singleton 패턴의 C++ 구현</h2>
-                    <p>Singleton 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    <p>Singleton 패턴은 클래스의 인스턴스가 애플리케이션 내에서 단 하나만 존재하도록 보장하고, 이 인스턴스에 대한 전역적인 접근점을 제공하는 디자인 패턴입니다. 아래는 C++로 구현한 Singleton 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 Singleton</h3>
+                        <h3>기본 Singleton</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 
 class Singleton {
@@ -89,8 +97,10 @@ public:
 
 // 정적 멤버 변수 초기화
 Singleton* Singleton::instance = nullptr;</code></pre>
+                    </div>
 
-                        <h3>4.2 안전한 Singleton (C++11 이상)</h3>
+                    <div class="code-section">
+                        <h3>스레드 안전한 Singleton (C++11 이상)</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;memory&gt;
 #include &lt;mutex&gt;
@@ -127,8 +137,10 @@ public:
 // 정적 멤버 변수 초기화
 std::unique_ptr&lt;ThreadSafeSingleton&gt; ThreadSafeSingleton::instance = nullptr;
 std::mutex ThreadSafeSingleton::mutex;</code></pre>
+                    </div>
 
-                        <h3>4.3 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include "singleton.h"  // 위의 싱글톤 클래스가 정의된 헤더 파일
 
@@ -152,13 +164,58 @@ int main() {
     return 0;
 }</code></pre>
                     </div>
+
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
+                        <pre><code>Singleton 인스턴스가 생성되었습니다.
+singleton1과 singleton2는 같은 인스턴스인가? True
+Singleton이 작업을 수행 중입니다.
+ThreadSafeSingleton 인스턴스가 생성되었습니다.
+ThreadSafeSingleton이 작업을 수행 중입니다.</code></pre>
+                    </div>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../singleton.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="singleton_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 C++에서 Singleton 패턴을 구현하는 방법을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>정적 인스턴스 포인터</strong>: 클래스의 유일한 인스턴스를 저장하는 정적 멤버 변수입니다.</li>
+                            <li><strong>Private 생성자</strong>: 외부에서 인스턴스 생성을 방지하기 위해 생성자를 private으로 선언합니다.</li>
+                            <li><strong>복사 방지</strong>: 복사 생성자와 대입 연산자를 삭제하여 싱글톤 복제를 방지합니다.</li>
+                            <li><strong>정적 접근 메서드</strong>: 싱글톤 인스턴스에 접근할 수 있는 정적 메서드를 제공합니다.</li>
+                            <li><strong>메모리 관리</strong>: 메모리 누수를 방지하기 위한 release 메서드 또는 스마트 포인터를 사용합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 특징</h3>
+                        <ul>
+                            <li><strong>스마트 포인터 활용</strong>: C++11 이상에서는 스마트 포인터(unique_ptr)를 사용하여 메모리 관리를 자동화할 수 있습니다.</li>
+                            <li><strong>스레드 안전성</strong>: 멀티스레드 환경에서는 mutex를 사용하여 스레드 안전성을 확보할 수 있습니다.</li>
+                            <li><strong>메모리 누수 방지</strong>: 원시 포인터를 사용할 경우 명시적으로 메모리를 해제하는 메서드가 필요합니다.</li>
+                            <li><strong>삭제된 메서드</strong>: C++11의 '= delete' 기능을 사용하여 복사 및 할당 연산을 명시적으로 방지합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>C++에서 Singleton 패턴 구현 시 고려사항</h3>
+                        <ul>
+                            <li><strong>초기화 순서 문제</strong>: 정적 객체의 초기화 순서는 확정적이지 않으므로, 지연 초기화(lazy initialization)가 권장됩니다.</li>
+                            <li><strong>스레드 안전성</strong>: 멀티스레드 환경에서는 이중 검사 잠금(Double-Checked Locking) 패턴을 사용하는 것이 좋습니다.</li>
+                            <li><strong>메모리 관리</strong>: 스마트 포인터를 사용하여 자동 메모리 관리를 구현하는 것이 안전합니다.</li>
+                            <li><strong>예외 안전성</strong>: 생성자에서 예외가 발생할 경우 싱글톤 생성이 실패할 수 있으므로 예외 처리를 고려해야 합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../singleton.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="singleton_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -166,7 +223,7 @@ int main() {
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

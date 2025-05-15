@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/pattern-detail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
@@ -20,6 +23,9 @@
                 <a href="../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -116,8 +122,8 @@
                     
                     <div class="code-tabs">
                         <div class="code-language-buttons">
-                            <a href="codes/dirtyflag_csharp.html" class="code-language-btn">C# 코드 보기</a>
-                            <a href="codes/dirtyflag_cpp.html" class="code-language-btn">C++ 코드 보기</a>
+                            <a href="codes/dirtyflag_csharp.html" class="code-language-btn">C# 코드 보기 <i class="fas fa-code"></i></a>
+                            <a href="codes/dirtyflag_cpp.html" class="code-language-btn">C++ 코드 보기 <i class="fas fa-code"></i></a>
                         </div>
                     </div>
                 </div>
@@ -182,13 +188,35 @@
                         </ul>
                     </div>
                 </div>
+                
+                <div class="content-section">
+                    <h2>7. 게임 개발에서의 Dirty Flag 패턴 응용</h2>
+                    <div class="pattern-pros-cons">
+                        <h3>7.1 렌더링 최적화</h3>
+                        <p>3D 모델이나 텍스처 데이터가 변경된 경우에만 GPU로 데이터를 전송하고 그렇지 않으면 이전 프레임의 데이터를 재사용합니다.</p>
+                        
+                        <h3>7.2 물리 시뮬레이션</h3>
+                        <p>게임 내 물체가 움직이거나 상호작용하는 경우에만 물리 계산을 수행하여 CPU 사용량을 최적화합니다.</p>
+                        
+                        <h3>7.3 사용자 인터페이스</h3>
+                        <p>UI 요소의 내용이나 위치가 변경된 경우에만 다시 그리기 작업을 수행하여 렌더링 오버헤드를 줄입니다.</p>
+                        
+                        <h3>7.4 게임 저장 시스템</h3>
+                        <p>변경된 데이터만 저장하여 디스크 I/O 작업을 최소화하고 저장 파일의 크기를 줄입니다.</p>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <a href="../patterns.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 목록으로 돌아가기</a>
+                    <a href="codes/dirtyflag_csharp.html" class="next-button">C# 코드 예제 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </section>
     </main>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

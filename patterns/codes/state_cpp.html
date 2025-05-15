@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>State 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>State 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>State 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">행동 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>State 패턴의 C++ 구현</h2>
-                    <p>State 패턴의 C++ 구현 코드와 사용 예시입니다.</p>
+                    <p>State 패턴은 객체의 내부 상태가 변할 때 객체의 행동이 바뀌는 것처럼 보이게 하는 디자인 패턴입니다. 아래는 C++로 구현한 State 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 구조</h3>
+                        <h3>기본 구조</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;memory&gt;
@@ -244,8 +252,10 @@ void JumpState::Exit() {
     std::cout &lt;&lt; "점프 상태 종료" &lt;&lt; std::endl;
     character->jumpPressed = false;
 }</code></pre>
+                    </div>
 
-                        <h3>4.2 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;memory&gt;
 #include &lt;typeinfo&gt;
@@ -286,8 +296,10 @@ int main() {
     
     return 0;
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 계층적 상태 시스템 구현</h3>
+                    <div class="code-section">
+                        <h3>계층적 상태 시스템 구현</h3>
                         <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;memory&gt;
 #include &lt;unordered_map&gt;
@@ -454,13 +466,65 @@ void RunningSubState::Exit() {
     std::cout &lt;&lt; "달리기 하위 상태 종료" &lt;&lt; std::endl;
 }</code></pre>
                     </div>
+
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
+                        <pre><code>상태 변경됨: class IdleState
+대기 상태 시작
+
+--- 초기 상태(대기) ---
+
+--- 걷기 시작 ---
+대기 상태 종료
+상태 변경됨: class WalkState
+걷기 상태 시작
+캐릭터가 1 방향으로 걷는 중
+
+--- 걷기 유지 ---
+캐릭터가 1 방향으로 걷는 중
+
+--- 점프 시작 ---
+걷기 상태 종료
+상태 변경됨: class JumpState
+점프 상태 시작
+캐릭터가 점프 중
+
+--- 착지(대기) ---
+점프 상태 종료
+상태 변경됨: class IdleState
+대기 상태 시작</code></pre>
+                    </div>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../state.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="state_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 C++에서 State 패턴을 구현하는 방법을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>IState 인터페이스</strong>: 모든 상태 클래스가 구현해야 하는 공통 인터페이스입니다.</li>
+                            <li><strong>Character (컨텍스트)</strong>: 현재 상태를 유지하고, 상태 전환을 관리하는 클래스입니다.</li>
+                            <li><strong>ConcreteState 클래스들</strong>: IState 인터페이스를 구현한 구체적인 상태 클래스들입니다.</li>
+                            <li><strong>StateMachine</strong>: 계층적 상태 시스템 구현을 위한 추가적인 클래스입니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++에서의 특징</h3>
+                        <ul>
+                            <li><strong>스마트 포인터 활용</strong>: 메모리 관리를 자동화하기 위해 shared_ptr을 사용합니다.</li>
+                            <li><strong>가상 소멸자</strong>: 다형성을 지원하는 베이스 클래스에 가상 소멸자를 사용하여 메모리 누수를 방지합니다.</li>
+                            <li><strong>콜백 시스템</strong>: std::function을 활용한 콜백 시스템으로 상태 변경을 감지하고 처리합니다.</li>
+                            <li><strong>템플릿 메서드</strong>: 계층적 상태 시스템에서 템플릿을 활용하여 타입 안전한 상태 전환을 구현합니다.</li>
+                            <li><strong>타입 식별</strong>: typeid와 type_index를 사용하여 타입 정보를 저장하고 검색합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../state.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="state_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -468,7 +532,7 @@ void RunningSubState::Exit() {
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

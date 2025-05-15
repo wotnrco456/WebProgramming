@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strategy 패턴 - C++ 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,22 +37,22 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Strategy 패턴 - C++ 코드</h1>
-                <div class="pattern-meta">
+                <h1>Strategy 패턴 - C++ 구현</h1>
+                <div class="code-meta">
                     <span class="category">행동 패턴</span>
-                    <span class="language">C++ 구현</span>
+                    <span class="language">C++ 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Strategy 패턴의 C++ 구현</h2>
-                    <p>Strategy 패턴의 C++ 구현 코드와 사용 예시입니다. 게임 캐릭터의 다양한 능력 전략을 구현하는 예제를 통해 Strategy 패턴의 활용 방법을 보여줍니다.</p>
+                    <p>Strategy 패턴은 알고리즘 군을 정의하고, 각각을 캡슐화하여 상호 교환 가능하게 만드는 디자인 패턴입니다. 아래는 게임 캐릭터의 다양한 능력 전략을 C++로 구현한 예제 코드입니다.</p>
                     
                     <div class="code-section">
                         <h3>1. Strategy 인터페이스 정의</h3>
@@ -290,7 +298,7 @@ namespace StrategyPattern {
 int main() {
     using namespace StrategyPattern;
     
-    std::cout &lt;&lt; "플레이어 캠릭터 생성..." &lt;&lt; std::endl;
+    std::cout &lt;&lt; "플레이어 캐릭터 생성..." &lt;&lt; std::endl;
     AbilityContext context("Player1", 10, 100);
     
     std::cout &lt;&lt; "\n==== 기본 능력 사용 테스트 ====\n" &lt;&lt; std::endl;
@@ -348,7 +356,7 @@ int main() {
 }</code></pre>
 
                         <h3>5. 실행 결과</h3>
-                        <pre><code>플레이어 캠릭터 생성...
+                        <pre><code>플레이어 캐릭터 생성...
 
 ==== 기본 능력 사용 테스트 ====
 
@@ -383,10 +391,33 @@ Player1이(가) 치유 능력을 사용했습니다!
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../strategy.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="strategy_csharp.html" class="next-button">C# 코드 보기</a>
+                    <h2>Strategy 패턴 C++ 구현 분석</h2>
+                    
+                    <div class="pattern-benefits">
+                        <h3>핵심 구성 요소</h3>
+                        <ul>
+                            <li><strong>Strategy 인터페이스 (IAbilityStrategy)</strong>: 순수 가상 함수를 통해 모든 전략 클래스의 공통 인터페이스를 정의합니다.</li>
+                            <li><strong>ConcreteStrategy 클래스들 (HealingAbility, DefenseAbility, AttackAbility)</strong>: Strategy 인터페이스를 구현하여 실제 알고리즘을 제공합니다.</li>
+                            <li><strong>Context 클래스 (AbilityContext)</strong>: 전략 객체의 레퍼런스를 갖고, 실행을 위임합니다.</li>
+                            <li><strong>스마트 포인터 활용</strong>: std::shared_ptr을 통해 메모리 관리를 자동화하고 안전하게 처리합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C++의 특징적 구현</h3>
+                        <ul>
+                            <li><strong>가상 소멸자</strong>: 상속 구조에서 메모리 누수를 방지하기 위해 가상 소멸자를 사용합니다.</li>
+                            <li><strong>열거형과 비트 연산자 오버로딩</strong>: 플래그 열거형과 연산자 오버로딩을 통해 직관적인 비트 연산을 구현합니다.</li>
+                            <li><strong>이름 공간 활용</strong>: namespace를 사용하여 코드를 구조화하고 이름 충돌을 방지합니다.</li>
+                            <li><strong>const 메서드</strong>: 객체의 상태를 변경하지 않는 메서드에 const 한정자를 사용하여 명확성을 높입니다.</li>
+                            <li><strong>명시적 생성자</strong>: explicit 키워드를 사용하여 의도하지 않은 암시적 변환을 방지합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../strategy.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="strategy_csharp.html" class="next-button">C# 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -394,7 +425,7 @@ Player1이(가) 치유 능력을 사용했습니다!
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Singleton 패턴 - C# 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,25 +37,25 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
-                <h1>Singleton 패턴 - C# 코드</h1>
-                <div class="pattern-meta">
+                <h1>Singleton 패턴 - C# 구현</h1>
+                <div class="code-meta">
                     <span class="category">생성 패턴</span>
-                    <span class="language">C# 구현</span>
+                    <span class="language">C# 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Singleton 패턴의 C# 구현</h2>
-                    <p>Singleton 패턴의 C# 구현 코드와 사용 예시입니다.</p>
+                    <p>Singleton 패턴은 클래스의 인스턴스가 애플리케이션 내에서 단 하나만 존재하도록 보장하고, 이 인스턴스에 대한 전역적인 접근점을 제공하는 디자인 패턴입니다. 아래는 C#으로 구현한 Singleton 패턴의 예시 코드입니다.</p>
                     
                     <div class="code-section">
-                        <h3>4.1 기본 Singleton</h3>
+                        <h3>기본 Singleton</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace SingletonPattern
@@ -85,8 +93,10 @@ namespace SingletonPattern
         }
     }
 }</code></pre>
+                    </div>
 
-                        <h3>4.2 스레드 안전한 Singleton</h3>
+                    <div class="code-section">
+                        <h3>스레드 안전한 Singleton</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace SingletonPattern
@@ -127,8 +137,10 @@ namespace SingletonPattern
         }
     }
 }</code></pre>
+                    </div>
 
-                        <h3>4.3 사용 예시</h3>
+                    <div class="code-section">
+                        <h3>사용 예시</h3>
                         <pre><code class="language-csharp">using System;
 
 namespace SingletonPattern
@@ -151,13 +163,46 @@ namespace SingletonPattern
     }
 }</code></pre>
                     </div>
+
+                    <div class="code-section">
+                        <h3>실행 결과</h3>
+                        <pre><code>Singleton 인스턴스가 생성되었습니다.
+singleton1과 singleton2는 같은 인스턴스인가? True
+Singleton이 작업을 수행 중입니다.
+ThreadSafeSingleton 인스턴스가 생성되었습니다.
+ThreadSafeSingleton이 작업을 수행 중입니다.</code></pre>
+                    </div>
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../singleton.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="singleton_cpp.html" class="next-button">C++ 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 Singleton 패턴의 기본적인 구현을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>정적 인스턴스 변수</strong>: 클래스의 유일한 인스턴스를 저장하는 정적 변수입니다.</li>
+                            <li><strong>public 정적 접근자</strong>: 외부에서 싱글톤 인스턴스에 접근할 수 있는 정적 프로퍼티 또는 메서드입니다.</li>
+                            <li><strong>private 생성자</strong>: 외부에서 인스턴스를 생성하지 못하도록 생성자를 private으로 선언합니다.</li>
+                            <li><strong>지연 초기화</strong>: 인스턴스가 처음 요청될 때만 생성되어 리소스를 절약합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C#에서의 Singleton 패턴 응용</h3>
+                        <ul>
+                            <li><strong>게임 매니저</strong>: 게임 상태, 점수, 난이도 등을 관리하는 매니저 클래스</li>
+                            <li><strong>오디오 매니저</strong>: 게임 내 음악과 효과음을 관리하는 클래스</li>
+                            <li><strong>입력 시스템</strong>: 키보드, 마우스, 터치 입력을 처리하는 클래스</li>
+                            <li><strong>씬 매니저</strong>: 게임 레벨이나 씬 전환을 관리하는 클래스</li>
+                            <li><strong>리소스 캐싱</strong>: 자주 사용되는 에셋이나 데이터를 캐싱하는 클래스</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../singleton.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="singleton_cpp.html" class="next-button">C++ 코드 보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -165,7 +210,7 @@ namespace SingletonPattern
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 

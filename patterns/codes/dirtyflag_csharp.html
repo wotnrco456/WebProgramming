@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dirty Flag 패턴 - C# 코드</title>
     <link rel="stylesheet" href="../../css/common.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    <link rel="stylesheet" href="../../css/pattern-detail.css">
+    <link rel="stylesheet" href="../../css/code-examples.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/csharp.min.js"></script>
 </head>
@@ -22,6 +27,9 @@
                 <a href="../../patterns.html">패턴 목록</a>
                 <a href="#">데모 게임</a>
                 <a href="#">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -29,18 +37,18 @@
         </nav>
     </header>
 
-    <main class="pattern-detail">
-        <section class="pattern-header">
+    <main class="code-example">
+        <section class="code-header">
             <div class="container">
                 <h1>Dirty Flag 패턴 - C# 코드</h1>
-                <div class="pattern-meta">
+                <div class="code-meta">
                     <span class="category">행동 패턴</span>
-                    <span class="language">C# 구현</span>
+                    <span class="language">C# 코드</span>
                 </div>
             </div>
         </section>
 
-        <section class="pattern-content">
+        <section class="code-content">
             <div class="container">
                 <div class="content-section">
                     <h2>Dirty Flag 패턴의 C# 구현</h2>
@@ -395,10 +403,45 @@ Currently loaded sectors:
                 </div>
 
                 <div class="content-section">
-                    <div class="navigation-buttons">
-                        <a href="../dirtyflag.html" class="back-button">패턴 설명으로 돌아가기</a>
-                        <a href="dirtyflag_cpp.html" class="next-button">C++ 코드 보기</a>
+                    <h2>코드 설명</h2>
+                    <p>위 코드는 Dirty Flag 패턴의 기본적인 구현을 보여줍니다.</p>
+                    
+                    <div class="pattern-benefits">
+                        <h3>주요 구성 요소</h3>
+                        <ul>
+                            <li><strong>Sector 클래스</strong>: Dirty Flag 패턴을 적용한 게임 월드의 영역을 나타냅니다. isDirty 플래그를 통해 업데이트 필요성을 표시합니다.</li>
+                            <li><strong>WorldManager 클래스</strong>: 여러 영역을 관리하고 플레이어 위치에 따라 콘텐츠를 로드/언로드하는 역할을 합니다.</li>
+                            <li><strong>ResourceManager 클래스</strong>: 실제 리소스 로딩과 언로딩을 처리합니다.</li>
+                        </ul>
                     </div>
+                    
+                    <div class="pattern-use-cases">
+                        <h3>C#에서의 특징</h3>
+                        <ul>
+                            <li><strong>명확한 플래그 관리</strong>: MarkDirty()와 Clean() 메서드를 통해 상태 변경을 명시적으로 관리합니다.</li>
+                            <li><strong>조건부 업데이트</strong>: isDirty 플래그가 설정된 영역만 선택적으로 업데이트하여 효율성을 높입니다.</li>
+                            <li><strong>상태 변화 감지</strong>: 플레이어의 위치 변화를 감지하여 필요한 영역만 로드하거나 언로드합니다.</li>
+                            <li><strong>자원 관리</strong>: ResourceManager를 통해 실제 리소스의 로드와 언로드를 추상화합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="pattern-benefits">
+                        <h3>Unity에서의 Dirty Flag 패턴 응용</h3>
+                        <ul>
+                            <li><strong>동적 레벨 로딩</strong>: 플레이어 주변의 레벨 영역만 로드하여 메모리 사용을 최적화할 수 있습니다.</li>
+                            <li><strong>원거리 Culling</strong>: 플레이어와 멀리 떨어져 렌더링이 필요없는 객체들을 비활성화하여 렌더링 성능을 향상시킬 수 있습니다.</li>
+                            <li><strong>UGUI 최적화</strong>: 변경된 UI 요소만 다시 그려 Unity UI 시스템의 성능을 향상시킬 수 있습니다.</li>
+                            <li><strong>과도한 연산 방지</strong>: 물리 연산, 경로 탐색, AI 로직등 비용이 많이 드는 연산을 필요한 경우에만 수행할 수 있습니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="../dirtyflag.html" class="back-button"><i class="fas fa-arrow-left"></i> 패턴 설명으로 돌아가기</a>
+                    <a href="dirtyflag_cpp.html" class="next-button">C++ 코드 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
                 </div>
             </div>
         </section>
@@ -406,7 +449,7 @@ Currently loaded sectors:
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 GameDev PatternHub. All rights reserved.</p>
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
         </div>
     </footer>
 
