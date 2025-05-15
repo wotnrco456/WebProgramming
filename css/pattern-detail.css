@@ -39,6 +39,40 @@
     line-height: 1.2;
 }
 
+/* 로딩 상태 애니메이션 */
+.pattern-header h1.loading {
+    position: relative;
+}
+
+.pattern-header h1.loading::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 3px;
+    animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+    0% {
+        width: 40px;
+        opacity: 0.5;
+    }
+    50% {
+        width: 100px;
+        opacity: 1;
+    }
+    100% {
+        width: 40px;
+        opacity: 0.5;
+    }
+}
+
 .pattern-meta {
     display: flex;
     justify-content: center;
@@ -62,6 +96,7 @@
     padding: 5rem 0;
     background-color: var(--light-bg);
     transition: background-color 0.3s ease;
+    min-height: 50vh; /* 최소 높이 설정 */
 }
 
 .pattern-content .container {
@@ -70,20 +105,44 @@
     padding: 0 1.5rem;
 }
 
+/* 로딩 중인 콘텐츠 스타일 */
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(37, 99, 235, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: var(--light-text);
+    font-size: 1.1rem;
+}
+
 .content-section {
     margin-bottom: 4rem;
-    animation: fadeInUp 0.8s ease-out forwards;
     opacity: 0;
     transform: translateY(20px);
-    animation-delay: 0.1s;
+    transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.content-section:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.content-section:nth-child(3) {
-    animation-delay: 0.3s;
+.content-section.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .content-section h2 {
@@ -281,6 +340,78 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* 스켈레톤 로딩 애니메이션 */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 25%, 
+        rgba(255, 255, 255, 0.2) 37%, 
+        rgba(255, 255, 255, 0.1) 63%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    height: 16px;
+    margin-bottom: 8px;
+}
+
+.skeleton-title {
+    height: 32px;
+    width: 70%;
+    margin-bottom: 24px;
+}
+
+.skeleton-text {
+    height: 16px;
+}
+
+.skeleton-text-short {
+    width: 50%;
+}
+
+.skeleton-text-medium {
+    width: 70%;
+}
+
+.skeleton-text-long {
+    width: 90%;
+}
+
+/* 에러 메시지 스타일 */
+.error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.error-message h2 {
+    color: #ef4444;
+    margin-bottom: 0.5rem;
+    border-bottom: none;
+}
+
+.error-message p {
+    color: #ef4444;
+    margin-bottom: 0.5rem;
+}
+
+.error-message a {
+    color: #ef4444;
+    font-weight: 600;
+    text-decoration: underline;
 }
 
 /* 반응형 디자인 - 패턴 상세 페이지 */
