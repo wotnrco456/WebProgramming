@@ -1,3 +1,9 @@
+// 페이지 로드 전에 테마 적용 (깜빡임 방지)
+(function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
     // 테마 토글 기능
     const themeToggle = document.getElementById('theme-toggle');
