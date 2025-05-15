@@ -1,0 +1,75 @@
+/* 패턴 카드 스타일 재정의 */
+.pattern-card {
+    padding: 0 !important; /* index.html의 패딩을 제거하고 patterns.html과 동일하게 */
+    overflow: hidden !important;
+}
+
+.pattern-content {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 240px; /* 최소 높이 늘림 */
+}
+
+.pattern-content h3 {
+    color: var(--secondary-color);
+    margin-bottom: 0.75rem;
+    font-size: 1.4rem;
+}
+
+.pattern-content p {
+    color: var(--light-text);
+    margin-bottom: 5.5rem; /* 아래쪽 여백 늘림 */
+    line-height: 1.6;
+}
+
+/* 태그 스타일 */
+.pattern-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    position: absolute;
+    bottom: 4.5rem; /* 하단에서 간격 늘림 */
+    left: 2rem;
+}
+
+.tag {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .tag {
+    background-color: rgba(129, 140, 248, 0.1);
+}
+
+/* 더 알아보기 링크 */
+.pattern-content .learn-more {
+    position: absolute;
+    bottom: 2rem; /* 하단에 고정 */
+    left: 2rem;
+    margin-top: 0;
+}
+
+.pattern-icon {
+    padding: 2rem 0;
+    text-align: center;
+    background-color: rgba(37, 99, 235, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .pattern-icon {
+    background-color: rgba(129, 140, 248, 0.1);
+}
+
+.pattern-icon i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
