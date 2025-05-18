@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문서 - GameDev PatternHub</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/document.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- PDF.js 스타일시트 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf_viewer.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>GameDev PatternHub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">홈</a>
+                <a href="patterns.html">패턴 목록</a>
+                <a href="demo-game.html">데모 게임</a>
+                <a href="document.html" class="active">문서</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="다크 모드 전환">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="document-main section-with-top-padding">
+        <div class="document-container">
+            <div class="document-header">
+                <h1>디자인 패턴 문서</h1>
+                <p class="document-description">게임 개발에 유용한 디자인 패턴과 SOLID 원칙에 관한 포괄적인 문서입니다.</p>
+            </div>
+
+            <div class="document-controls">
+                <div class="control-group">
+                    <button id="prev-page" class="control-btn"><i class="fas fa-chevron-left"></i> 이전 페이지</button>
+                    <div class="page-info">
+                        <span id="page-num">0</span> / <span id="page-count">0</span>
+                    </div>
+                    <button id="next-page" class="control-btn">다음 페이지 <i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="control-group">
+                    <button id="zoom-out" class="control-btn"><i class="fas fa-search-minus"></i></button>
+                    <select id="zoom-select" class="zoom-select">
+                        <option value="0.5">50%</option>
+                        <option value="0.75">75%</option>
+                        <option value="1" selected>100%</option>
+                        <option value="1.25">125%</option>
+                        <option value="1.5">150%</option>
+                        <option value="2">200%</option>
+                    </select>
+                    <button id="zoom-in" class="control-btn"><i class="fas fa-search-plus"></i></button>
+                </div>
+                <div class="control-group">
+                    <button id="full-screen" class="control-btn"><i class="fas fa-expand"></i> 전체화면</button>
+                    <button id="print-document" class="control-btn"><i class="fas fa-print"></i> 인쇄</button>
+                    <button id="download-document" class="control-btn"><i class="fas fa-download"></i> 다운로드</button>
+                </div>
+            </div>
+
+            <div class="document-content">
+                <div class="document-sidebar">
+                    <div class="sidebar-header">
+                        <h2>목차</h2>
+                        <button id="toggle-sidebar" class="toggle-sidebar">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar-content">
+                        <ul id="outline-list" class="outline-list">
+                            <!-- 목차가 여기에 동적으로 생성됩니다 -->
+                            <li class="outline-loading">목차를 불러오는 중...</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="document-viewer-container">
+                    <div id="pdf-loading" class="pdf-loading">
+                        <div class="loading-spinner"></div>
+                        <p>문서를 불러오는 중입니다...</p>
+                    </div>
+                    <div id="pdf-viewer" class="pdf-viewer">
+                        <div id="viewer" class="pdfViewer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 GameDev PatternHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- PDF.js 라이브러리 로드 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+
+    <!-- 기본 JS -->
+    <script src="js/main.js"></script>
+    
+    <!-- PDF 뷰어 JS -->
+    <script src="js/document-viewer.js"></script>
+</body>
+</html>
