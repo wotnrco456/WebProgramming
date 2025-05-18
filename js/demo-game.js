@@ -14,7 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 게임 로드 상태
     let gameLoaded = false;
-    let gameElement = null;
+    
+    // Unity 인스턴스에 직접 접근하기 위한 전역 변수
+    window.gameUnityInstance = null;
     
     // 게임 로드 버튼 클릭 이벤트
     loadGameBtn.addEventListener('click', function() {
@@ -22,8 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     /**
-     * 게임 로드 함수
-     * game/index.html을 로드하여 유니티 WebGL 게임을 표시합니다.
+     * 게임 로드 함수 - iframe 대신 직접 로드 방식으로 변경
      */
     function loadGame() {
         if (gameLoaded) return;
@@ -37,177 +38,96 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         try {
-            console.log('게임 로드 시도 중...');
+            console.log('게임 직접 로드 시도 중...');
             
-            // 두 가지 방법 중 첫 번째 - 직접 HTML 태그로 삽입
-            // 게임 경로 설정
-            const gamePath = './game/index.html'; // 상대경로로 수정
-            console.log('사용할 게임 경로:', gamePath);
-            
-            // iframe HTML 직접 생성
+            // Unity 게임을 직접 로드하기 위한 초기 HTML 구조
             gameContent.innerHTML = `
-                <iframe src="${gamePath}" class="game-embed" style="width:100%; height:100%; border:none; background-color:#000; overflow:hidden;" 
-                    allow="fullscreen; autoplay" allowfullscreen frameborder="0" scrolling="no"></iframe>
+                <div id="unity-container" class="unity-desktop">
+                    <canvas id="unity-canvas" width="960" height="600" tabindex="-1" style="width: 100%; height: 100%;"></canvas>
+                    <div id="unity-loading-bar">
+                        <div id="unity-logo"></div>
+                        <div id="unity-progress-bar-empty">
+                            <div id="unity-progress-bar-full"></div>
+                        </div>
+                    </div>
+                    <div id="unity-warning"></div>
+                </div>
             `;
             
-            // 생성된 iframe 요소 접근
-            gameElement = gameContent.querySelector('iframe');
+            // Unity 컨테이너와 캔버스 스타일 설정
+            const unityContainer = document.getElementById('unity-container');
+            unityContainer.style.width = '100%';
+            unityContainer.style.height = '100%';
+            unityContainer.style.position = 'relative';
+            unityContainer.style.background = '#000';
             
-            console.log('iframe 요소 생성됨:', gameElement ? 'O' : 'X');
+            const unityCanvas = document.getElementById('unity-canvas');
+            unityCanvas.style.width = '100%';
+            unityCanvas.style.height = '100%';
             
-            // iframe 로딩 이벤트 처리
-            gameElement.onload = function() {
-                console.log('iframe 로드 완료');
-                
-                // 상태 초기화
-                clearTimeout(loadTimeoutId);
-                
-                try {
-                    // iframe 로드 성공 확인
-                    if (gameElement.contentWindow) {
-                        console.log('iframe contentWindow 접근 가능');
-                        gameLoaded = true;
-                        
-                        // Unity 스크립트가 완전히 로드되기를 기다렸다가 요소 제거 시도
-                        // 오류 방지: 유니티 스크립트가 전체화면 버튼 onclick 이벤트를 설정한 후 제거
-                        setTimeout(function() {
-                            // iframe 내부 접근 시도
-                            try {
-                                const iframeDoc = gameElement.contentDocument || gameElement.contentWindow.document;
-                                
-                                // 유니티 컨테이너 요소 찾기
-                                const unityContainer = iframeDoc.getElementById('unity-container');
-                                
-                                if (unityContainer) {
-                                    console.log('유니티 컨테이너 발견, 스타일 조정 시도');
-                                    
-                                    // 컨테이너 스타일 조정
-                                    unityContainer.style.position = 'absolute';
-                                    unityContainer.style.left = '0';
-                                    unityContainer.style.top = '0';
-                                    unityContainer.style.width = '100%';
-                                    unityContainer.style.height = '100%';
-                                    unityContainer.style.margin = '0';
-                                    unityContainer.style.padding = '0';
-                                    unityContainer.style.transform = 'none'; // 기존 중앙 정렬 transform 제거
-                                    
-                                    // 정색 제거 및 푸터 요소 제거
-                                    const unityFooter = iframeDoc.getElementById('unity-footer');
-                                    if (unityFooter) {
-                                        // 푸터를 완전히 제거
-                                        unityFooter.style.display = 'none';
-                                    }
-                                    
-                                    // 유니티 로고 및 제목도 제거 시도
-                                    const logoElement = iframeDoc.getElementById('unity-logo-title-footer');
-                                    if (logoElement) {
-                                        logoElement.style.display = 'none';
-                                    }
-                                    
-                                    const buildTitle = iframeDoc.getElementById('unity-build-title');
-                                    if (buildTitle) {
-                                        buildTitle.style.display = 'none';
-                                    }
-                                    
-                                    // 전체화면 버튼 제거
-                                    const fullscreenBtn = iframeDoc.getElementById('unity-fullscreen-button');
-                                    if (fullscreenBtn) {
-                                        fullscreenBtn.style.display = 'none';
-                                    }
-                                    
-                                    // 캔버스 스타일 조정
-                                    const unityCanvas = iframeDoc.getElementById('unity-canvas');
-                                    if (unityCanvas) {
-                                        // 캔버스 크기 및 스타일 조정
-                                        unityCanvas.style.width = '100%';
-                                        unityCanvas.style.height = '100%';
-                                        unityCanvas.style.display = 'block';
-                                        
-                                        // 고정 크기 제거
-                                        unityCanvas.removeAttribute('width');
-                                        unityCanvas.removeAttribute('height');
-                                    }
-                                    
-                                    // 추가 스타일 적용
-                                    const styleElement = iframeDoc.createElement('style');
-                                    styleElement.textContent = `
-                                        html, body { 
-                                          margin: 0; 
-                                          padding: 0; 
-                                          overflow: hidden; 
-                                          width: 100%; 
-                                          height: 100%; 
-                                          background: #000; 
-                                        }
-                                        #unity-container { 
-                                          position: absolute; 
-                                          width: 100%; 
-                                          height: 100%; 
-                                          left: 0; 
-                                          top: 0; 
-                                          transform: none; 
-                                        }
-                                        #unity-canvas { 
-                                          width: 100% !important; 
-                                          height: 100% !important; 
-                                          background: #000; 
-                                          display: block; 
-                                        }
-                                        /* 하단 유니티 푸터 완전히 숨기기 */
-                                        #unity-footer { 
-                                          display: none !important;
-                                        }
-                                        /* 로고, 제목, 전체화면 버튼 각각 숨기기 */
-                                        #unity-logo-title-footer, #unity-build-title, #unity-fullscreen-button {
-                                          display: none !important;
-                                        }
-                                        #unity-loading-bar { z-index: 10; }
-                                        .unity-desktop { left: 0 !important; top: 0 !important; transform: none !important; }
-                                    `;
-                                    iframeDoc.head.appendChild(styleElement);
-                                    
-                                    console.log('유니티 컨테이너 스타일 조정 완료');
-                                }
-                            } catch (error) {
-                                console.warn('유니티 컨테이너 스타일 조정 실패:', error);
-                            }
-                        }, 2000); // 오류 방지를 위해 2초 뒤에 적용
-                    }
-                } catch (error) {
-                    console.warn('iframe 내부 접근 중 오류:', error);
-                }
+            // Unity 로더 및 스크립트 설정
+            const buildUrl = "./game/Build";
+            const loaderUrl = buildUrl + "/game.loader.js";
+            
+            const config = {
+                dataUrl: buildUrl + "/game.data",
+                frameworkUrl: buildUrl + "/game.framework.js",
+                codeUrl: buildUrl + "/game.wasm",
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "DefaultCompany",
+                productName: "DesignPattern",
+                productVersion: "0.1",
             };
             
-            // iframe 로드 오류 처리
-            gameElement.onerror = function(error) {
-                console.error('iframe 로드 오류:', error);
-                clearTimeout(loadTimeoutId);
+            // Unity 로딩 게이지 표시
+            document.querySelector("#unity-loading-bar").style.display = "block";
+            
+            // Unity 로더 스크립트 추가
+            const script = document.createElement("script");
+            script.src = loaderUrl;
+            script.onload = () => {
+                // Unity 인스턴스 생성
+                createUnityInstance(unityCanvas, config, (progress) => {
+                    // 로딩 진행 상태 업데이트
+                    const progressBarFull = document.querySelector("#unity-progress-bar-full");
+                    if (progressBarFull) {
+                        progressBarFull.style.width = 100 * progress + "%";
+                    }
+                }).then((unityInstance) => {
+                    // Unity 인스턴스가 준비되면 전역 변수에 저장
+                    window.gameUnityInstance = unityInstance;
+                    console.log('Unity 인스턴스가 준비되었습니다.');
+                    
+                    // 로딩 바 숨기기
+                    const loadingBar = document.querySelector("#unity-loading-bar");
+                    if (loadingBar) {
+                        loadingBar.style.display = "none";
+                    }
+                    
+                    // 게임 로드 완료 상태 설정
+                    gameLoaded = true;
+                    
+                    // 이미 음소거 상태라면 음소거 적용
+                    if (isMuted) {
+                        toggleMute(true);
+                    }
+                    
+                    // 로드 완료 메시지 표시
+                    showGameMessage('게임이 준비되었습니다!');
+                }).catch((message) => {
+                    console.error('Unity 인스턴스 생성 오류:', message);
+                    handleGameLoadError();
+                });
+            };
+            
+            // 스크립트 오류 처리
+            script.onerror = function(error) {
+                console.error('Unity 로더 스크립트 로드 오류:', error);
                 handleGameLoadError();
             };
             
-            // 로딩 타임아웃 설정
-            var loadTimeoutId = setTimeout(function() {
-                console.warn('게임 로드 타임아웃 - 오류 처리 시작');
-                handleGameLoadError();
-            }, 15000); // 15초 타임아웃
-            
-            // 게임 로드 상태 업데이트
-            gameLoaded = true;
-            
-            // 윈도우 언로드 시 정리
-            window.addEventListener('unload', function() {
-                // 필요한 정리 작업
-                if (gameElement && gameElement.contentWindow) {
-                    try {
-                        // 게임 인스턴스 정리 시도
-                        if (gameElement.contentWindow.unityInstance) {
-                            gameElement.contentWindow.unityInstance.Quit();
-                        }
-                    } catch (e) {
-                        console.warn('게임 정리 중 오류:', e);
-                    }
-                }
-            });
+            // 스크립트를 문서에 추가
+            document.body.appendChild(script);
             
         } catch (error) {
             console.error('게임 로드 중 오류 발생:', error);
@@ -242,29 +162,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 게임 로드 상태 초기화
         gameLoaded = false;
-        gameElement = null;
+        window.gameUnityInstance = null;
     }
     
     // 전체화면 버튼 클릭 이벤트
     fullscreenBtn.addEventListener('click', function() {
-        // 게임 iframe이 있는 경우 iframe 내부의 전체화면 버튼을 활용하려고 시도
-        if (gameLoaded && gameElement && gameElement.contentWindow) {
-            try {
-                // iframe 내부의 전체화면 버튼 찾기 시도
-                const iframeFullscreenBtn = gameElement.contentDocument.querySelector('#unity-fullscreen-button');
-                if (iframeFullscreenBtn) {
-                    // iframe 내부의 전체화면 버튼 클릭
-                    iframeFullscreenBtn.click();
-                    return;
-                }
-            } catch (error) {
-                console.warn('iframe 내부 전체화면 접근 실패:', error);
-                // Cross-Origin 제한으로 접근 실패 시 기본 전체화면 사용
-            }
+        // Unity 인스턴스의 내장 전체화면 기능 사용
+        if (gameLoaded && window.gameUnityInstance) {
+            window.gameUnityInstance.SetFullscreen(1);
+        } else {
+            // Unity가 로드되지 않았거나 접근할 수 없는 경우 DOM 전체화면 사용
+            toggleFullscreen();
         }
-        
-        // 기본 전체화면 동작 실행
-        toggleFullscreen();
     });
     
     /**
@@ -329,55 +238,21 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // 게임 재시작 로직
-        try {
-            if (gameElement && gameElement.contentWindow) {
-                // iframe 페이지 새로고침
-                gameElement.src = gameElement.src;
-                showGameMessage('게임을 재시작합니다...');
-            } else {
-                // iframe이 없는 경우 게임 다시 로드
-                loadGame();
-            }
-        } catch (error) {
-            console.error('게임 재시작 중 오류:', error);
-            showGameMessage('게임 재시작 중 오류가 발생했습니다.');
-        }
+        // 게임 재시작 로직 - 현재 페이지 새로고침
+        location.reload();
     });
     
     // 음소거 버튼 클릭 이벤트
     let isMuted = false;
     muteBtn.addEventListener('click', function() {
         isMuted = !isMuted;
+        toggleMute(isMuted);
         
+        // 버튼 상태 업데이트
         if (isMuted) {
             muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i> 음소거 해제';
-            // 유니티 게임 오디오 음소거 시도
-            try {
-                if (gameElement && gameElement.contentWindow) {
-                    // 유니티 인스턴스에 접근 시도 (Same-Origin Policy 제한 있을 수 있음)
-                    const unityInstance = gameElement.contentWindow.unityInstance;
-                    if (unityInstance) {
-                        // 유니티 게임에 음소거 메시지 전송 시도
-                        unityInstance.SendMessage('AudioManager', 'SetMute', true);
-                    }
-                }
-            } catch (error) {
-                console.warn('음소거 적용 실패:', error);
-            }
         } else {
             muteBtn.innerHTML = '<i class="fas fa-volume-up"></i> 음소거';
-            // 유니티 게임 오디오 음소거 해제 시도
-            try {
-                if (gameElement && gameElement.contentWindow) {
-                    const unityInstance = gameElement.contentWindow.unityInstance;
-                    if (unityInstance) {
-                        unityInstance.SendMessage('AudioManager', 'SetMute', false);
-                    }
-                }
-            } catch (error) {
-                console.warn('음소거 해제 실패:', error);
-            }
         }
         
         // 메시지 표시
@@ -385,11 +260,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     /**
+     * 음소거 토글 함수
+     * @param {boolean} mute 음소거 여부
+     */
+    function toggleMute(mute) {
+        if (gameLoaded && window.gameUnityInstance) {
+            try {
+                // Unity 게임에 음소거 명령 전송 - int 값 사용
+                // bool값을 int로 변환(true->1, false->0)
+                const muteValue = mute ? 1 : 0;
+                window.gameUnityInstance.SendMessage('AudioManager', 'SetMute', muteValue);
+                console.log('음소거 상태 변경:', mute, '값:', muteValue);
+                return true;
+            } catch (error) {
+                console.warn('음소거 기능 실행 중 오류:', error);
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * 게임 메시지 표시 함수
      * @param {string} message 표시할 메시지
      */
     function showGameMessage(message) {
-        if (!gameLoaded || !gameElement) return;
+        if (!gameContent) return;
         
         const messageElement = document.createElement('div');
         messageElement.className = 'game-message';
@@ -460,59 +356,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    /**
-     * 실제 게임 HTML 콘텐츠를 로드하는 함수
-     * iframe 대신 fetch와 DOMParser를 사용하여 안전하게 로드
-     * 
-     * @param {string} url 로드할 HTML 파일 URL
-     * @returns {Promise} HTML 콘텐츠 로드 프로미스
-     */
-    function loadGameHTMLContent(url) {
-        return fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.text();
-            })
-            .then(html => {
-                // HTML 파싱
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                
-                // 필요한 스크립트와 스타일을 추출
-                const scripts = Array.from(doc.querySelectorAll('script'));
-                const styles = Array.from(doc.querySelectorAll('style, link[rel="stylesheet"]'));
-                const bodyContent = doc.body.innerHTML;
-                
-                // 컨테이너 생성
-                const container = document.createElement('div');
-                container.style.width = '100%';
-                container.style.height = '100%';
-                container.innerHTML = bodyContent;
-                
-                // 스타일 추가
-                styles.forEach(style => {
-                    const clone = style.cloneNode(true);
-                    document.head.appendChild(clone);
-                });
-                
-                // 스크립트 추가 (보안 주의: 신뢰할 수 있는 소스만 로드)
-                scripts.forEach(script => {
-                    if (script.src) {
-                        const newScript = document.createElement('script');
-                        newScript.src = script.src;
-                        document.body.appendChild(newScript);
-                    } else {
-                        // 인라인 스크립트는 새 스크립트 요소로 실행
-                        // 주의: 보안 위험이 있으므로 신뢰할 수 있는 소스만 사용
-                        const newScript = document.createElement('script');
-                        newScript.textContent = script.textContent;
-                        document.body.appendChild(newScript);
-                    }
-                });
-                
-                return container;
-            });
-    }
+    // 페이지를 떠날 때 Unity 인스턴스 정리
+    window.addEventListener('unload', function() {
+        if (window.gameUnityInstance) {
+            window.gameUnityInstance.Quit();
+        }
+    });
 });
