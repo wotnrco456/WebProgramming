@@ -111,16 +111,31 @@
         width: 100%;
         background-color: var(--bg-color);
         box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-        padding: 1rem;
+        padding: 1.25rem;
         text-align: center;
         flex-direction: column;
+        align-items: center; /* 중앙 정렬을 위해 추가 */
+        z-index: 100; /* 다른 요소보다 앞에 표시 */
+        border-top: 1px solid var(--border-color);
     }
 
     .nav-links a {
-        margin: 0;
-        padding: 0.75rem;
+        margin: 0.25rem 0;
+        padding: 0.9rem 1rem;
         display: block;
-        width: 100%;
+        width: 160px; /* 해당 너비로 고정 */
+        text-align: center; /* 텍스트 중앙 정렬 */
+        border-radius: 8px; /* 둘근 모서리 */
+        background-color: var(--light-bg); /* 배경색 추가 */
+        font-weight: 600; /* 두께게 */
+        transition: all 0.2s ease; /* 전환 효과 */
+    }
+    
+    .nav-links a:hover, 
+    .nav-links a.active {
+        background-color: var(--primary-color); /* 활성화 시 배경색 */
+        color: white; /* 활성화 시 텍스트 색상 */
+        transform: translateY(-2px); /* 활성화 시 약간 위로 이동 */
     }
 
     .nav-links a::after {
@@ -129,6 +144,28 @@
 
     .mobile-menu-btn {
         display: block;
+    }
+    
+    /* 테마 토글 버튼도 중앙 정렬 */
+    .nav-links .theme-toggle {
+        margin: 1rem auto 0;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--light-bg);
+        border: none;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-links .theme-toggle:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
     }
 }
 
