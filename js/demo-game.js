@@ -65,107 +65,114 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     // iframe 로드 성공 확인
                     if (gameElement.contentWindow) {
-                    console.log('iframe contentWindow 접근 가능');
-                    gameLoaded = true;
+                        console.log('iframe contentWindow 접근 가능');
+                        gameLoaded = true;
                         
-                    // iframe 내부 유니티 컨테이너 스타일 조정 시도
-                    try {
-                        const iframeDoc = gameElement.contentDocument || gameElement.contentWindow.document;
-                        
-                        // 유니티 컨테이너 요소 찾기
-                        const unityContainer = iframeDoc.getElementById('unity-container');
-                        const unityCanvas = iframeDoc.getElementById('unity-canvas');
-                        
-                        if (unityContainer) {
-                            console.log('유니티 컨테이너 발견, 스타일 조정 시도');
-                            
-                            // 컨테이너 스타일 조정
-                            unityContainer.style.position = 'absolute';
-                            unityContainer.style.left = '0';
-                            unityContainer.style.top = '0';
-                            unityContainer.style.width = '100%';
-                            unityContainer.style.height = '100%';
-                            unityContainer.style.margin = '0';
-                            unityContainer.style.padding = '0';
-                            unityContainer.style.transform = 'none'; // 기존 중앙 정렬 transform 제거
-                            
-                            // 정색 제거
-                            const unityFooter = iframeDoc.getElementById('unity-footer');
-                            if (unityFooter) {
-                                unityFooter.style.background = 'transparent';
-                            }
-                            
-                            // 캔버스 스타일 조정
-                            if (unityCanvas) {
-                                // 캔버스 크기 및 스타일 조정
-                                unityCanvas.style.width = '100%';
-                                unityCanvas.style.height = '100%';
-                                unityCanvas.style.display = 'block';
+                        // Unity 스크립트가 완전히 로드되기를 기다렸다가 요소 제거 시도
+                        // 오류 방지: 유니티 스크립트가 전체화면 버튼 onclick 이벤트를 설정한 후 제거
+                        setTimeout(function() {
+                            // iframe 내부 접근 시도
+                            try {
+                                const iframeDoc = gameElement.contentDocument || gameElement.contentWindow.document;
                                 
-                                // 고정 크기 제거
-                                unityCanvas.removeAttribute('width');
-                                unityCanvas.removeAttribute('height');
+                                // 유니티 컨테이너 요소 찾기
+                                const unityContainer = iframeDoc.getElementById('unity-container');
                                 
-                                // WebGL 자체 사이즈 조정을 위해 코드 오버라이드 시도
-                                // Unity 코드에서 config.matchWebGLToCanvasSize를 false로 설정하는 부분을 오버라이드
-                                try {
-                                    // 오버라이드 시도
-                                    const configScript = Array.from(iframeDoc.scripts).find(script => 
-                                        script.textContent && script.textContent.includes('config.matchWebGLToCanvasSize'));
+                                if (unityContainer) {
+                                    console.log('유니티 컨테이너 발견, 스타일 조정 시도');
                                     
-                                    if (configScript) {
-                                        console.log('WebGL 캔버스 설정 스크립트 발견, 오버라이드 시도');
-                                        
-                                        // 스크립트 태그에 데이터 속성 추가
-                                        configScript.setAttribute('data-modified', 'true');
+                                    // 컨테이너 스타일 조정
+                                    unityContainer.style.position = 'absolute';
+                                    unityContainer.style.left = '0';
+                                    unityContainer.style.top = '0';
+                                    unityContainer.style.width = '100%';
+                                    unityContainer.style.height = '100%';
+                                    unityContainer.style.margin = '0';
+                                    unityContainer.style.padding = '0';
+                                    unityContainer.style.transform = 'none'; // 기존 중앙 정렬 transform 제거
+                                    
+                                    // 정색 제거 및 푸터 요소 제거
+                                    const unityFooter = iframeDoc.getElementById('unity-footer');
+                                    if (unityFooter) {
+                                        // 푸터를 완전히 제거
+                                        unityFooter.style.display = 'none';
                                     }
-                                } catch (e) {
-                                    console.warn('WebGL 설정 오버라이드 실패:', e);
+                                    
+                                    // 유니티 로고 및 제목도 제거 시도
+                                    const logoElement = iframeDoc.getElementById('unity-logo-title-footer');
+                                    if (logoElement) {
+                                        logoElement.style.display = 'none';
+                                    }
+                                    
+                                    const buildTitle = iframeDoc.getElementById('unity-build-title');
+                                    if (buildTitle) {
+                                        buildTitle.style.display = 'none';
+                                    }
+                                    
+                                    // 전체화면 버튼 제거
+                                    const fullscreenBtn = iframeDoc.getElementById('unity-fullscreen-button');
+                                    if (fullscreenBtn) {
+                                        fullscreenBtn.style.display = 'none';
+                                    }
+                                    
+                                    // 캔버스 스타일 조정
+                                    const unityCanvas = iframeDoc.getElementById('unity-canvas');
+                                    if (unityCanvas) {
+                                        // 캔버스 크기 및 스타일 조정
+                                        unityCanvas.style.width = '100%';
+                                        unityCanvas.style.height = '100%';
+                                        unityCanvas.style.display = 'block';
+                                        
+                                        // 고정 크기 제거
+                                        unityCanvas.removeAttribute('width');
+                                        unityCanvas.removeAttribute('height');
+                                    }
+                                    
+                                    // 추가 스타일 적용
+                                    const styleElement = iframeDoc.createElement('style');
+                                    styleElement.textContent = `
+                                        html, body { 
+                                          margin: 0; 
+                                          padding: 0; 
+                                          overflow: hidden; 
+                                          width: 100%; 
+                                          height: 100%; 
+                                          background: #000; 
+                                        }
+                                        #unity-container { 
+                                          position: absolute; 
+                                          width: 100%; 
+                                          height: 100%; 
+                                          left: 0; 
+                                          top: 0; 
+                                          transform: none; 
+                                        }
+                                        #unity-canvas { 
+                                          width: 100% !important; 
+                                          height: 100% !important; 
+                                          background: #000; 
+                                          display: block; 
+                                        }
+                                        /* 하단 유니티 푸터 완전히 숨기기 */
+                                        #unity-footer { 
+                                          display: none !important;
+                                        }
+                                        /* 로고, 제목, 전체화면 버튼 각각 숨기기 */
+                                        #unity-logo-title-footer, #unity-build-title, #unity-fullscreen-button {
+                                          display: none !important;
+                                        }
+                                        #unity-loading-bar { z-index: 10; }
+                                        .unity-desktop { left: 0 !important; top: 0 !important; transform: none !important; }
+                                    `;
+                                    iframeDoc.head.appendChild(styleElement);
+                                    
+                                    console.log('유니티 컨테이너 스타일 조정 완료');
                                 }
+                            } catch (error) {
+                                console.warn('유니티 컨테이너 스타일 조정 실패:', error);
                             }
-                            
-                            // 추가 스타일 적용
-                            const styleElement = iframeDoc.createElement('style');
-                            styleElement.textContent = `
-                                html, body { 
-                                  margin: 0; 
-                                  padding: 0; 
-                                  overflow: hidden; 
-                                  width: 100%; 
-                                  height: 100%; 
-                                  background: #000; 
-                                }
-                                #unity-container { 
-                                  position: absolute; 
-                                  width: 100%; 
-                                  height: 100%; 
-                                  left: 0; 
-                                  top: 0; 
-                                  transform: none; 
-                                }
-                                #unity-canvas { 
-                                  width: 100% !important; 
-                                  height: 100% !important; 
-                                  background: #000; 
-                                  display: block; 
-                                }
-                                #unity-footer { 
-                                  position: absolute; 
-                                  bottom: 0; 
-                                  width: 100%; 
-                                  background: transparent !important; 
-                                }
-                                #unity-loading-bar { z-index: 10; }
-                                .unity-desktop { left: 0 !important; top: 0 !important; transform: none !important; }
-                            `;
-                            iframeDoc.head.appendChild(styleElement);
-                            
-                            console.log('유니티 컨테이너 스타일 조정 완료');
-                        }
-                    } catch (error) {
-                        console.warn('유니티 컨테이너 스타일 조정 실패:', error);
+                        }, 2000); // 오류 방지를 위해 2초 뒤에 적용
                     }
-                }
                 } catch (error) {
                     console.warn('iframe 내부 접근 중 오류:', error);
                 }
