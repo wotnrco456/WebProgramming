@@ -55,14 +55,36 @@ document.addEventListener('DOMContentLoaded', function() {
             // 로딩 메시지 업데이트
             pdfLoading.innerHTML = `
                 <div class="loading-spinner"></div>
-                <p>문서를 불러오는 중... (0/${pdf.numPages})</p>
+                <p>최적의 크기 계산 중...</p>
             `;
             
-            // 목차 로드
-            loadOutline();
-            
-            // 전체 페이지 미리 렌더링
-            renderAllPages();
+            // 모든 페이지중 하나를 선택하여 최적의 크기 계산
+            pdf.getPage(1).then(function(page) {
+                const viewerContainer = document.querySelector('.document-viewer-container');
+                const containerWidth = viewerContainer.clientWidth;
+                
+                // 원본 PDF 페이지의 원래 너비 가져오기 (스케일 1.0)
+                const originalViewport = page.getViewport({ scale: 1.0 });
+                const originalWidth = originalViewport.width;
+                
+                // 좌우 간격이 딱 맞는 최적의 스케일 계산
+                // 양쪽에 약간의 마진(20px)을 두고 계산
+                scale = (containerWidth - 20) / originalWidth;
+                console.log('최적의 스케일:', scale);
+                
+                // 클립 적용: 너무 크거나 작은 경우 조정
+                if (scale < 0.5) scale = 0.5; // 최소 스케일
+                if (scale > 2.0) scale = 2.0; // 최대 스케일
+                
+                // 스케일 표시 업데이트
+                updateZoomSelect();
+                
+                // 이제 목차 로드
+                loadOutline();
+                
+                // 계산된 스케일로 모든 페이지 렌더링
+                renderAllPages();
+            });
             
         }).catch(function(error) {
             console.error('PDF 로드 오류:', error);
@@ -102,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 페이지 렌더링
             pdfDoc.getPage(pageIndex).then(function(page) {
+                // 미리 계산된 scale 사용
                 const viewport = page.getViewport({ scale: scale });
                 
                 // 페이지 컨테이너 생성
