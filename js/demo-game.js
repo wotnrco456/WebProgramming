@@ -23,8 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     /**
      * 게임 로드 함수
-     * HTML 요소를 사용하여 게임 컨텐츠를 로드합니다.
-     * iframe 대신 안전한 방식으로 구현
+     * game/index.html을 로드하여 유니티 WebGL 게임을 표시합니다.
      */
     function loadGame() {
         if (gameLoaded) return;
@@ -38,96 +37,128 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         try {
-            // 게임 컨테이너 생성
-            gameElement = document.createElement('div');
-            gameElement.className = 'game-embed';
-            gameElement.style.width = '100%';
-            gameElement.style.height = '100%';
-            gameElement.style.backgroundColor = '#000';
+            console.log('게임 로드 시도 중...');
             
-            // 실제 환경에서는 여기에 게임 HTML을 로드하거나 WebGL 컨텐츠를 삽입합니다
-            // 예제에서는 간단한 메시지와 캔버스로 대체
+            // 두 가지 방법 중 첫 번째 - 직접 HTML 태그로 삽입
+            // 게임 경로 설정
+            const gamePath = './game/index.html'; // 상대경로로 수정
+            console.log('사용할 게임 경로:', gamePath);
             
-            // 캔버스 생성 (실제 게임에서는 WebGL 컨텐츠로 대체)
-            const canvas = document.createElement('canvas');
-            canvas.width = 1280;
-            canvas.height = 720;
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
+            // iframe HTML 직접 생성
+            gameContent.innerHTML = `
+                <iframe src="${gamePath}" class="game-embed" style="width:100%; height:100%; border:none; background-color:#000;" 
+                    allow="fullscreen; autoplay" allowfullscreen></iframe>
+            `;
             
-            // 간단한 애니메이션으로 게임 로드 시뮬레이션
-            const ctx = canvas.getContext('2d');
-            let animationId;
+            // 생성된 iframe 요소 접근
+            gameElement = gameContent.querySelector('iframe');
             
-            function drawGameDemo() {
-                // 배경 그리기
-                ctx.fillStyle = '#0f172a';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            console.log('iframe 요소 생성됨:', gameElement ? 'O' : 'X');
+            
+            // iframe 로딩 이벤트 처리
+            gameElement.onload = function() {
+                console.log('iframe 로드 완료');
                 
-                // 간단한 제목 표시
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 36px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('디자인 패턴 데모 게임', canvas.width / 2, 100);
+                // 상태 초기화
+                clearTimeout(loadTimeoutId);
                 
-                // 게임 시작 메시지
-                ctx.fillStyle = '#64748b';
-                ctx.font = '24px Inter, sans-serif';
-                ctx.fillText('게임이 로드되었습니다.', canvas.width / 2, canvas.height / 2 - 30);
-                ctx.fillText('이 영역에 실제 게임이 표시됩니다.', canvas.width / 2, canvas.height / 2 + 30);
-                
-                // 애니메이션 지속
-                animationId = requestAnimationFrame(drawGameDemo);
-            }
-            
-            // 캔버스를 게임 요소에 추가
-            gameElement.appendChild(canvas);
-            
-            // 게임 요소를 게임 컨텐츠에 추가
-            gameContent.innerHTML = '';
-            gameContent.appendChild(gameElement);
-            
-            // 애니메이션 시작
-            animationId = requestAnimationFrame(drawGameDemo);
-            
-            // 정리 함수
-            const cleanup = () => {
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
+                try {
+                    // iframe 로드 성공 확인
+                    if (gameElement.contentWindow) {
+                        console.log('iframe contentWindow 접근 가능');
+                        gameLoaded = true;
+                    }
+                } catch (error) {
+                    console.warn('iframe 내부 접근 중 오류:', error);
                 }
             };
+            
+            // iframe 로드 오류 처리
+            gameElement.onerror = function(error) {
+                console.error('iframe 로드 오류:', error);
+                clearTimeout(loadTimeoutId);
+                handleGameLoadError();
+            };
+            
+            // 로딩 타임아웃 설정
+            var loadTimeoutId = setTimeout(function() {
+                console.warn('게임 로드 타임아웃 - 오류 처리 시작');
+                handleGameLoadError();
+            }, 15000); // 15초 타임아웃
             
             // 게임 로드 상태 업데이트
             gameLoaded = true;
             
-            // 로드 완료 로그
-            console.log('게임 데모가 성공적으로 로드되었습니다.');
-            
             // 윈도우 언로드 시 정리
-            window.addEventListener('unload', cleanup);
-            
-            // 실제 게임 환경에서는 여기에 게임 초기화 코드가 들어갑니다
-            // 예: gameInstance.init();
+            window.addEventListener('unload', function() {
+                // 필요한 정리 작업
+                if (gameElement && gameElement.contentWindow) {
+                    try {
+                        // 게임 인스턴스 정리 시도
+                        if (gameElement.contentWindow.unityInstance) {
+                            gameElement.contentWindow.unityInstance.Quit();
+                        }
+                    } catch (e) {
+                        console.warn('게임 정리 중 오류:', e);
+                    }
+                }
+            });
             
         } catch (error) {
             console.error('게임 로드 중 오류 발생:', error);
-            
-            // 오류 메시지 표시
-            gameContent.innerHTML = `
-                <div class="game-placeholder">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>게임을 불러오는 중 오류가 발생했습니다.</p>
-                    <button id="retry-btn" class="load-game-btn">다시 시도</button>
-                </div>
-            `;
-            
-            // 재시도 버튼 이벤트 리스너
-            document.getElementById('retry-btn').addEventListener('click', loadGame);
+            handleGameLoadError();
         }
+    }
+    
+    /**
+     * 게임 로드 오류 처리 함수
+     */
+    function handleGameLoadError() {
+        console.log('게임 로드 오류 처리 함수 실행');
+        
+        // 오류 메시지 표시
+        gameContent.innerHTML = `
+            <div class="game-placeholder">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>게임을 불러오는 중 오류가 발생했습니다.</p>
+                <p class="error-details">파일 경로를 확인하고 범위 접근 오류가 있는지 확인해보세요.</p>
+                <button id="direct-link-btn" class="load-game-btn">게임 페이지 직접 열기</button>
+                <button id="retry-btn" class="load-game-btn">다시 시도</button>
+            </div>
+        `;
+        
+        // 재시도 버튼 이벤트 리스너
+        document.getElementById('retry-btn').addEventListener('click', loadGame);
+        
+        // 직접 열기 버튼 이벤트 리스너 (테스트용)
+        document.getElementById('direct-link-btn').addEventListener('click', function() {
+            window.open('./game/index.html', '_blank');
+        });
+        
+        // 게임 로드 상태 초기화
+        gameLoaded = false;
+        gameElement = null;
     }
     
     // 전체화면 버튼 클릭 이벤트
     fullscreenBtn.addEventListener('click', function() {
+        // 게임 iframe이 있는 경우 iframe 내부의 전체화면 버튼을 활용하려고 시도
+        if (gameLoaded && gameElement && gameElement.contentWindow) {
+            try {
+                // iframe 내부의 전체화면 버튼 찾기 시도
+                const iframeFullscreenBtn = gameElement.contentDocument.querySelector('#unity-fullscreen-button');
+                if (iframeFullscreenBtn) {
+                    // iframe 내부의 전체화면 버튼 클릭
+                    iframeFullscreenBtn.click();
+                    return;
+                }
+            } catch (error) {
+                console.warn('iframe 내부 전체화면 접근 실패:', error);
+                // Cross-Origin 제한으로 접근 실패 시 기본 전체화면 사용
+            }
+        }
+        
+        // 기본 전체화면 동작 실행
         toggleFullscreen();
     });
     
@@ -194,11 +225,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // 게임 재시작 로직
-        // 실제 게임에서는 게임 인스턴스 재시작 함수 호출
-        // 예: gameInstance.restart();
-        
-        // 예제에서는 간단히 메시지 표시
-        showGameMessage('게임을 재시작합니다...');
+        try {
+            if (gameElement && gameElement.contentWindow) {
+                // iframe 페이지 새로고침
+                gameElement.src = gameElement.src;
+                showGameMessage('게임을 재시작합니다...');
+            } else {
+                // iframe이 없는 경우 게임 다시 로드
+                loadGame();
+            }
+        } catch (error) {
+            console.error('게임 재시작 중 오류:', error);
+            showGameMessage('게임 재시작 중 오류가 발생했습니다.');
+        }
     });
     
     // 음소거 버튼 클릭 이벤트
@@ -208,15 +247,35 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isMuted) {
             muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i> 음소거 해제';
-            // 실제 게임에서는 게임 오디오 음소거
-            // 예: gameInstance.setMute(true);
+            // 유니티 게임 오디오 음소거 시도
+            try {
+                if (gameElement && gameElement.contentWindow) {
+                    // 유니티 인스턴스에 접근 시도 (Same-Origin Policy 제한 있을 수 있음)
+                    const unityInstance = gameElement.contentWindow.unityInstance;
+                    if (unityInstance) {
+                        // 유니티 게임에 음소거 메시지 전송 시도
+                        unityInstance.SendMessage('AudioManager', 'SetMute', true);
+                    }
+                }
+            } catch (error) {
+                console.warn('음소거 적용 실패:', error);
+            }
         } else {
             muteBtn.innerHTML = '<i class="fas fa-volume-up"></i> 음소거';
-            // 실제 게임에서는 게임 오디오 음소거 해제
-            // 예: gameInstance.setMute(false);
+            // 유니티 게임 오디오 음소거 해제 시도
+            try {
+                if (gameElement && gameElement.contentWindow) {
+                    const unityInstance = gameElement.contentWindow.unityInstance;
+                    if (unityInstance) {
+                        unityInstance.SendMessage('AudioManager', 'SetMute', false);
+                    }
+                }
+            } catch (error) {
+                console.warn('음소거 해제 실패:', error);
+            }
         }
         
-        // 예제에서는 간단히 메시지 표시
+        // 메시지 표시
         showGameMessage(isMuted ? '게임 소리가 꺼졌습니다.' : '게임 소리가 켜졌습니다.');
     });
     

@@ -59,6 +59,15 @@
     align-items: center;
 }
 
+/* iframe 스타일 */
+.game-embed {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: #000;
+    display: block;
+}
+
 /* 게임 로딩 플레이스홀더 */
 .game-placeholder {
     display: flex;
@@ -82,6 +91,13 @@
     font-size: 1.2rem;
     margin-bottom: 1.5rem;
     color: var(--bg-color);
+}
+
+.game-placeholder .error-details {
+    font-size: 0.9rem;
+    color: #ff9999;
+    margin-bottom: 1.5rem;
+    max-width: 80%;
 }
 
 .load-game-btn {
