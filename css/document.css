@@ -345,7 +345,12 @@
     }
 
     .document-main {
-        padding-top: 90px; /* 모바일에서는 더 작게 조정 */
+        padding-top: 110px; /* 모바일에서도 여백 유지 */
+    }
+    
+    .document-header {
+        margin-top: 1.5rem; /* 여백 추가 */
+        margin-bottom: 2rem;
     }
 }
 
@@ -355,7 +360,7 @@
     }
     
     .document-main {
-        padding-top: 70px;
+        padding-top: 90px; /* 여백 조정 */
     }
     
     .document-content {
@@ -363,6 +368,7 @@
     }
     
     .document-header {
-        margin-bottom: 1.5rem; /* 작은 화면에서는 헤더 마진 감소 */
+        margin-top: 1.5rem; /* 여백 추가 유지 */
+        margin-bottom: 1.5rem;
     }
 }

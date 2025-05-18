@@ -1,5 +1,27 @@
 /* 홈페이지 스타일 (home.css) */
 
+/* 히어로 섹션 CTA 버튼 */
+.hero-cta-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 480px) {
+    .hero-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .cta-button {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
 /* 기본 애니메이션 */
 @keyframes fadeInUp {
     from {

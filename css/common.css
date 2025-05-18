@@ -78,17 +78,13 @@ a {
     text-align: center;
     font-size: 1rem;
     line-height: 1.5;
-    height: 3rem;
+    min-height: 3rem;
 }
 
 .cta-button:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
-}
-
-.cta-secondary {
-    margin-left: 1rem;
 }
 
 .section-title {

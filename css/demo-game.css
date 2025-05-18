@@ -305,11 +305,12 @@
 /* 반응형 스타일 */
 @media (max-width: 768px) {
     .section-with-top-padding {
-        padding-top: 80px; /* 모바일에서는 여백 줄임 */
+        padding-top: 100px; /* 모바일에서 여백 유지 */
     }
     
     .section-title {
         font-size: 2rem;
+        margin-top: 1.5rem; /* 상단 여백 추가 */
     }
     
     .pattern-list {
@@ -332,11 +333,12 @@
 
 @media (max-width: 480px) {
     .section-with-top-padding {
-        padding-top: 70px; /* 작은 디바이스에서 여백 더 줄임 */
+        padding-top: 90px; /* 작은 디바이스에서 여백 조정 */
     }
 
     .section-title {
         font-size: 1.75rem;
+        margin-top: 1.5rem; /* 작은 화면에서도 여백 유지 */
     }
     
     .controls-grid {
