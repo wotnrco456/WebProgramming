@@ -96,13 +96,13 @@
                             </div>
                             
                             <div class="pattern-item">
-                                <h4><i class="fas fa-exchange-alt"></i> State 패턴</h4>
-                                <p>플레이어 캐릭터와 적의 다양한 상태(대기, 이동, 공격, 방어 등)를 관리하는 데 사용되었습니다. 캐릭터의 움직임을 통해 상태 전환을 확인할 수 있습니다.</p>
+                                <h4><i class="fas fa-recycle"></i> Object Pool 패턴</h4>
+                                <p>총알, 파티클, 적 캐릭터 등 자주 생성 및 제거되는 오브젝트를 미리 생성하여 관리함으로써 게임 성능을 최적화합니다. 반복되는 오브젝트 생성에 따른 메모리 부하를 줄여줍니다.</p>
                             </div>
-                            
+
                             <div class="pattern-item">
-                                <h4><i class="fas fa-bell"></i> Observer 패턴</h4>
-                                <p>게임 이벤트 시스템에 적용되어 점수 변경, 적 등장, 아이템 획득 등의 이벤트가 발생할 때 UI, 사운드, 파티클 효과 등이 자동으로 업데이트됩니다.</p>
+                                <h4><i class="fas fa-crown"></i> Singleton 패턴</h4>
+                                <p>게임 매니저, 오디오 매니저, 입력 시스템 등 게임 전체에서 공유되는 시스템 컴포넌트에 적용되었습니다.</p>
                             </div>
                             
                             <div class="pattern-item">
@@ -111,8 +111,38 @@
                             </div>
                             
                             <div class="pattern-item">
-                                <h4><i class="fas fa-crown"></i> Singleton 패턴</h4>
-                                <p>게임 매니저, 오디오 매니저, 입력 시스템 등 게임 전체에서 공유되는 시스템 컴포넌트에 적용되었습니다.</p>
+                                <h4><i class="fas fa-exchange-alt"></i> State 패턴</h4>
+                                <p>플레이어 캐릭터와 적의 다양한 상태(대기, 이동, 공격, 방어 등)를 관리하는 데 사용되었습니다. 캐릭터의 움직임을 통해 상태 전환을 확인할 수 있습니다.</p>
+                            </div>
+                            
+                            <div class="pattern-item">
+                                <h4><i class="fas fa-bell"></i> Observer 패턴</h4>
+                                <p>게임 이벤트 시스템에 적용되어 점수 변경, 적 등장, 아이템 획득 등의 이벤트가 발생할 때 UI, 사운드, 파티클 효과 등이 자동으로 업데이트됩니다.</p>
+                            </div>
+
+                            <div class="pattern-item">
+                                <h4><i class="fas fa-th-large"></i> MVP 패턴</h4>
+                                <p>게임 UI 시스템에 적용되어 비즈니스 로직과 화면 표시를 분리합니다. 게임 인벤토리, 스탯 화면 등에서 모델과 뷰 간의 상호작용을 프레젠터가 관리합니다.</p>
+                            </div>
+
+                            <div class="pattern-item">
+                                <h4><i class="fas fa-code-branch"></i> MVVM 패턴</h4>
+                                <p>복잡한 게임 데이터 바인딩을 처리하기 위해 사용됩니다. 플레이어 스탯, 인벤토리 상태 등이 변경될 때 UI가 자동으로 업데이트되도록 합니다.</p>
+                            </div>
+
+                            <div class="pattern-item">
+                                <h4><i class="fas fa-chess"></i> Strategy 패턴</h4>
+                                <p>적 AI, 무기 시스템, 이동 방식 등 다양한 알고리즘을 교체 가능하게 구현하는 데 사용되었습니다. 게임 중 전략을 바꾸어 다양한 플레이 스타일을 경험할 수 있습니다.</p>
+                            </div>
+
+                            <div class="pattern-item">
+                                <h4><i class="fas fa-feather-alt"></i> Flyweight 패턴</h4>
+                                <p>지형 타일, 공통 텍스처, 효과음 등 게임에서 반복적으로 사용되는 리소스를 공유하여 메모리 사용량을 줄입니다. 대규모 월드 렌더링 시 효율성을 높여줍니다.</p>
+                            </div>
+
+                            <div class="pattern-item">
+                                <h4><i class="fas fa-flag"></i> Dirty Flag 패턴</h4>
+                                <p>게임 오브젝트의 상태가 변경됐을 때만 업데이트 로직을 실행하여 성능을 최적화합니다. 대규모 시뮬레이션이나 물리 연산에서 불필요한 계산을 줄여줍니다.</p>
                             </div>
                         </div>
                     </div>
