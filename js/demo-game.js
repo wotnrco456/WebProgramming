@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Unity 게임에 음소거 명령 전송 - int 값 사용
                 // bool값을 int로 변환(true->1, false->0)
                 const muteValue = mute ? 1 : 0;
-                window.gameUnityInstance.SendMessage('AudioManager', 'SetMute', muteValue);
+                window.gameUnityInstance.SendMessage('AudioListenerController', 'SetMute', muteValue);
                 console.log('음소거 상태 변경:', mute, '값:', muteValue);
                 return true;
             } catch (error) {
